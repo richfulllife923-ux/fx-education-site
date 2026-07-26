@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Google Fontsへの外部フェッチに依存しないシステムフォントスタック。
+     どの環境でもビルドが失敗しないよう、OS標準の高品質な日本語フォントを優先させる。 */
+  --font-display: -apple-system, "SF Pro Display", "Hiragino Sans", "Yu Gothic UI", "Meiryo",
+    "Noto Sans JP", sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic UI",
+    "Meiryo", "Noto Sans JP", sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-paper text-ink font-body antialiased;
+  font-feature-settings: "palt" 1;
+}
+
+/* ダークモード（system設定 + class両対応） */
+.dark body {
+  @apply bg-navy-900 text-navy-50;
+}
+
+h1, h2, h3, h4 {
+  @apply font-display tracking-tight;
+}
+
+::selection {
+  background-color: theme("colors.gold.300");
+  color: theme("colors.navy.900");
+}
+
+/* 共通コンポーネントクラス */
+.container-page {
+  @apply mx-auto w-full max-w-content px-5 sm:px-8;
+}
+
+.card {
+  @apply rounded-card border border-line bg-white shadow-card transition-shadow hover:shadow-card-hover;
+}
+
+.badge {
+  @apply inline-flex items-center gap-1 rounded-pill bg-sky-100 px-3 py-1 text-xs font-medium text-sky-700;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-pill bg-navy-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-navy-700;
+}
+
+.btn-gold {
+  @apply inline-flex items-center justify-center gap-2 rounded-pill bg-gold-500 px-6 py-3 text-sm font-semibold text-navy-900 transition-colors hover:bg-gold-600;
+}
+
+.btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 rounded-pill border border-line px-6 py-3 text-sm font-semibold text-navy-900 transition-colors hover:border-navy-500;
+}
+
+/* 見出しの装飾線 */
+.eyebrow {
+  @apply mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-gold-600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
