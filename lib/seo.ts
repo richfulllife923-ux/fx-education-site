@@ -3,8 +3,9 @@ import type { Metadata } from "next";
 const SITE_NAME = "TUTTO";
 const SITE_URL = "https://example.com";
 const DEFAULT_DESCRIPTION =
-  "TUTTOは、市場がどの構造を受け入れ、どの構造を拒否したのかを可視化するために開発中のMT5 Market Structure Platformです。";
-const DEFAULT_OG_IMAGE = `${SITE_URL}/og/default.png`;
+  "TUTTOは、市場がどの構造を受け入れ、どの構造を拒否したのかを可視化するために開発中のMarket Structure Observation Frameworkです。";
+const DEFAULT_OG_IMAGE = `${SITE_URL}/brand/og-image.png`;
+const BRAND_LOGO = `${SITE_URL}/brand/tutto-logo.svg`;
 
 interface PageSeoInput {
   title: string;
@@ -61,6 +62,8 @@ export const site = {
   name: SITE_NAME,
   url: SITE_URL,
   description: DEFAULT_DESCRIPTION,
+  ogImage: DEFAULT_OG_IMAGE,
+  logo: BRAND_LOGO,
 };
 
 export function breadcrumbJsonLd(items: { name: string; path: string }[]) {
@@ -97,7 +100,7 @@ export function articleJsonLd(input: {
     publisher: {
       "@type": "Organization",
       name: SITE_NAME,
-      logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
+      logo: { "@type": "ImageObject", url: BRAND_LOGO },
     },
     mainEntityOfPage: `${SITE_URL}${input.path}`,
   };

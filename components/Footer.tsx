@@ -5,17 +5,18 @@ const COLUMNS: { title: string; links: { href: string; label: string }[] }[] = [
   {
     title: "Framework",
     links: [
-      { href: "/tutto-theory", label: "TUTTO Framework" },
-      { href: "/fibonacci", label: "市場構造" },
-      { href: "/tools", label: "開発状況" },
+      { href: "/framework", label: "Framework" },
+      { href: "/research", label: "Research" },
+      { href: "/indicator", label: "Indicator" },
     ],
   },
   {
     title: "Resources",
     links: [
-      { href: "/blog", label: "ブログ" },
+      { href: "/roadmap", label: "Roadmap" },
       { href: "/fx-basics", label: "基礎知識" },
       { href: "/fund-management", label: "資金管理" },
+      { href: "/blog", label: "ブログ" },
     ],
   },
   {
@@ -33,7 +34,9 @@ export default function Footer() {
     <footer className="border-t border-border bg-background text-text-secondary">
       <div className="container-page grid gap-10 py-14 lg:grid-cols-[1.3fr_repeat(3,1fr)]">
         <div>
-          <p className="font-display text-lg font-bold text-text-primary">◉ TUTTO</p>
+          <Link href="/" className="inline-flex items-center" aria-label="TUTTO Home">
+            <img src="/brand/tutto-logo-dark.svg" alt="TUTTO" className="h-10 w-auto" />
+          </Link>
           <p className="mt-3 max-w-xs text-sm leading-relaxed">
             Market Structure Observation Framework。市場を予測するのではなく、市場が採用した構造を観測するための研究・開発プロジェクトです。
           </p>
@@ -64,7 +67,7 @@ export default function Footer() {
         <div className="container-page flex flex-col gap-3 py-6 text-xs text-text-secondary sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} TUTTO. All rights reserved.</p>
           <p className="max-w-2xl leading-relaxed">
-            本サイトは研究・教育目的の情報提供です。将来の価格、利益、取引成果を保証するものではありません。実際の判断はご自身の責任で行ってください。
+            本サイトは研究・教育目的の情報提供です。将来の価格、利益、取引結果を保証するものではありません。実際の判断はご自身の責任で行ってください。
           </p>
         </div>
       </div>
