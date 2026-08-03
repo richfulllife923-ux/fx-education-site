@@ -48,9 +48,8 @@ export default function BlogListClient() {
   return (
     <section className="container-page grid grid-cols-1 gap-10 lg:grid-cols-[1fr_320px]">
       <div>
-        {/* 検索 */}
-        <div className="mb-6 flex items-center gap-2 rounded-pill border border-line bg-white px-4 py-2.5">
-          <Search size={16} className="text-muted" />
+        <div className="mb-6 flex items-center gap-2 rounded-button border border-border bg-surface px-4 py-2.5">
+          <Search size={16} className="text-text-secondary" strokeWidth={1.8} />
           <input
             type="text"
             value={query}
@@ -58,17 +57,16 @@ export default function BlogListClient() {
               setQuery(e.target.value);
               setCurrentPage(1);
             }}
-            placeholder="記事を検索（例：ロット、ゼロカット）"
-            className="w-full bg-transparent text-sm outline-none placeholder:text-muted"
+            placeholder="記事を検索"
+            className="w-full bg-transparent text-sm text-text-primary outline-none placeholder:text-text-secondary"
           />
         </div>
 
-        {/* カテゴリタブ */}
         <div className="mb-8 flex flex-wrap gap-2">
           <button
             onClick={() => selectCategory(undefined)}
-            className={`rounded-pill px-4 py-1.5 text-xs font-semibold transition-colors ${
-              !activeCategory ? "bg-navy-900 text-white" : "border border-line text-navy-700 hover:border-navy-500"
+            className={`rounded-button px-4 py-1.5 text-xs font-semibold transition-colors ${
+              !activeCategory ? "bg-primary text-white" : "border border-border text-text-secondary hover:border-primary hover:text-text-primary"
             }`}
           >
             すべて
@@ -77,8 +75,8 @@ export default function BlogListClient() {
             <button
               key={c}
               onClick={() => selectCategory(c)}
-              className={`rounded-pill px-4 py-1.5 text-xs font-semibold transition-colors ${
-                activeCategory === c ? "bg-navy-900 text-white" : "border border-line text-navy-700 hover:border-navy-500"
+              className={`rounded-button px-4 py-1.5 text-xs font-semibold transition-colors ${
+                activeCategory === c ? "bg-primary text-white" : "border border-border text-text-secondary hover:border-primary hover:text-text-primary"
               }`}
             >
               {c}
@@ -86,24 +84,22 @@ export default function BlogListClient() {
           ))}
         </div>
 
-        {/* 記事グリッド */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           {pagePosts.map((post) => (
             <PostCard key={post.slug} post={post} />
           ))}
         </div>
 
-        {pagePosts.length === 0 && <p className="mt-10 text-sm text-muted">該当する記事が見つかりませんでした。</p>}
+        {pagePosts.length === 0 && <p className="mt-10 text-sm text-text-secondary">該当する記事が見つかりませんでした。</p>}
 
-        {/* ページネーション */}
         {totalPages > 1 && (
           <nav className="mt-12 flex justify-center gap-2" aria-label="ページネーション">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
               <button
                 key={n}
                 onClick={() => setCurrentPage(n)}
-                className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold transition-colors ${
-                  n === safePage ? "bg-navy-900 text-white" : "border border-line text-navy-700 hover:border-navy-500"
+                className={`flex h-9 w-9 items-center justify-center rounded-button text-sm font-semibold transition-colors ${
+                  n === safePage ? "bg-primary text-white" : "border border-border text-text-secondary hover:border-primary hover:text-text-primary"
                 }`}
               >
                 {n}
@@ -113,16 +109,15 @@ export default function BlogListClient() {
         )}
       </div>
 
-      {/* サイドバー */}
       <aside className="space-y-8">
         <div className="card p-5">
-          <h3 className="mb-4 font-display text-sm font-bold text-navy-900">人気記事</h3>
+          <h3 className="mb-4 font-display text-sm font-bold text-text-primary">よく読まれている記事</h3>
           <ul className="space-y-4">
             {popular.map((p, i) => (
               <li key={p.slug}>
-                <Link href={`/blog/${p.slug}`} className="flex items-start gap-3 group">
-                  <span className="font-display text-lg font-black text-gold-500">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="text-sm font-medium leading-snug text-navy-700 group-hover:text-gold-600">{p.title}</span>
+                <Link href={`/blog/${p.slug}`} className="group flex items-start gap-3">
+                  <span className="font-display text-lg font-black text-primary">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="text-sm font-medium leading-snug text-text-secondary group-hover:text-text-primary">{p.title}</span>
                 </Link>
               </li>
             ))}
@@ -130,11 +125,11 @@ export default function BlogListClient() {
         </div>
 
         <div className="card p-5">
-          <h3 className="mb-4 font-display text-sm font-bold text-navy-900">カテゴリー</h3>
+          <h3 className="mb-4 font-display text-sm font-bold text-text-primary">カテゴリー</h3>
           <ul className="space-y-2">
             {CATEGORIES.map((c) => (
               <li key={c}>
-                <button onClick={() => selectCategory(c)} className="text-sm text-navy-700 hover:text-gold-600">
+                <button onClick={() => selectCategory(c)} className="text-sm text-text-secondary hover:text-text-primary">
                   {c}
                 </button>
               </li>

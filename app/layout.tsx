@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 import ScrollToTop from "@/components/ScrollToTop";
 import { site } from "@/lib/seo";
 
-// フォントはビルド時にGoogle Fontsへネットワークアクセスしない、
-// システムフォントスタック（globals.css内 --font-body / --font-display）を採用。
-// これによりCI/CD環境のネットワーク制限に左右されず、常にビルドが成功する。
-
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: `${site.name}｜勝率ではなく、生存率を上げる`, template: `%s | ${site.name}` },
+  title: { default: `${site.name} | Market Geometry Observation Framework`, template: `%s | ${site.name}` },
   description: site.description,
   robots: { index: true, follow: true },
   alternates: { types: { "application/rss+xml": "/rss.xml" } },
@@ -23,7 +19,6 @@ const orgJsonLd = {
   name: site.name,
   url: site.url,
   logo: `${site.url}/logo.png`,
-  sameAs: ["https://twitter.com/", "https://youtube.com/"],
 };
 
 const websiteJsonLd = {

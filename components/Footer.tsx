@@ -1,64 +1,56 @@
 import Link from "next/link";
-import { Twitter, Youtube, Rss } from "lucide-react";
+import { Rss } from "lucide-react";
 
 const COLUMNS: { title: string; links: { href: string; label: string }[] }[] = [
   {
-    title: "学ぶ",
+    title: "Framework",
     links: [
+      { href: "/tutto-theory", label: "TUTTOとは" },
+      { href: "/fibonacci", label: "市場構造" },
+      { href: "/tools", label: "開発状況" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { href: "/blog", label: "ブログ" },
+      { href: "/fx-basics", label: "基礎知識" },
       { href: "/fund-management", label: "資金管理" },
-      { href: "/tutto-theory", label: "TUTTO理論" },
-      { href: "/fx-basics", label: "FX基礎知識" },
-      { href: "/fibonacci", label: "フィボナッチ講座" },
     ],
   },
   {
-    title: "サイト",
+    title: "Site",
     links: [
-      { href: "/overseas-fx", label: "海外FX" },
-      { href: "/tools", label: "おすすめツール" },
-      { href: "/blog", label: "ブログ一覧" },
-      { href: "/profile", label: "運営者プロフィール" },
-    ],
-  },
-  {
-    title: "サポート",
-    links: [
-      { href: "/contact", label: "お問い合わせ" },
-      { href: "/sitemap.xml", label: "サイトマップ" },
-      { href: "/rss.xml", label: "RSSフィード" },
+      { href: "/profile", label: "About" },
+      { href: "/contact", label: "Contact" },
+      { href: "/sitemap.xml", label: "Sitemap" },
     ],
   },
 ];
 
 export default function Footer() {
   return (
-    <footer className="border-t border-line bg-navy-900 text-navy-100">
+    <footer className="border-t border-border bg-background text-text-secondary">
       <div className="container-page grid gap-10 py-14 lg:grid-cols-[1.3fr_repeat(3,1fr)]">
         <div>
-          <p className="font-display text-lg font-bold text-white">FX生存戦略ラボ</p>
-          <p className="mt-3 max-w-xs text-sm leading-relaxed text-navy-300">
-            勝率ではなく、生存率を上げる。FX初心者が安心して学べる教育サイトです。
+          <p className="font-display text-lg font-bold text-text-primary">◉ TUTTO</p>
+          <p className="mt-3 max-w-xs text-sm leading-relaxed">
+            Market Geometry Observation Framework。市場を予測するのではなく、市場が採用した構造を観測するための研究・開発プロジェクトです。
           </p>
           <div className="mt-5 flex gap-3">
-            <a href="#" aria-label="X (Twitter)" className="rounded-full border border-navy-500 p-2 hover:border-gold-500 hover:text-gold-500">
-              <Twitter size={16} />
-            </a>
-            <a href="#" aria-label="YouTube" className="rounded-full border border-navy-500 p-2 hover:border-gold-500 hover:text-gold-500">
-              <Youtube size={16} />
-            </a>
-            <a href="/rss.xml" aria-label="RSS" className="rounded-full border border-navy-500 p-2 hover:border-gold-500 hover:text-gold-500">
-              <Rss size={16} />
+            <a href="/rss.xml" aria-label="RSS" className="rounded-button border border-border p-2 hover:border-primary hover:text-text-primary">
+              <Rss size={16} strokeWidth={1.8} />
             </a>
           </div>
         </div>
 
         {COLUMNS.map((col) => (
           <div key={col.title}>
-            <p className="mb-4 text-xs font-bold uppercase tracking-widest text-navy-300">{col.title}</p>
+            <p className="mb-4 text-xs font-bold uppercase tracking-widest text-text-primary">{col.title}</p>
             <ul className="space-y-2.5">
               {col.links.map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="text-sm text-navy-100 hover:text-gold-400">
+                  <Link href={l.href} className="text-sm text-text-secondary hover:text-text-primary">
                     {l.label}
                   </Link>
                 </li>
@@ -68,12 +60,11 @@ export default function Footer() {
         ))}
       </div>
 
-      <div className="border-t border-navy-700">
-        <div className="container-page flex flex-col gap-3 py-6 text-xs text-navy-300 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} FX生存戦略ラボ. All rights reserved.</p>
+      <div className="border-t border-border">
+        <div className="container-page flex flex-col gap-3 py-6 text-xs text-text-secondary sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} TUTTO. All rights reserved.</p>
           <p className="max-w-2xl leading-relaxed">
-            当サイトは投資判断の最終的な参考情報を提供するものであり、投資助言や利益を保証するものではありません。
-            FX取引には元本を超える損失が生じるリスクがあります。取引の最終判断はご自身の責任で行ってください。
+            本サイトは研究・教育目的の情報提供です。将来の価格、利益、取引成果を保証するものではありません。実際の判断はご自身の責任で行ってください。
           </p>
         </div>
       </div>

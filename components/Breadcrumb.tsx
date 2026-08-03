@@ -8,34 +8,31 @@ export interface Crumb {
 }
 
 export default function Breadcrumb({ items }: { items: Crumb[] }) {
-  const full = [{ name: "ホーム", path: "/" }, ...items];
+  const full = [{ name: "Home", path: "/" }, ...items];
 
   return (
-    <nav aria-label="パンくずリスト" className="container-page py-4 text-xs text-muted">
+    <nav aria-label="パンくずリスト" className="container-page py-4 text-xs text-text-secondary">
       <ol className="flex flex-wrap items-center gap-1.5">
         {full.map((item, i) => (
           <li key={item.path} className="flex items-center gap-1.5">
             {i === 0 ? (
-              <Link href={item.path} className="flex items-center gap-1 hover:text-navy-700">
-                <Home size={12} /> {item.name}
+              <Link href={item.path} className="flex items-center gap-1 hover:text-text-primary">
+                <Home size={12} strokeWidth={1.8} /> {item.name}
               </Link>
             ) : i === full.length - 1 ? (
-              <span className="font-medium text-navy-700" aria-current="page">
+              <span className="font-medium text-text-primary" aria-current="page">
                 {item.name}
               </span>
             ) : (
-              <Link href={item.path} className="hover:text-navy-700">
+              <Link href={item.path} className="hover:text-text-primary">
                 {item.name}
               </Link>
             )}
-            {i < full.length - 1 && <ChevronRight size={12} />}
+            {i < full.length - 1 && <ChevronRight size={12} strokeWidth={1.8} />}
           </li>
         ))}
       </ol>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd(full)) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd(full)) }} />
     </nav>
   );
 }

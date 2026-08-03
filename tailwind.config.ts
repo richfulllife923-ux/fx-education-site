@@ -1,55 +1,30 @@
 import type { Config } from "tailwindcss";
 
-// ==========================================================================
-// デザイントークン (Design Tokens)
-// コンセプト:「Apple × TradingView × Notion」
-//  - Apple   : 余白・素材感・タイポグラフィの精度
-//  - TradingView : ダークネイビー基調のデータ表現、チャート的な図解
-//  - Notion  : 白ベースの読みやすさ、角丸カード、情報設計の明快さ
-// ==========================================================================
 const config: Config = {
   darkMode: "class",
-  content: [
-    "./app/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-  ],
+  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        // ベースカラー
-        paper: "#FFFFFF",
-        surface: "#F7F8FA",
-        "surface-dark": "#0B1220",
-        // アクセント: ダークネイビー（信頼・知性）
+        background: "var(--color-background)",
+        surface: "var(--color-surface)",
+        primary: "var(--color-primary)",
+        text: {
+          primary: "var(--color-text-primary)",
+          secondary: "var(--color-text-secondary)",
+        },
+        border: "var(--color-border)",
+        success: "var(--color-success)",
+        warning: "var(--color-warning)",
+        danger: "var(--color-danger)",
         navy: {
-          50: "#EEF1F6",
-          100: "#D6DCE8",
-          300: "#8894AC",
-          500: "#33415C",
-          700: "#1B2439",
-          900: "#0B1220",
+          50: "#F5F7FA",
+          100: "#E6EAF2",
+          300: "#AAB4C5",
+          500: "#56657D",
+          700: "#26324A",
+          900: "#0B1020",
         },
-        // アクセント: ゴールド（達成・生存の証）
-        gold: {
-          100: "#F5E9D0",
-          300: "#E3C285",
-          500: "#C9A961",
-          600: "#B08A3E",
-          700: "#8C6C2E",
-        },
-        // アクセント: ライトブルー（学習・冷静さ）
-        sky: {
-          100: "#E7F1FC",
-          300: "#A9CBF2",
-          500: "#5B9BD5",
-          700: "#3A6FA0",
-        },
-        // セマンティック
-        ink: "#101828",
-        muted: "#5B6472",
-        line: "#E4E7EC",
-        danger: "#C0392B",
-        safe: "#2E7D5B",
       },
       fontFamily: {
         display: ["var(--font-display)", "sans-serif"],
@@ -57,25 +32,14 @@ const config: Config = {
         mono: ["var(--font-mono)", "monospace"],
       },
       borderRadius: {
-        card: "1.25rem",
-        pill: "999px",
+        card: "0.5rem",
+        button: "0.625rem",
       },
       boxShadow: {
-        card: "0 1px 2px rgba(11,18,32,0.04), 0 8px 24px -12px rgba(11,18,32,0.12)",
-        "card-hover": "0 4px 12px rgba(11,18,32,0.08), 0 16px 32px -12px rgba(11,18,32,0.16)",
+        card: "0 14px 40px -28px rgba(0, 0, 0, 0.55)",
       },
       maxWidth: {
-        prose: "42rem",
         content: "72rem",
-      },
-      keyframes: {
-        fadeUp: {
-          "0%": { opacity: "0", transform: "translateY(12px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-      },
-      animation: {
-        fadeUp: "fadeUp 0.5s ease-out both",
       },
     },
   },

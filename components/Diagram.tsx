@@ -1,48 +1,46 @@
-import { LucideIcon, ArrowRight, ArrowDown } from "lucide-react";
+import { ArrowDown, ArrowRight, LucideIcon } from "lucide-react";
 
-// アイコン付き原則カード（資金管理ページなどで使用）
 export function PrincipleCard({
   icon: Icon,
   title,
   description,
-  tone = "navy",
+  tone = "primary",
 }: {
   icon: LucideIcon;
   title: string;
   description: string;
-  tone?: "navy" | "gold" | "sky";
+  tone?: "primary" | "success" | "warning";
 }) {
   const toneMap = {
-    navy: "bg-navy-50 text-navy-700",
-    gold: "bg-gold-100 text-gold-700",
-    sky: "bg-sky-100 text-sky-700",
+    primary: "border-primary bg-[rgba(59,130,246,0.10)] text-primary",
+    success: "border-success bg-[rgba(34,197,94,0.10)] text-success",
+    warning: "border-warning bg-[rgba(245,158,11,0.10)] text-warning",
   } as const;
 
   return (
-    <div className="card flex flex-col gap-3 p-6">
-      <span className={`flex h-11 w-11 items-center justify-center rounded-xl ${toneMap[tone]}`}>
-        <Icon size={20} />
+    <div className="card flex h-full flex-col gap-3 p-6 hover:border-primary">
+      <span className={`flex h-11 w-11 items-center justify-center rounded-button border ${toneMap[tone]}`}>
+        <Icon size={20} strokeWidth={1.8} />
       </span>
-      <h3 className="font-display text-base font-bold text-navy-900">{title}</h3>
-      <p className="text-sm leading-relaxed text-muted">{description}</p>
+      <h3 className="font-display text-base font-bold text-text-primary">{title}</h3>
+      <p className="text-sm leading-relaxed text-text-secondary">{description}</p>
     </div>
   );
 }
 
-// フローチャート（横並び／縦並び自動切替）
 export function FlowChart({ steps }: { steps: { label: string; note?: string }[] }) {
   return (
     <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:gap-3">
       {steps.map((step, i) => (
         <div key={step.label} className="flex flex-1 flex-col items-center gap-2 sm:flex-row">
-          <div className="w-full rounded-xl border border-line bg-white p-4 text-center shadow-card">
-            <p className="text-sm font-bold text-navy-900">{step.label}</p>
-            {step.note && <p className="mt-1 text-xs text-muted">{step.note}</p>}
+          <div className="w-full rounded-card border border-border bg-surface p-4 text-center shadow-card">
+            <p className="text-sm font-bold text-text-primary">{step.label}</p>
+            {step.note && <p className="mt-1 text-xs text-text-secondary">{step.note}</p>}
           </div>
           {i < steps.length - 1 && (
             <>
-              <ArrowDown size={18} className="shrink-0 text-gold-500 sm:hidden" />
-              <ArrowRight size={18} className="hidden shrink-0 text-gold-500 sm:block" />
+              <ArrowDown size={18} className="shrink-0 text-primary sm:hidden" strokeWidth={1.8} />
+              <ArrowRight size={18} className="hidden shrink-0 text-primary sm:block" strokeWidth={1.8} />
             </>
           )}
         </div>
@@ -51,7 +49,6 @@ export function FlowChart({ steps }: { steps: { label: string; note?: string }[]
   );
 }
 
-// 汎用比較テーブル
 export function ComparisonTable({
   headers,
   rows,
@@ -60,12 +57,12 @@ export function ComparisonTable({
   rows: (string | number)[][];
 }) {
   return (
-    <div className="overflow-x-auto rounded-card border border-line">
+    <div className="overflow-x-auto rounded-card border border-border">
       <table className="w-full min-w-[520px] border-collapse text-sm">
         <thead>
-          <tr className="bg-navy-900 text-white">
+          <tr className="bg-surface text-text-primary">
             {headers.map((h) => (
-              <th key={h} className="px-4 py-3 text-left font-medium">
+              <th key={h} className="border-b border-border px-4 py-3 text-left font-medium">
                 {h}
               </th>
             ))}
@@ -73,9 +70,9 @@ export function ComparisonTable({
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-surface"}>
+            <tr key={i} className={i % 2 === 0 ? "bg-background" : "bg-surface"}>
               {row.map((cell, j) => (
-                <td key={j} className="border-t border-line px-4 py-3 text-navy-700">
+                <td key={j} className="border-t border-border px-4 py-3 text-text-secondary">
                   {cell}
                 </td>
               ))}
@@ -87,26 +84,26 @@ export function ComparisonTable({
   );
 }
 
-// 注意喚起・ポイント強調ボックス
 export function Callout({
-  tone = "gold",
+  tone = "primary",
   title,
   children,
 }: {
-  tone?: "gold" | "danger" | "sky";
+  tone?: "primary" | "danger" | "warning";
   title: string;
   children: React.ReactNode;
 }) {
   const toneMap = {
-    gold: "border-gold-300 bg-gold-100/60",
-    danger: "border-danger/30 bg-red-50",
-    sky: "border-sky-300 bg-sky-100/60",
+    primary: "border-primary bg-[rgba(59,130,246,0.10)]",
+    danger: "border-danger bg-[rgba(239,68,68,0.10)]",
+    warning: "border-warning bg-[rgba(245,158,11,0.10)]",
   } as const;
 
   return (
     <div className={`rounded-card border p-5 ${toneMap[tone]}`}>
-      <p className="mb-1.5 text-sm font-bold text-navy-900">{title}</p>
-      <div className="text-sm leading-relaxed text-navy-700">{children}</div>
+      <p className="mb-1.5 text-sm font-bold text-text-primary">{title}</p>
+      <div className="text-sm leading-relaxed text-text-secondary">{children}</div>
     </div>
   );
 }
+

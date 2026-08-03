@@ -1,8 +1,8 @@
 {
-  "name": "fx-survival-lab",
+  "name": "fx-education-site",
   "version": "1.0.0",
   "private": true,
-  "description": "『勝率ではなく、生存率を上げる』— FX初心者が安心して学べる教育サイト",
+  "description": "TUTTO official site - Market Geometry Observation Framework",
   "engines": {
     "node": ">=18.18.0"
   },
@@ -10,7 +10,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "next": "15.5.21",

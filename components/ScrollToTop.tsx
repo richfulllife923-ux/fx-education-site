@@ -17,10 +17,10 @@ export default function ScrollToTop() {
   return (
     <button
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      aria-label="ページトップへ戻る"
-      className="fixed bottom-6 right-5 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-navy-900 text-white shadow-card-hover transition-transform hover:-translate-y-0.5"
+      aria-label="ページ上部へ戻る"
+      className="fixed bottom-6 right-5 z-40 flex h-11 w-11 items-center justify-center rounded-button border border-border bg-surface text-text-primary shadow-card transition-transform hover:-translate-y-0.5 hover:border-primary"
     >
-      <ArrowUp size={18} />
+      <ArrowUp size={18} strokeWidth={1.8} />
     </button>
   );
 }
