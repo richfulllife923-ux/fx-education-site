@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="240" viewBox="0 0 960 240" role="img" aria-labelledby="title desc">
+  <title id="title">TUTTO logo for dark background</title>
+  <desc id="desc">Transparent TUTTO logo using a blue structure ring, red observation point, and white wordmark.</desc>
+  <circle cx="120" cy="120" r="68" fill="none" stroke="#1976D2" stroke-width="14"/>
+  <circle cx="120" cy="120" r="16" fill="#B71C1C"/>
+  <text x="230" y="145" fill="#FFFFFF" font-family="Inter, Noto Sans JP, Hiragino Sans, Yu Gothic, Meiryo, sans-serif" font-size="82" font-weight="800" letter-spacing="3">TUTTO</text>
+</svg>
