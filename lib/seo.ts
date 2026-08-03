@@ -28,7 +28,7 @@ export function buildMetadata({
   tags,
 }: PageSeoInput): Metadata {
   const url = `${SITE_URL}${path}`;
-  const fullTitle = path === "/" ? `${SITE_NAME} | Market Geometry Observation Framework` : `${title} | ${SITE_NAME}`;
+  const fullTitle = path === "/" ? `${SITE_NAME} | Market Structure Observation Framework` : `${title} | ${SITE_NAME}`;
 
   return {
     title: fullTitle,

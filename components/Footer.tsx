@@ -5,7 +5,7 @@ const COLUMNS: { title: string; links: { href: string; label: string }[] }[] = [
   {
     title: "Framework",
     links: [
-      { href: "/tutto-theory", label: "TUTTOとは" },
+      { href: "/tutto-theory", label: "TUTTO Framework" },
       { href: "/fibonacci", label: "市場構造" },
       { href: "/tools", label: "開発状況" },
     ],
@@ -35,7 +35,7 @@ export default function Footer() {
         <div>
           <p className="font-display text-lg font-bold text-text-primary">◉ TUTTO</p>
           <p className="mt-3 max-w-xs text-sm leading-relaxed">
-            Market Geometry Observation Framework。市場を予測するのではなく、市場が採用した構造を観測するための研究・開発プロジェクトです。
+            Market Structure Observation Framework。市場を予測するのではなく、市場が採用した構造を観測するための研究・開発プロジェクトです。
           </p>
           <div className="mt-5 flex gap-3">
             <a href="/rss.xml" aria-label="RSS" className="rounded-button border border-border p-2 hover:border-primary hover:text-text-primary">

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Menu, Search, X } from "lucide-react";
 
 const NAV_LINKS = [
-  { href: "/tutto-theory", label: "理論" },
+  { href: "/tutto-theory", label: "Framework" },
   { href: "/fibonacci", label: "構造" },
   { href: "/tools", label: "開発状況" },
   { href: "/blog", label: "ブログ" },

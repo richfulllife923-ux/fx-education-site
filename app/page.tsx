@@ -50,7 +50,7 @@ export default function HomePage() {
         </div>
         <div className="container-page relative grid gap-10 py-20 sm:py-28 lg:grid-cols-[1fr_360px] lg:items-center">
           <div>
-            <p className="eyebrow"><FlaskConical size={14} strokeWidth={1.8} /> Market Geometry Observation Framework</p>
+            <p className="eyebrow"><FlaskConical size={14} strokeWidth={1.8} /> Market Structure Observation Framework</p>
             <h1 className="max-w-4xl font-display text-5xl font-black leading-tight text-text-primary sm:text-6xl">TUTTO</h1>
             <p className="mt-5 max-w-2xl text-xl font-semibold leading-relaxed text-text-primary">
               市場を予測するのではない。<br />市場が採用した構造を観測する。
@@ -59,8 +59,8 @@ export default function HomePage() {
               TUTTOは、市場がどの構造を受け入れ、どの構造を拒否したのかを可視化するために開発中のMT5 Market Structure Platformです。
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/tutto-theory" className="btn-primary">TUTTOとは <ArrowRight size={16} strokeWidth={1.8} /></Link>
-              <Link href="/fibonacci" className="btn-secondary">理論を見る</Link>
+              <Link href="/tutto-theory" className="btn-primary">TUTTO Framework <ArrowRight size={16} strokeWidth={1.8} /></Link>
+              <Link href="/fibonacci" className="btn-secondary">Frameworkを見る</Link>
               <Link href="/blog" className="btn-secondary">ブログを見る</Link>
               <Link href="/tools" className="btn-ghost">開発状況</Link>
             </div>
@@ -77,7 +77,7 @@ export default function HomePage() {
       </section>
 
       <section className="container-page py-16 sm:py-24">
-        <SectionHeading eyebrow="About" title="TUTTOとは" description="TUTTOは、売買ボタンを押すためのEAではなく、チャート上で市場構造を観測し、トレーダーが計画を立てるためのフレームワークです。" />
+        <SectionHeading eyebrow="About" title="TUTTO Framework" description="TUTTOは、売買ボタンを押すためのEAではなく、チャート上で市場構造を観測し、トレーダーが計画を立てるためのフレームワークです。" />
         <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           {FEATURES.map((feature) => (
             <PrincipleCard key={feature.title} icon={feature.icon} title={feature.title} description={feature.description} />
@@ -87,7 +87,7 @@ export default function HomePage() {
 
       <section className="border-y border-border bg-surface py-16 sm:py-24">
         <div className="container-page grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-          <SectionHeading eyebrow="Theory" title="理論" description="TUTTOの理論は、未来価格を断定するものではありません。観測対象を明確にし、どの構造が市場に扱われているかを整理します。" />
+          <SectionHeading eyebrow="Theory" title="Framework" description="TUTTO Frameworkは、未来価格を断定するものではありません。観測対象を明確にし、どの構造が市場に扱われているかを整理します。" />
           <div className="space-y-3">
             {THEORY_POINTS.map((point, index) => (
               <div key={point} className="card flex gap-4 p-5">
@@ -128,7 +128,7 @@ export default function HomePage() {
             <p className="eyebrow">Development</p>
             <h2 className="text-2xl font-bold text-text-primary">開発状況</h2>
             <p className="mt-3 text-sm leading-7 text-text-secondary">
-              MT5向けの市場構造観測プラットフォームとして、理論、アーキテクチャ、表示レイヤーを段階的に構築しています。一般公開前の内部ロジックは掲載しません。
+              MT5向けの市場構造観測プラットフォームとして、Framework、アーキテクチャ、表示レイヤーを段階的に構築しています。一般公開前の内部ロジックは掲載しません。
             </p>
             <Link href="/tools" className="btn-secondary mt-6">進捗を見る</Link>
           </div>
