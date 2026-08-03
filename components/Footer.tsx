@@ -5,17 +5,18 @@ const COLUMNS: { title: string; links: { href: string; label: string }[] }[] = [
   {
     title: "Framework",
     links: [
-      { href: "/tutto-theory", label: "TUTTO Framework" },
-      { href: "/fibonacci", label: "市場構造" },
-      { href: "/tools", label: "開発状況" },
+      { href: "/framework", label: "Framework" },
+      { href: "/research", label: "Research" },
+      { href: "/indicator", label: "Indicator" },
     ],
   },
   {
     title: "Resources",
     links: [
-      { href: "/blog", label: "ブログ" },
+      { href: "/roadmap", label: "Roadmap" },
       { href: "/fx-basics", label: "基礎知識" },
       { href: "/fund-management", label: "資金管理" },
+      { href: "/blog", label: "ブログ" },
     ],
   },
   {
