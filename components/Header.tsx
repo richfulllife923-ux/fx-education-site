@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, Search, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
-  { href: "/tutto-theory", label: "Framework" },
-  { href: "/fibonacci", label: "構造" },
-  { href: "/tools", label: "開発状況" },
-  { href: "/blog", label: "ブログ" },
-  { href: "/profile", label: "About" },
+  { href: "/", label: "HOME" },
+  { href: "/framework", label: "Framework" },
+  { href: "/research", label: "Research" },
+  { href: "/indicator", label: "Indicator" },
+  { href: "/roadmap", label: "Roadmap" },
 ];
 
 export default function Header() {
@@ -32,8 +32,8 @@ export default function Header() {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <Link href="/blog" aria-label="ブログを見る" className="rounded-button p-2 text-text-secondary hover:bg-surface hover:text-text-primary">
-            <Search size={18} strokeWidth={1.8} />
+          <Link href="/blog" className="btn-ghost">
+            Blog
           </Link>
           <Link href="/contact" className="btn-secondary">
             Contact
@@ -56,6 +56,9 @@ export default function Header() {
               </li>
             ))}
             <li className="mt-2 border-t border-border pt-3">
+              <Link href="/blog" onClick={() => setOpen(false)} className="block rounded-button px-3 py-2.5 text-sm text-text-secondary hover:bg-surface hover:text-text-primary">
+                Blog
+              </Link>
               <Link href="/contact" onClick={() => setOpen(false)} className="block rounded-button px-3 py-2.5 text-sm text-text-secondary hover:bg-surface hover:text-text-primary">
                 Contact
               </Link>
@@ -66,4 +69,3 @@ export default function Header() {
     </header>
   );
 }
-

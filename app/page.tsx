@@ -59,10 +59,10 @@ export default function HomePage() {
               TUTTOは、市場がどの構造を受け入れ、どの構造を拒否したのかを可視化するために開発中のMT5 Market Structure Platformです。
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/tutto-theory" className="btn-primary">TUTTO Framework <ArrowRight size={16} strokeWidth={1.8} /></Link>
-              <Link href="/fibonacci" className="btn-secondary">Frameworkを見る</Link>
+              <Link href="/framework" className="btn-primary">TUTTO Framework <ArrowRight size={16} strokeWidth={1.8} /></Link>
+              <Link href="/framework" className="btn-secondary">Frameworkを見る</Link>
               <Link href="/blog" className="btn-secondary">ブログを見る</Link>
-              <Link href="/tools" className="btn-ghost">開発状況</Link>
+              <Link href="/roadmap" className="btn-ghost">開発状況</Link>
             </div>
           </div>
           <div className="relative mx-auto hidden w-full max-w-[320px] lg:block" aria-hidden="true">
@@ -130,7 +130,7 @@ export default function HomePage() {
             <p className="mt-3 text-sm leading-7 text-text-secondary">
               MT5向けの市場構造観測プラットフォームとして、Framework、アーキテクチャ、表示レイヤーを段階的に構築しています。一般公開前の内部ロジックは掲載しません。
             </p>
-            <Link href="/tools" className="btn-secondary mt-6">進捗を見る</Link>
+            <Link href="/roadmap" className="btn-secondary mt-6">Roadmapを見る</Link>
           </div>
           <div className="card p-6 sm:p-8">
             <p className="eyebrow">Coming Soon</p>

@@ -6,6 +6,10 @@ export const dynamic = "force-static";
 
 const STATIC_PATHS = [
   "",
+  "/framework",
+  "/research",
+  "/indicator",
+  "/roadmap",
   "/fund-management",
   "/tutto-theory",
   "/fx-basics",
