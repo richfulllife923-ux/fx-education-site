@@ -1,54 +1,33 @@
-import { buildMetadata } from "@/lib/seo";
 import Breadcrumb from "@/components/Breadcrumb";
 import SectionHeading from "@/components/SectionHeading";
-import { PrincipleCard } from "@/components/Diagram";
-import { Calculator, NotebookPen, LineChart, Bell } from "lucide-react";
+import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
-  title: "おすすめツール｜資金管理と分析を助ける定番アイテム",
-  description: "ロット計算機、取引記録ツール、チャート分析環境、経済指標カレンダーなど、FX学習・資金管理に役立つツールのカテゴリを紹介します。",
+  title: "開発状況",
+  description: "TUTTO Indicatorと関連ツールの開発状況を公開可能な範囲でまとめます。",
   path: "/tools",
 });
 
-const TOOLS = [
-  {
-    icon: Calculator,
-    title: "ロット計算ツール",
-    description: "許容損失とストップ幅から、適切なロット数を自動計算するツール。感覚でのロット決定を防ぎます。",
-  },
-  {
-    icon: NotebookPen,
-    title: "取引記録（トレードジャーナル）",
-    description: "エントリー根拠・結果・反省点を記録するツール。感情に流されたトレードを客観視するために欠かせません。",
-  },
-  {
-    icon: LineChart,
-    title: "チャート分析プラットフォーム",
-    description: "マルチタイムフレーム表示やフィボナッチ描画に対応したチャートツール。TUTTO理論の分析にも活用できます。",
-  },
-  {
-    icon: Bell,
-    title: "経済指標カレンダー",
-    description: "重要な経済指標の発表日時を確認できるツール。指標前後のボラティリティ上昇に備えるために活用します。",
-  },
+const ROADMAP = [
+  { label: "Architecture", state: "Completed", text: "観測エンジンと表示レイヤーの責任分離を整理。" },
+  { label: "Indicator", state: "In development", text: "MT5上で構造を可視化するための実装を段階的に構築中。" },
+  { label: "Public release", state: "Coming soon", text: "検証とドキュメント整備後に公開予定。" },
 ];
 
 export default function ToolsPage() {
   return (
     <div className="pb-24">
-      <Breadcrumb items={[{ name: "おすすめツール", path: "/tools" }]} />
-
+      <Breadcrumb items={[{ name: "開発状況", path: "/tools" }]} />
       <section className="container-page pt-6">
-        <SectionHeading
-          eyebrow="Toolkit"
-          title="資金管理と分析を助けるツール"
-          description="ここでは特定の商品名ではなく、資金管理・分析において「何を目的に」ツールを選ぶべきかをカテゴリ別に紹介します。"
-        />
+        <SectionHeading eyebrow="Development" title="開発状況" description="TUTTOは現在、Market Geometry Observation Frameworkとして段階的に開発中です。" />
       </section>
-
-      <section className="container-page mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2">
-        {TOOLS.map((t) => (
-          <PrincipleCard key={t.title} {...t} />
+      <section className="container-page mt-12 space-y-4">
+        {ROADMAP.map((item) => (
+          <div key={item.label} className="card grid gap-3 p-5 sm:grid-cols-[160px_160px_1fr] sm:items-center">
+            <p className="font-display font-bold text-text-primary">{item.label}</p>
+            <span className="badge w-fit">{item.state}</span>
+            <p className="text-sm leading-7 text-text-secondary">{item.text}</p>
+          </div>
         ))}
       </section>
     </div>
