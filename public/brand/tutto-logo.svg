@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">TUTTO official logo</title>
+  <desc id="desc">Outer ring represents market structure, center point represents observation point, and TUTTO wordmark represents the framework.</desc>
+  <rect width="1200" height="360" rx="36" fill="#081321"/>
+  <circle cx="180" cy="180" r="92" fill="none" stroke="#1976D2" stroke-width="18"/>
+  <circle cx="180" cy="180" r="22" fill="#B71C1C"/>
+  <text x="320" y="204" fill="#FFFFFF" font-family="Inter, Noto Sans JP, Hiragino Sans, Yu Gothic, Meiryo, sans-serif" font-size="104" font-weight="800" letter-spacing="4">TUTTO</text>
+  <text x="326" y="260" fill="#AAB4C5" font-family="Inter, Noto Sans JP, Hiragino Sans, Yu Gothic, Meiryo, sans-serif" font-size="30" font-weight="500">Market Structure Observation Framework</text>
+</svg>
