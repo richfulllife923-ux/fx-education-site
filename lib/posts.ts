@@ -65,7 +65,7 @@ export const posts: Post[] = [
     excerpt: "比率そのものではなく、価格帯が市場参加者にどう扱われたかを見る視点を紹介します。",
     category: "市場構造",
     tags: ["価格帯", "構造", "観測"],
-    coverImage: "/images/blog/fibonacci-structure.jpg",
+    coverImage: "/images/blog/structure-observation.jpg",
     publishedAt: "2026-03-20",
     updatedAt: "2026-03-20",
     author: "TUTTO Lab",

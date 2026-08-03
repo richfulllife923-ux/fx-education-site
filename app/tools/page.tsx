@@ -19,7 +19,7 @@ export default function ToolsPage() {
     <div className="pb-24">
       <Breadcrumb items={[{ name: "開発状況", path: "/tools" }]} />
       <section className="container-page pt-6">
-        <SectionHeading eyebrow="Development" title="開発状況" description="TUTTOは現在、Market Geometry Observation Frameworkとして段階的に開発中です。" />
+        <SectionHeading eyebrow="Development" title="開発状況" description="TUTTOは現在、Market Structure Observation Frameworkとして段階的に開発中です。" />
       </section>
       <section className="container-page mt-12 space-y-4">
         {ROADMAP.map((item) => (

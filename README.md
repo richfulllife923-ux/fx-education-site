@@ -1,6 +1,6 @@
-# TUTTO Official Site
+# TUTTO Framework Official Site
 
-TUTTO official website for the Market Geometry Observation Framework.
+TUTTO official website for the Market Structure Observation Framework.
 
 ## Stack
 
@@ -13,7 +13,7 @@ TUTTO official website for the Market Geometry Observation Framework.
 ## Brand
 
 - Logo text: ◉ TUTTO
-- Subtitle: Market Geometry Observation Framework
+- Subtitle: Market Structure Observation Framework
 - Theme: dark navy, restrained blue accent, scientific and geometric tone
 - Fonts: system font stack only. No `next/font`, no external font fetching, no added local font files.
 
@@ -38,4 +38,4 @@ npm run build
 
 ## Public Content Policy
 
-The public site explains TUTTO as a market structure observation framework. Do not publish internal Geometry values, scoring formulas, acceptance thresholds, invalidation rules, collision formulas, or source-code-level trading logic.
+The public site explains TUTTO as a market structure observation framework. Do not publish internal structure values, scoring formulas, acceptance thresholds, invalidation rules, transition formulas, or source-code-level trading logic.

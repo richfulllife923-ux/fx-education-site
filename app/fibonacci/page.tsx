@@ -4,29 +4,29 @@ import SectionHeading from "@/components/SectionHeading";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
-  title: "市場構造",
-  description: "TUTTOにおける価格帯の見方を、公開可能な抽象レベルで紹介します。",
+  title: "Structure Theory",
+  description: "TUTTO Frameworkにおける構造の見方を、公開可能な抽象レベルで紹介します。",
   path: "/fibonacci",
 });
 
 const ITEMS = [
-  { title: "価格帯", text: "数値そのものではなく、市場参加者がその帯をどう扱ったかを観測します。" },
-  { title: "反応", text: "到達、保持、拒否、通過といった反応を、後から説明できる形で整理します。" },
-  { title: "構造", text: "単独の点ではなく、波、押し戻し、維持の流れを含めて判断材料にします。" },
+  { title: "構造起点", text: "観測する構造がどこから始まったのかを整理するための基準です。" },
+  { title: "構造認証点", text: "市場がその構造を扱い始めたかどうかを確認するための境界です。" },
+  { title: "構造候補", text: "採用、拒否、通過、遷移のいずれにもなり得る観測対象です。" },
 ];
 
-export default function FibonacciPage() {
+export default function StructurePage() {
   return (
     <div className="pb-24">
-      <Breadcrumb items={[{ name: "市場構造", path: "/fibonacci" }]} />
+      <Breadcrumb items={[{ name: "Structure Theory", path: "/fibonacci" }]} />
       <section className="container-page pt-6">
         <SectionHeading
-          eyebrow="Structure"
-          title="数値ではなく、市場構造として見る"
-          description="TUTTOでは、価格帯を単なる暗記対象として扱いません。市場がどの帯を採用し、どの帯を拒否したのかを観測することを重視します。"
+          eyebrow="Structure Theory"
+          title="構造として市場を見る"
+          description="TUTTO Frameworkでは、価格帯を単なる目標値として扱いません。構造起点、構造認証点、構造候補を分け、市場がどの構造を受容し、どの構造を拒否したのかを観測します。"
         />
         <Callout tone="warning" title="公開範囲について">
-          一般公開サイトでは、独自のGeometry値、内部スコア、判定条件は掲載しません。ここでは考え方の概要だけを説明します。
+          一般公開サイトでは、独自の内部数値、スコア、判定条件は掲載しません。ここでは構造理論の概要だけを説明します。
         </Callout>
       </section>
       <section className="container-page mt-16 grid grid-cols-1 gap-5 sm:grid-cols-3">

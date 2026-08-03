@@ -2,7 +2,7 @@
   "name": "fx-education-site",
   "version": "1.0.0",
   "private": true,
-  "description": "TUTTO official site - Market Geometry Observation Framework",
+  "description": "TUTTO official site - Market Structure Observation Framework",
   "engines": {
     "node": ">=18.18.0"
   },

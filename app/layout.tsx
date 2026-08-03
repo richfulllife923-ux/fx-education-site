@@ -7,7 +7,7 @@ import { site } from "@/lib/seo";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: `${site.name} | Market Geometry Observation Framework`, template: `%s | ${site.name}` },
+  title: { default: `${site.name} | Market Structure Observation Framework`, template: `%s | ${site.name}` },
   description: site.description,
   robots: { index: true, follow: true },
   alternates: { types: { "application/rss+xml": "/rss.xml" } },

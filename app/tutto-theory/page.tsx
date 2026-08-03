@@ -5,8 +5,8 @@ import SectionHeading from "@/components/SectionHeading";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
-  title: "TUTTOとは",
-  description: "TUTTOは、市場構造の採用と拒否を観測するためのMarket Geometry Observation Frameworkです。",
+  title: "TUTTO Framework",
+  description: "TUTTO Frameworkは、市場構造の受容と拒否を観測するためのMarket Structure Observation Frameworkです。",
   path: "/tutto-theory",
 });
 
@@ -16,36 +16,37 @@ const PRINCIPLES = [
   "内部条件を公開せず、公開サイトでは抽象概念に留める",
 ];
 
-export default function TuttoTheoryPage() {
+export default function TuttoFrameworkPage() {
   return (
     <div className="pb-24">
-      <Breadcrumb items={[{ name: "TUTTOとは", path: "/tutto-theory" }]} />
+      <Breadcrumb items={[{ name: "TUTTO Framework", path: "/tutto-theory" }]} />
       <section className="container-page pt-6">
         <SectionHeading
           eyebrow="Framework"
-          title="TUTTOとは"
-          description="TUTTOは、売買シグナルを出すための一般的なインジケーターではありません。市場がどの構造を受け入れ、どの構造を拒否したのかを整理するための観測フレームワークです。"
+          title="TUTTO Framework"
+          description="TUTTO Frameworkは、売買シグナルを出すための一般的なインジケーターではありません。市場がどの構造を受け入れ、どの構造を拒否したのかを整理するための観測フレームワークです。"
         />
         <Callout tone="primary" title="公開サイトで説明する範囲">
-          このページでは、TUTTOの思想と使い方の方向性を説明します。独自パラメータ、内部判定式、閾値、無効化ロジックなどは公開しません。
+          このページでは、TUTTO Frameworkの思想と使い方の方向性を説明します。独自パラメータ、内部判定式、閾値、構造無効化ロジックなどは公開しません。
         </Callout>
       </section>
 
       <section className="container-page mt-16">
-        <SectionHeading eyebrow="Process" title="観測の流れ" />
+        <SectionHeading eyebrow="Framework Map" title="TUTTO Frameworkの階層" />
         <FlowChart
           steps={[
-            { label: "価格", note: "チャートそのもの" },
-            { label: "構造", note: "波と価格帯" },
-            { label: "反応", note: "受容・拒否・通過" },
-            { label: "計画", note: "人間が判断する材料" },
+            { label: "Philosophy", note: "予測ではなく観測" },
+            { label: "Structure Theory", note: "構造起点と構造認証点" },
+            { label: "Market Layer", note: "時間軸の役割分離" },
+            { label: "STATE", note: "構造状態の整理" },
+            { label: "Trade Plan", note: "人間が使う計画" },
           ]}
         />
       </section>
 
       <section className="border-y border-border bg-surface py-16 mt-16">
         <div className="container-page">
-          <SectionHeading eyebrow="Principles" title="TUTTOの原則" />
+          <SectionHeading eyebrow="Principles" title="TUTTO Frameworkの原則" />
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
             {PRINCIPLES.map((item) => (
               <div key={item} className="card flex items-start gap-3 p-5">
