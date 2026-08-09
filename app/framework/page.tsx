@@ -28,6 +28,7 @@ const FOUNDATION = [
     icon: Layers3,
     title: "Market Layer",
     description: "Execution、Swing、Structure、Macroの役割を分け、時間軸の混線を減らします。",
+    href: "/framework/market-layer",
   },
   {
     icon: SquareStack,
@@ -53,6 +54,27 @@ const TERMS = [
   "構造無効化",
 ];
 
+function FrameworkCard({ item }: { item: (typeof FOUNDATION)[number] }) {
+  if (!item.href) {
+    return <PrincipleCard icon={item.icon} title={item.title} description={item.description} />;
+  }
+
+  const Icon = item.icon;
+
+  return (
+    <Link href={item.href} className="group card flex h-full flex-col gap-3 p-6 hover:border-primary" aria-label={`${item.title} documentationを読む`}>
+      <span className="flex h-11 w-11 items-center justify-center rounded-button border border-primary bg-[rgba(59,130,246,0.10)] text-primary">
+        <Icon size={20} strokeWidth={1.8} aria-hidden="true" />
+      </span>
+      <h3 className="font-display text-base font-bold text-text-primary">{item.title}</h3>
+      <p className="text-sm leading-relaxed text-text-secondary">{item.description}</p>
+      <span className="mt-auto inline-flex items-center gap-2 pt-4 text-sm font-semibold text-primary group-hover:text-text-primary">
+        詳しく読む <ArrowRight size={15} strokeWidth={1.8} aria-hidden="true" />
+      </span>
+    </Link>
+  );
+}
+
 export default function FrameworkPage() {
   return (
     <div className="pb-24">
@@ -77,18 +99,9 @@ export default function FrameworkPage() {
       <section className="container-page mt-16">
         <SectionHeading eyebrow="Core" title="Framework Components" />
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-5">
-          {FOUNDATION.map((item) =>
-            item.href ? (
-              <Link key={item.title} href={item.href} className="group block h-full" aria-label={`${item.title} documentationを読む`}>
-                <PrincipleCard icon={item.icon} title={item.title} description={item.description} />
-                <span className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary group-hover:text-text-primary">
-                  詳しく読む <ArrowRight size={15} strokeWidth={1.8} />
-                </span>
-              </Link>
-            ) : (
-              <PrincipleCard key={item.title} icon={item.icon} title={item.title} description={item.description} />
-            )
-          )}
+          {FOUNDATION.map((item) => (
+            <FrameworkCard key={item.title} item={item} />
+          ))}
         </div>
       </section>
 

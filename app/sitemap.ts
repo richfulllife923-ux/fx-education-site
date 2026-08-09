@@ -10,6 +10,7 @@ const STATIC_PATHS = [
   "/framework",
   "/framework/philosophy",
   "/framework/structure-theory",
+  "/framework/market-layer",
   "/research",
   "/indicator",
   "/roadmap",
