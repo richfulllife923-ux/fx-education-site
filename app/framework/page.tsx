@@ -34,6 +34,7 @@ const FOUNDATION = [
     icon: SquareStack,
     title: "STATE",
     description: "市場構造の形成、遷移、保留、無効化を人間が追える状態へ整理します。",
+    href: "/framework/state",
   },
   {
     icon: Route,
