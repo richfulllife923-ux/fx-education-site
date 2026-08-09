@@ -107,10 +107,10 @@ export default function ManifestoPage() {
             </div>
           </div>
 
-          <div className="mx-auto w-full max-w-[280px] lg:max-w-[320px]" role="img" aria-label="観測する一点">
+          <div className="mx-auto w-full max-w-[280px] lg:max-w-[320px]">
             <img
               src="/images/brand/tutto-geometry-ring.png"
-              alt=""
+              alt="観測する一点"
               className="h-auto w-full rounded-full border border-border opacity-85 shadow-card"
             />
           </div>
@@ -200,7 +200,7 @@ export default function ManifestoPage() {
             <Route size={14} strokeWidth={1.8} /> Closing Statement
           </p>
           <h2 className="max-w-3xl font-display text-2xl font-bold leading-snug text-text-primary sm:text-3xl">
-            観測は、判断になる。
+            観測から、判断へ。
           </h2>
           <p className="mt-5 max-w-3xl text-sm leading-8 text-text-secondary sm:text-base">
             市場を見る方法を学ぶことは、答えを受け取ることではありません。自分の目で構造を見て、受け入れられたものと拒否されたものを整理し、次の判断へ進むことです。
