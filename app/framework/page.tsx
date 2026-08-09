@@ -22,6 +22,7 @@ const FOUNDATION = [
     icon: ScanLine,
     title: "Structure Theory",
     description: "構造起点、構造認証点、構造候補を分け、構造受容と構造無効化を観測します。",
+    href: "/framework/structure-theory",
   },
   {
     icon: Layers3,
