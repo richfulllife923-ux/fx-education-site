@@ -39,7 +39,8 @@ const FOUNDATION = [
   {
     icon: Route,
     title: "Trade Plan",
-    description: "観測結果を、Entry、Stop、Targetの計画として表示するための境界です。",
+    description: "観測された市場文脈を、判断可能な計画として整理するための境界です。",
+    href: "/framework/trade-plan",
   },
 ];
 
