@@ -6,6 +6,7 @@ export const dynamic = "force-static";
 
 const STATIC_PATHS = [
   "",
+  "/manifesto",
   "/framework",
   "/research",
   "/indicator",
