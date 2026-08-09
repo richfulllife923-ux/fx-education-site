@@ -6,10 +6,15 @@ export const dynamic = "force-static";
 
 const STATIC_PATHS = [
   "",
+  "/manifesto",
+  "/framework",
+  "/research",
+  "/indicator",
+  "/roadmap",
+  "/brokers",
   "/fund-management",
   "/tutto-theory",
   "/fx-basics",
-  "/fibonacci",
   "/overseas-fx",
   "/tools",
   "/blog",
