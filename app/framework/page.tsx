@@ -79,9 +79,13 @@ export default function FrameworkPage() {
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-5">
           {FOUNDATION.map((item) =>
             item.href ? (
-              <Link key={item.title} href={item.href} className="group block h-full" aria-label={`${item.title} documentationを読む`}>
-                <PrincipleCard icon={item.icon} title={item.title} description={item.description} />
-                <span className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary group-hover:text-text-primary">
+              <Link key={item.title} href={item.href} className="card group flex h-full flex-col gap-3 p-6 hover:border-primary" aria-label={`${item.title} documentationを読む`}>
+                <span className="flex h-11 w-11 items-center justify-center rounded-button border border-primary bg-[rgba(59,130,246,0.10)] text-primary">
+                  <item.icon size={20} strokeWidth={1.8} />
+                </span>
+                <h3 className="font-display text-base font-bold text-text-primary">{item.title}</h3>
+                <p className="flex-1 text-sm leading-relaxed text-text-secondary">{item.description}</p>
+                <span className="mt-auto inline-flex items-center gap-2 pt-2 text-sm font-semibold text-primary group-hover:text-text-primary">
                   詳しく読む <ArrowRight size={15} strokeWidth={1.8} />
                 </span>
               </Link>

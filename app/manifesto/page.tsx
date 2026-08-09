@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BookOpen, Eye, Layers3, Route, ShieldCheck } from "lucide-react";
 import Breadcrumb from "@/components/Breadcrumb";
@@ -84,7 +85,7 @@ export default function ManifestoPage() {
           <div className="absolute left-1/2 top-0 h-px w-[720px] -translate-x-1/2 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
           <div className="absolute inset-x-0 top-0 h-[380px] bg-[radial-gradient(circle_at_50%_0%,rgba(59,130,246,0.14),transparent_60%)]" />
         </div>
-        <div className="container-page relative grid gap-10 py-16 sm:py-24 lg:grid-cols-[1fr_340px] lg:items-center">
+        <div className="container-page relative py-16 pb-10 sm:pt-24 sm:pb-12">
           <div>
             <p className="eyebrow">
               <Eye size={14} strokeWidth={1.8} /> TUTTO Manifesto
@@ -106,14 +107,17 @@ export default function ManifestoPage() {
               </Link>
             </div>
           </div>
-
-          <div className="mx-auto w-full max-w-[280px] lg:max-w-[320px]">
-            <img
-              src="/images/brand/tutto-geometry-ring.png"
-              alt="観測する一点"
-              className="h-auto w-full rounded-full border border-border opacity-85 shadow-card"
-            />
-          </div>
+        </div>
+        <div className="relative w-full overflow-hidden">
+          <Image
+            src="/images/manifesto/tutto-trading-observation.png"
+            alt="複数の市場チャートを観測するトレーディング環境"
+            width={2048}
+            height={1084}
+            priority
+            sizes="100vw"
+            className="h-[320px] w-full object-cover object-center sm:h-[460px] lg:h-[560px] xl:h-[620px]"
+          />
         </div>
       </section>
 
