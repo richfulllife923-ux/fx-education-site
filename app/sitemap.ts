@@ -11,6 +11,7 @@ const STATIC_PATHS = [
   "/research",
   "/indicator",
   "/roadmap",
+  "/brokers",
   "/fund-management",
   "/tutto-theory",
   "/fx-basics",

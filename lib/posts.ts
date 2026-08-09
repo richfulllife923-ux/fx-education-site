@@ -60,20 +60,6 @@ export const posts: Post[] = [
       "TUTTOは未来価格を当てるための道具ではありません。市場が受け入れた構造と、拒否した構造を分けて観測し、トレーダーがチャート上で判断を組み立てるためのフレームワークです。内部判定式や独自パラメータは公開せず、一般公開サイトでは思想と利用目的を中心に説明します。",
   },
   {
-    slug: "fibonacci-as-market-structure",
-    title: "数値暗記ではなく、構造として価格帯を見る",
-    excerpt: "比率そのものではなく、価格帯が市場参加者にどう扱われたかを見る視点を紹介します。",
-    category: "市場構造",
-    tags: ["価格帯", "構造", "観測"],
-    coverImage: "/images/blog/structure-observation.jpg",
-    publishedAt: "2026-03-20",
-    updatedAt: "2026-03-20",
-    author: "TUTTO Lab",
-    readingMinutes: 7,
-    content:
-      "TUTTOでは、価格帯を単なる目標値として扱いません。到達、保持、拒否、通過といった市場の反応を観測し、現在の構造が継続しているのか、別の構造へ移行しているのかを整理します。",
-  },
-  {
     slug: "offshore-fx-pros-and-cons",
     title: "取引環境を選ぶ前に確認したいこと",
     excerpt: "取引条件だけでなく、透明性・リスク・運用ルールの観点から環境を確認します。",
