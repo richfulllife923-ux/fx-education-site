@@ -60,7 +60,7 @@ export default function HomePage() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/manifesto" className="btn-primary">Manifestoを読む <ArrowRight size={16} strokeWidth={1.8} /></Link>
-              <Link href="/fibonacci" className="btn-secondary">Frameworkを見る</Link>
+              <Link href="/framework" className="btn-secondary">Frameworkを見る</Link>
               <Link href="/blog" className="btn-secondary">ブログを見る</Link>
               <Link href="/tools" className="btn-ghost">開発状況</Link>
             </div>

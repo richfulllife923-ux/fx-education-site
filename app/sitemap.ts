@@ -14,7 +14,6 @@ const STATIC_PATHS = [
   "/fund-management",
   "/tutto-theory",
   "/fx-basics",
-  "/fibonacci",
   "/overseas-fx",
   "/tools",
   "/blog",
