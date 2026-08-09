@@ -1,4 +1,5 @@
-import { BookOpen, Layers3, Route, ScanLine, SquareStack } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, BookOpen, Layers3, Route, ScanLine, SquareStack } from "lucide-react";
 import Breadcrumb from "@/components/Breadcrumb";
 import { FlowChart, PrincipleCard } from "@/components/Diagram";
 import SectionHeading from "@/components/SectionHeading";
@@ -15,6 +16,7 @@ const FOUNDATION = [
     icon: BookOpen,
     title: "Philosophy",
     description: "市場を予測するのではなく、市場が採用した構造を観測するという中心思想です。",
+    href: "/framework/philosophy",
   },
   {
     icon: ScanLine,
@@ -74,9 +76,18 @@ export default function FrameworkPage() {
       <section className="container-page mt-16">
         <SectionHeading eyebrow="Core" title="Framework Components" />
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-5">
-          {FOUNDATION.map((item) => (
-            <PrincipleCard key={item.title} icon={item.icon} title={item.title} description={item.description} />
-          ))}
+          {FOUNDATION.map((item) =>
+            item.href ? (
+              <Link key={item.title} href={item.href} className="group block h-full" aria-label={`${item.title} documentationを読む`}>
+                <PrincipleCard icon={item.icon} title={item.title} description={item.description} />
+                <span className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-primary group-hover:text-text-primary">
+                  詳しく読む <ArrowRight size={15} strokeWidth={1.8} />
+                </span>
+              </Link>
+            ) : (
+              <PrincipleCard key={item.title} icon={item.icon} title={item.title} description={item.description} />
+            )
+          )}
         </div>
       </section>
 
