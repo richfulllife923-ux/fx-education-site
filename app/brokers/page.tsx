@@ -62,18 +62,22 @@ const HERO_POINTS = ["比較して選ぶ", "自分に合う環境を確認", "�
 
 const TONE_STYLES = {
   blue: {
-    card: "border-primary shadow-[0_0_34px_rgba(59,130,246,0.18)]",
+    card: "border-primary shadow-[0_0_44px_rgba(59,130,246,0.20)]",
+    hero: "border-primary bg-[linear-gradient(135deg,rgba(59,130,246,0.24),rgba(59,130,246,0.08)_42%,rgba(11,16,32,0)_100%)]",
     panel: "border-primary bg-[rgba(59,130,246,0.10)]",
-    icon: "border-primary bg-[rgba(59,130,246,0.14)] text-primary",
+    icon: "border-primary bg-[rgba(59,130,246,0.16)] text-primary shadow-[0_0_24px_rgba(59,130,246,0.22)]",
     text: "text-primary",
-    button: "border-primary bg-[rgba(59,130,246,0.16)] hover:bg-primary hover:text-white",
+    divider: "bg-primary",
+    button: "border-primary bg-primary text-white hover:bg-blue-500 hover:shadow-[0_0_22px_rgba(59,130,246,0.30)]",
   },
   green: {
-    card: "border-success shadow-[0_0_34px_rgba(34,197,94,0.16)]",
+    card: "border-success shadow-[0_0_44px_rgba(34,197,94,0.18)]",
+    hero: "border-success bg-[linear-gradient(135deg,rgba(34,197,94,0.20),rgba(34,197,94,0.07)_42%,rgba(11,16,32,0)_100%)]",
     panel: "border-success bg-[rgba(34,197,94,0.10)]",
-    icon: "border-success bg-[rgba(34,197,94,0.14)] text-success",
+    icon: "border-success bg-[rgba(34,197,94,0.16)] text-success shadow-[0_0_24px_rgba(34,197,94,0.20)]",
     text: "text-success",
-    button: "border-success bg-[rgba(34,197,94,0.14)] hover:bg-success hover:text-background",
+    divider: "bg-success",
+    button: "border-success bg-success text-background hover:bg-green-400 hover:shadow-[0_0_22px_rgba(34,197,94,0.28)]",
   },
 } as const;
 
@@ -124,58 +128,60 @@ export default function BrokersPage() {
         </div>
       </section>
 
-      <section className="container-page mt-16">
-        <SectionHeading eyebrow="Brokers" title="比較候補" description="掲載順は順位を示すものではありません。各社の最新条件は必ず公式情報で確認してください。" />
-        <div className="grid grid-cols-1 gap-7">
+      <section className="container-page mt-20">
+        <SectionHeading eyebrow="Brokers" title="比較候補" description="掲載順は優劣を示すものではありません。各社の最新条件は必ず公式情報で確認してください。" />
+        <div className="space-y-10">
           {BROKERS.map((broker) => {
             const tone = TONE_STYLES[broker.tone];
 
             return (
-              <article key={broker.name} className={`card overflow-hidden p-0 ${tone.card}`}>
-                <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr]">
-                  <div className="flex min-h-full flex-col p-6 sm:p-8">
-                    <div className="flex items-start gap-4">
-                      <span className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-card border ${tone.icon}`}>
-                        <Building2 size={26} strokeWidth={1.8} />
+              <article key={broker.name} className={`card overflow-hidden ${tone.card}`}>
+                <div className={`border-b p-7 sm:p-9 lg:p-10 ${tone.hero}`}>
+                  <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-start gap-5">
+                      <span className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-card border ${tone.icon}`}>
+                        <Building2 size={30} strokeWidth={1.8} />
                       </span>
                       <div>
-                        <p className={`text-xs font-bold uppercase tracking-[0.16em] ${tone.text}`}>Broker</p>
-                        <h2 className="mt-2 font-display text-3xl font-black leading-tight text-text-primary sm:text-4xl">{broker.name}</h2>
+                        <p className={`text-xs font-black uppercase tracking-[0.18em] ${tone.text}`}>Broker</p>
+                        <h2 className="mt-3 font-display text-3xl font-black leading-tight text-text-primary sm:text-5xl">{broker.name}</h2>
                       </div>
                     </div>
-
-                    <p className="mt-6 text-base leading-8 text-text-secondary">{broker.description}</p>
-
-                    <div className={`mt-8 rounded-card border p-5 ${tone.panel}`}>
-                      <p className={`text-xs font-bold uppercase tracking-[0.16em] ${tone.text}`}>Trading Platform</p>
-                      <p className="mt-3 font-display text-2xl font-black leading-tight text-text-primary sm:text-3xl">{broker.platform}</p>
-                    </div>
+                    <div className={`h-1 w-24 rounded-full ${tone.divider}`} aria-hidden="true" />
                   </div>
+                  <p className="mt-7 max-w-4xl text-base leading-8 text-text-secondary sm:text-lg">{broker.description}</p>
+                </div>
 
-                  <div className="border-t border-border bg-background/55 p-6 sm:p-8 lg:border-l lg:border-t-0">
-                    <div className="rounded-card border border-border bg-surface p-5">
-                      <p className="text-sm font-bold text-text-primary">Main Characteristics</p>
-                      <ul className="mt-4 space-y-3.5">
+                <div className="p-7 sm:p-9 lg:p-10">
+                  <div className="grid grid-cols-1 gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-stretch">
+                    <section className={`rounded-card border p-6 sm:p-7 ${tone.panel}`} aria-labelledby={`${broker.name}-platform`}>
+                      <p id={`${broker.name}-platform`} className={`text-xs font-black uppercase tracking-[0.18em] ${tone.text}`}>Trading Platform</p>
+                      <p className="mt-5 font-display text-3xl font-black leading-tight text-text-primary sm:text-4xl">{broker.platform}</p>
+                      <p className="mt-5 text-sm leading-7 text-text-secondary">利用したい取引環境に対応しているか、口座開設前に公式情報で確認してください。</p>
+                    </section>
+
+                    <section className="rounded-card border border-border bg-background/60 p-6 sm:p-7" aria-labelledby={`${broker.name}-characteristics`}>
+                      <p id={`${broker.name}-characteristics`} className="text-sm font-bold text-text-primary">Main Characteristics</p>
+                      <ul className="mt-5 grid grid-cols-1 gap-3">
                         {broker.characteristics.map((item) => (
-                          <li key={item} className="flex gap-3 text-sm leading-7 text-text-secondary">
+                          <li key={item} className="flex gap-3 rounded-button border border-border bg-surface px-4 py-3 text-sm leading-7 text-text-secondary">
                             <CheckCircle2 className={`mt-1 shrink-0 ${tone.text}`} size={18} strokeWidth={1.8} />
                             <span>{item}</span>
                           </li>
                         ))}
                       </ul>
-                    </div>
+                    </section>
+                  </div>
 
-                    <div className="mt-6 rounded-card border border-border bg-surface p-5">
-                      <p className={`text-xs font-bold uppercase tracking-[0.16em] ${tone.text}`}>Official Check</p>
+                  <div className="mt-7 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_320px] lg:items-end">
+                    <div>
+                      <p className={`text-xs font-black uppercase tracking-[0.18em] ${tone.text}`}>Official Check</p>
                       <p className="mt-3 text-sm leading-7 text-text-secondary">条件・リスク・規約等は、口座開設前にリンク先の公式情報で確認してください。</p>
+                      <p className="mt-4 text-xs leading-relaxed text-text-secondary">紹介リンクを含みます。条件・リスク・規約等はリンク先の公式情報で確認してください。</p>
                     </div>
-
-                    <div className="mt-7">
-                      <a href={broker.href} target="_blank" rel="noopener noreferrer sponsored" className={`inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-button border px-6 py-4 text-base font-bold text-text-primary transition hover:-translate-y-0.5 ${tone.button}`} aria-label={`${broker.name}の紹介リンクを新しいタブで開く`}>
-                        {broker.cta} <ArrowUpRight size={18} strokeWidth={1.8} />
-                      </a>
-                      <p className="mt-3 text-xs leading-relaxed text-text-secondary">紹介リンクを含みます。条件・リスク・規約等はリンク先の公式情報で確認してください。</p>
-                    </div>
+                    <a href={broker.href} target="_blank" rel="noopener noreferrer sponsored" className={`inline-flex min-h-16 w-full items-center justify-center gap-3 rounded-button border px-6 py-4 text-base font-black transition hover:-translate-y-0.5 ${tone.button}`} aria-label={`${broker.name}の紹介リンクを新しいタブで開く`}>
+                      {broker.cta} <ArrowUpRight size={20} strokeWidth={1.8} />
+                    </a>
                   </div>
                 </div>
               </article>
