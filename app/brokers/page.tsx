@@ -17,7 +17,7 @@ const BROKERS = [
     characteristics: ["FX / CFD等を提供", "デモ取引対応", "取引条件は公式情報で確認"],
     href: "https://www.vantagetradings.com/open-live-account/?utm_source=promo&utm_medium=social&utm_campaign=RAF&utm_term=NA&utm_content=NA&c=yLNWzY8SMiiQdekrxIQBUQ==",
     cta: "Vantage Tradingを見る",
-    tone: "blue",
+    tone: "orange",
   },
   {
     name: "FXGT",
@@ -61,14 +61,14 @@ const CHECKPOINTS = [
 const HERO_POINTS = ["比較して選ぶ", "自分に合う環境を確認", "公式情報を確認"] as const;
 
 const TONE_STYLES = {
-  blue: {
-    card: "border-primary shadow-[0_0_44px_rgba(59,130,246,0.20)]",
-    hero: "border-primary bg-[linear-gradient(135deg,rgba(59,130,246,0.24),rgba(59,130,246,0.08)_42%,rgba(11,16,32,0)_100%)]",
-    panel: "border-primary bg-[rgba(59,130,246,0.10)]",
-    icon: "border-primary bg-[rgba(59,130,246,0.16)] text-primary shadow-[0_0_24px_rgba(59,130,246,0.22)]",
-    text: "text-primary",
-    divider: "bg-primary",
-    button: "border-primary bg-primary text-white hover:bg-blue-500 hover:shadow-[0_0_22px_rgba(59,130,246,0.30)]",
+  orange: {
+    card: "border-warning shadow-[0_0_44px_rgba(245,158,11,0.20)]",
+    hero: "border-warning bg-[linear-gradient(135deg,rgba(245,158,11,0.22),rgba(245,158,11,0.08)_42%,rgba(11,16,32,0)_100%)]",
+    panel: "border-warning bg-[rgba(245,158,11,0.10)]",
+    icon: "border-warning bg-[rgba(245,158,11,0.16)] text-warning shadow-[0_0_24px_rgba(245,158,11,0.22)]",
+    text: "text-warning",
+    divider: "bg-warning",
+    button: "border-warning bg-warning text-background hover:bg-amber-400 hover:shadow-[0_0_22px_rgba(245,158,11,0.30)]",
   },
   green: {
     card: "border-success shadow-[0_0_44px_rgba(34,197,94,0.18)]",
