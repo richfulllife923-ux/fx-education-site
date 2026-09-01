@@ -49,6 +49,25 @@ const PARAMETERS = [
   },
 ];
 
+const ENTRY_COLORS = [
+  {
+    color: "DeepSkyBlue",
+    title: "Short-Term / MICRO Entry",
+    layer: "L1 — M1 / M5",
+    description:
+      "M1をCanonical SourceとするL1（M1/M5）の短期Entry候補です。M5で表示している場合でも、Entryの色は表示時間足ではなく、元となるLayerに基づいて決まります。",
+    swatch: "bg-sky-400",
+  },
+  {
+    color: "Orange",
+    title: "Mid-Term Entry",
+    layer: "L2 — M15 / M30",
+    description:
+      "L2（M15/M30）の中期Entryに使用する設計の色です。現在のIndicatorではL2 Mid-Term Entry表示は開発中のため、実装後に同じ考え方で区別されます。",
+    swatch: "bg-orange-400",
+  },
+];
+
 function Mt5IndicatorPanel({ parameter }: { parameter: (typeof PARAMETERS)[number] }) {
   const isFearGreed = parameter.tone === "fear";
   const statusClass = parameter.state === "CONFIRMING" || parameter.state === "NEUTRAL" ? "text-yellow-300" : parameter.state === "EARLY" ? "text-red-300" : "text-slate-200";
@@ -142,6 +161,29 @@ export default function IndicatorPage() {
         <p className="mt-5 text-sm leading-7 text-text-secondary">
           ENTRY / MICROの確率表示は、将来の値動きや利益を保証するものではありません。TUTTO Indicatorによる市場構造の観測結果を確認するための補助表示です。
         </p>
+      </section>
+
+      <section className="container-page mt-16">
+        <SectionHeading
+          eyebrow="Usage"
+          title="Entryラインの色について"
+          description="TUTTOでは、EntryがどのMarket Layerから生まれたかを色で区別します。Entryは売買指示ではなく、市場構造の観測とEntry候補の可視化を補助する表示です。"
+        />
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          {ENTRY_COLORS.map((entryColor) => (
+            <div key={entryColor.color} className="card p-6">
+              <div className="flex items-start gap-4">
+                <span className={`mt-1 h-4 w-4 shrink-0 rounded-full border border-white/40 ${entryColor.swatch}`} aria-hidden="true" />
+                <div>
+                  <p className="font-display text-xs font-black uppercase tracking-[0.16em] text-primary">{entryColor.color}</p>
+                  <h3 className="mt-3 text-lg font-bold text-text-primary">{entryColor.title}</h3>
+                  <p className="mt-2 text-sm font-semibold text-text-primary">{entryColor.layer}</p>
+                  <p className="mt-3 text-sm leading-7 text-text-secondary">{entryColor.description}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   );
