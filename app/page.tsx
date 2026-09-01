@@ -45,6 +45,24 @@ const EVIDENCE_FLOW = [
   { label: "STRUCTURE VERIFICATION", description: "構造検証" },
 ];
 
+const INDICATOR_ITEMS = [
+  {
+    label: "ENTRY",
+    title: "中長期エントリーの発生確率",
+    description: "TUTTOが中長期の市場構造をもとに、エントリー条件が整う可能性を表示します。",
+  },
+  {
+    label: "MICRO",
+    title: "短期エントリーの発生確率",
+    description: "短期の市場構造を観測し、短期エントリー条件が整う可能性を表示します。",
+  },
+  {
+    label: "CNN",
+    title: "恐怖指数",
+    description: "市場全体のFear / Greed環境を確認するための指標です。",
+  },
+];
+
 const DISTRIBUTION_ROLES = [
   {
     icon: Radar,
@@ -123,6 +141,41 @@ export default function HomePage() {
               TUTTOは、売買シグナル、自動売買命令、投資助言、利益保証を提供しません。表示される情報や解説は、判断材料を整理するための補助であり、最終的な判断と責任は利用者自身にあります。
             </p>
           </div>
+        </div>
+      </section>
+
+      <section className="container-page pb-16 sm:pb-24">
+        <div className="card border-primary p-6 sm:p-8">
+          <div className="grid gap-8 lg:grid-cols-[0.88fr_1.12fr] lg:items-start">
+            <div>
+              <p className="eyebrow"><LineChart size={14} strokeWidth={1.8} /> TUTTO Indicator</p>
+              <h2 className="mt-3 text-3xl font-bold leading-tight text-text-primary sm:text-4xl">これが核です</h2>
+              <p className="mt-3 font-display text-sm font-black uppercase tracking-[0.18em] text-primary">ENTRY / MICRO / CNN</p>
+              <p className="mt-5 text-sm leading-8 text-text-secondary">
+                TUTTO Indicatorで表示される主要な確認項目を、公開可能な範囲で整理しています。
+              </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Link href="/indicator" className="btn-primary">
+                  Indicatorを見る <ArrowRight size={16} strokeWidth={1.8} />
+                </Link>
+                <Link href="/indicator/install" className="btn-secondary">
+                  MT5へのインストール方法
+                </Link>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              {INDICATOR_ITEMS.map((item) => (
+                <div key={item.label} className="rounded-card border border-border bg-surface p-5">
+                  <p className="font-display text-xs font-black uppercase tracking-[0.16em] text-primary">{item.label}</p>
+                  <h3 className="mt-3 text-base font-bold leading-7 text-text-primary">{item.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-text-secondary">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <p className="mt-6 border-t border-border pt-5 text-xs leading-6 text-text-secondary">
+            ENTRY / MICROの確率表示は、将来の値動きや利益を保証するものではありません。TUTTO Indicatorによる市場構造の観測結果を確認するための補助表示です。
+          </p>
         </div>
       </section>
 
