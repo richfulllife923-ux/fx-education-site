@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Activity, ArrowRight, BookOpen, Boxes, FlaskConical, LineChart, Radar, ShieldCheck } from "lucide-react";
+import { Activity, ArrowRight, BookOpen, Boxes, ExternalLink, FlaskConical, LineChart, PlayCircle, Radar, ShieldCheck } from "lucide-react";
 import { buildMetadata } from "@/lib/seo";
 import SectionHeading from "@/components/SectionHeading";
 import PostCard from "@/components/PostCard";
@@ -34,6 +34,41 @@ const FEATURES = [
     icon: ShieldCheck,
     title: "Risk First",
     description: "売買シグナルではなく、判断前に構造とリスクを確認するためのプラットフォームです。",
+  },
+];
+
+const EVIDENCE_FLOW = [
+  { label: "PRE-OBSERVATION", description: "先出し観測" },
+  { label: "MARKET REACTION", description: "市場反応" },
+  { label: "RUNTIME EVIDENCE", description: "経過記録" },
+  { label: "ANSWER CHECK", description: "答え合わせ" },
+  { label: "STRUCTURE VERIFICATION", description: "構造検証" },
+];
+
+const DISTRIBUTION_ROLES = [
+  {
+    icon: Radar,
+    title: "X — Current Observation",
+    description: "短い市場構造観測、経過観測、答え合わせ、Runtime Evidenceの抜粋を公開します。",
+    keywords: ["Fast", "Current", "Visual", "Evidence-driven"],
+    href: "https://x.com/Tutto249306",
+    cta: "Xで観測を見る",
+    external: true,
+  },
+  {
+    icon: PlayCircle,
+    title: "YouTube — Explanation & Verification",
+    description: "Xで短く公開した観測について、なぜそのStructureやGeometryを見ていたのか、その後市場がどう扱ったのかを詳しく解説・検証する場所です。",
+    keywords: ["WHY", "Verification", "Case Study", "Education"],
+    cta: "Coming soon",
+  },
+  {
+    icon: BookOpen,
+    title: "Website — Documentation",
+    description: "TUTTOのPhilosophy、Structure Theory、Market Layer、STATE、Trade Planを体系的に記録する公式Documentationです。",
+    keywords: ["SSOT", "Framework", "Research Archive", "Reference"],
+    href: "/framework",
+    cta: "Frameworkを読む",
   },
 ];
 
@@ -73,6 +108,98 @@ export default function HomePage() {
               className="relative h-auto w-full rounded-full border border-border opacity-80 shadow-card"
             />
           </div>
+        </div>
+      </section>
+
+      <section className="container-page py-12 sm:py-16">
+        <div className="card border-primary p-6 sm:p-8">
+          <p className="eyebrow"><ShieldCheck size={14} strokeWidth={1.8} /> Important Notice</p>
+          <h2 className="mt-3 text-2xl font-bold text-text-primary">TUTTOは投資助言ではありません。</h2>
+          <div className="mt-4 space-y-3 text-sm leading-8 text-text-secondary">
+            <p>
+              TUTTOで公開しているFramework、Indicator、動画、ライブ配信、記事、その他の情報は、市場構造を観測し学習するための教育・研究目的の情報です。特定の金融商品の売買、投資判断、エントリー、決済、利益を指示または保証するものではありません。
+            </p>
+            <p>
+              TUTTOは、売買シグナル、自動売買命令、投資助言、利益保証を提供しません。表示される情報や解説は、判断材料を整理するための補助であり、最終的な判断と責任は利用者自身にあります。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-border bg-surface py-16 sm:py-24">
+        <div className="container-page">
+          <div className="grid gap-10 lg:grid-cols-[0.86fr_1.14fr] lg:items-start">
+            <div>
+              <p className="eyebrow"><Radar size={14} strokeWidth={1.8} /> OBSERVATION → EVIDENCE</p>
+              <h2 className="max-w-2xl text-3xl font-bold leading-tight text-text-primary sm:text-4xl">
+                先に観測し、<br />市場の反応を後から検証する。
+              </h2>
+              <div className="mt-5 space-y-4 text-sm leading-8 text-text-secondary">
+                <p>
+                  TUTTOは、市場が動いた後に「ここが重要だった」と説明するためのFrameworkではありません。
+                </p>
+                <p>
+                  市場の結果がまだ分からない段階でStructureやGeometryの観測ポイントを記録し、その後に市場が実際にどう扱ったかを確認します。
+                </p>
+                <p>
+                  未来価格を保証するのではなく、市場がどの構造を採用したかを観測・検証します。
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 lg:grid-cols-5">
+              {EVIDENCE_FLOW.map((step, index) => (
+                <div key={step.label} className="card relative p-4 sm:min-h-[150px]">
+                  <span className="font-display text-xs font-black text-primary">0{index + 1}</span>
+                  <h3 className="mt-4 text-sm font-bold leading-6 text-text-primary">{step.label}</h3>
+                  <p className="mt-2 text-sm leading-6 text-text-secondary">{step.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="container-page py-16 sm:py-24">
+        <SectionHeading
+          eyebrow="Distribution"
+          title="X / YouTube / Website"
+          description="TUTTOの公開活動は、現在の観測、検証の説明、公式Documentationを分けて記録します。Indicatorは、そのFrameworkをChart上で観測するためのToolです。"
+        />
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+          {DISTRIBUTION_ROLES.map((role) => {
+            const Icon = role.icon;
+
+            return (
+              <div key={role.title} className="card flex h-full flex-col p-6">
+                <span className="flex h-11 w-11 items-center justify-center rounded-button border border-primary bg-[rgba(59,130,246,0.10)] text-primary">
+                  <Icon size={20} strokeWidth={1.8} aria-hidden="true" />
+                </span>
+                <h3 className="mt-5 text-lg font-bold text-text-primary">{role.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-text-secondary">{role.description}</p>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {role.keywords.map((keyword) => (
+                    <span key={keyword} className="badge">{keyword}</span>
+                  ))}
+                </div>
+                <div className="mt-auto pt-6">
+                  {role.href ? (
+                    role.external ? (
+                      <a href={role.href} target="_blank" rel="noopener noreferrer" className="btn-secondary">
+                        {role.cta} <ExternalLink size={15} strokeWidth={1.8} aria-hidden="true" />
+                      </a>
+                    ) : (
+                      <Link href={role.href} className="btn-secondary">
+                        {role.cta} <ArrowRight size={15} strokeWidth={1.8} aria-hidden="true" />
+                      </Link>
+                    )
+                  ) : (
+                    <span className="badge">{role.cta}</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
