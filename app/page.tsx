@@ -149,7 +149,7 @@ export default function HomePage() {
           <div className="grid gap-8 lg:grid-cols-[0.88fr_1.12fr] lg:items-start">
             <div>
               <p className="eyebrow"><LineChart size={14} strokeWidth={1.8} /> TUTTO Indicator</p>
-              <h2 className="mt-3 text-3xl font-bold leading-tight text-text-primary sm:text-4xl">これが核です</h2>
+              <h2 className="mt-3 text-3xl font-bold leading-tight text-text-primary sm:text-4xl">インジケーター</h2>
               <p className="mt-3 font-display text-sm font-black uppercase tracking-[0.18em] text-primary">ENTRY / MICRO / CNN</p>
               <p className="mt-5 text-sm leading-8 text-text-secondary">
                 TUTTO Indicatorで表示される主要な確認項目を、公開可能な範囲で整理しています。
