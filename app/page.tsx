@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Activity, ArrowRight, BookOpen, Boxes, ExternalLink, FlaskConical, LineChart, PlayCircle, Radar, ShieldCheck } from "lucide-react";
+import { Activity, ArrowRight, BookOpen, Boxes, Building2, ExternalLink, FlaskConical, LineChart, PlayCircle, Radar, ShieldCheck } from "lucide-react";
 import { buildMetadata } from "@/lib/seo";
 import SectionHeading from "@/components/SectionHeading";
 import PostCard from "@/components/PostCard";
@@ -107,6 +107,23 @@ export default function HomePage() {
               alt=""
               className="relative h-auto w-full rounded-full border border-border opacity-80 shadow-card"
             />
+          </div>
+        </div>
+      </section>
+
+      <section className="container-page py-12 sm:py-16">
+        <div className="card border-primary p-6 sm:p-8">
+          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <p className="eyebrow"><Building2 size={14} strokeWidth={1.8} /> Broker Selection</p>
+              <h2 className="text-3xl font-bold leading-tight text-text-primary sm:text-4xl">FX会社を選ぶ</h2>
+              <p className="mt-4 max-w-2xl text-sm leading-8 text-text-secondary">
+                取引環境やサービス内容はFX会社によって異なります。プラットフォームや取引条件を確認し、自分に合った環境を比較できます。
+              </p>
+            </div>
+            <Link href="/brokers" className="btn-primary min-h-14 px-6 text-base">
+              FX会社を比較する <ArrowRight size={18} strokeWidth={1.8} />
+            </Link>
           </div>
         </div>
       </section>
