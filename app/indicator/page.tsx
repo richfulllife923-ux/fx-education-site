@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Callout } from "@/components/Diagram";
 import SectionHeading from "@/components/SectionHeading";
@@ -22,6 +23,11 @@ export default function IndicatorPage() {
         <Callout tone="primary" title="公開準備中">
           まだ購入ボタンや配布導線は追加しません。検証、ドキュメント、公開準備が整った段階で案内します。
         </Callout>
+        <div className="mt-6">
+          <Link href="/indicator/install" className="btn-ghost">
+            MT5へのインストール方法
+          </Link>
+        </div>
       </section>
     </div>
   );
