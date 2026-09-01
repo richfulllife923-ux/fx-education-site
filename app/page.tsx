@@ -45,39 +45,6 @@ const EVIDENCE_FLOW = [
   { label: "STRUCTURE VERIFICATION", description: "構造検証" },
 ];
 
-const INDICATOR_ITEMS = [
-  {
-    label: "ENTRY",
-    scale: ["100", "80", "60", "40", "20", "0"],
-    value: null,
-    state: "EARLY",
-    tone: "entry",
-    activeSegments: 0,
-    title: "中長期エントリーの発生確率",
-    description: "TUTTOが中長期の市場構造をもとに、エントリー条件が整う可能性を表示します。",
-  },
-  {
-    label: "MICRO",
-    scale: ["100", "80", "60", "40", "20", "0"],
-    value: "65",
-    state: "CONFIRMING",
-    tone: "micro",
-    activeSegments: 4,
-    title: "短期エントリーの発生確率",
-    description: "短期の市場構造を観測し、短期エントリー条件が整う可能性を表示します。",
-  },
-  {
-    label: "CNN F&G",
-    scale: ["100", "75", "50", "25", "0"],
-    value: "47",
-    state: "NEUTRAL",
-    tone: "fear",
-    activeSegments: 3,
-    title: "恐怖指数",
-    description: "市場全体のFear / Greed環境を確認するための指標です。",
-  },
-];
-
 const DISTRIBUTION_ROLES = [
   {
     icon: Radar,
@@ -104,64 +71,6 @@ const DISTRIBUTION_ROLES = [
     cta: "Frameworkを読む",
   },
 ];
-
-function IndicatorPanel({ item, index }: { item: (typeof INDICATOR_ITEMS)[number]; index: number }) {
-  const isFearGreed = item.tone === "fear";
-  const statusClass = item.state === "CONFIRMING" || item.state === "NEUTRAL" ? "text-yellow-300" : item.state === "EARLY" ? "text-red-300" : "text-slate-200";
-  const segmentColors = ["bg-red-700/85", "bg-red-500/80", "bg-orange-400/85", "bg-yellow-300/90", "bg-slate-500/45", "bg-slate-500/35"];
-  const segments = Array.from({ length: item.scale.length }, (_, segmentIndex) => segmentIndex);
-
-  return (
-    <div className="rounded-card border border-border bg-background/70 p-4">
-      <div className="flex justify-center">
-        <div className="relative h-[178px] w-[96px] border border-slate-200/80 bg-[#05070b] p-[5px] font-mono text-[10px] leading-none text-slate-100">
-          <p className="absolute left-[5px] top-[5px] text-[10px] uppercase tracking-normal text-slate-100">{item.label}</p>
-          <span className="absolute right-[5px] top-[5px] rounded-[2px] border border-slate-500/60 px-[3px] py-[2px] text-[8px] text-slate-300">表示例</span>
-          <div className="absolute left-[6px] top-[26px] flex h-[104px] flex-col justify-between text-[9px] text-slate-100">
-            {item.scale.map((tick) => (
-              <span key={tick}>{tick}</span>
-            ))}
-          </div>
-          <div className="absolute left-[34px] top-[24px] flex h-[108px] w-[16px] flex-col-reverse gap-[3px]">
-            {segments.map((segmentIndex) => {
-              const active = segmentIndex < item.activeSegments;
-              return (
-                <span
-                  key={segmentIndex}
-                  className={`block h-[15px] border border-slate-300/80 ${active ? segmentColors[segmentIndex] : "bg-[#20252b]"}`}
-                />
-              );
-            })}
-          </div>
-          {item.value ? (
-            <span className="absolute left-[55px] top-[83px] text-[10px] text-yellow-300">{item.value}</span>
-          ) : (
-            <span className="absolute left-[54px] top-[123px] h-px w-[18px] bg-slate-300/80" />
-          )}
-          {item.tone === "entry" ? (
-            <span className="absolute left-[56px] top-[117px] flex items-center gap-[2px] text-[10px] text-red-400">
-              <span className="h-[5px] w-[5px] rounded-full border border-red-400" />
-              <span className="h-px w-[8px] bg-red-400" />
-            </span>
-          ) : null}
-          {isFearGreed ? (
-            <div className="absolute bottom-[24px] left-[6px] grid w-[60px] grid-cols-3 overflow-hidden border border-slate-600/70">
-              <span className="h-[5px] bg-red-600/80" />
-              <span className="h-[5px] bg-yellow-300/80" />
-              <span className="h-[5px] bg-slate-500/45" />
-            </div>
-          ) : null}
-          <p className={`absolute bottom-[7px] left-[5px] text-[10px] uppercase ${statusClass}`}>{item.state}</p>
-        </div>
-      </div>
-      <div className="mt-5">
-        <span className="font-mono text-[11px] text-text-secondary">0{index + 1}</span>
-        <h3 className="mt-2 text-base font-bold leading-7 text-text-primary">{item.title}</h3>
-        <p className="mt-2 text-sm leading-7 text-text-secondary">{item.description}</p>
-      </div>
-    </div>
-  );
-}
 
 export default function HomePage() {
   const latest = getAllPosts().slice(0, 3);
@@ -225,7 +134,7 @@ export default function HomePage() {
               <h2 className="mt-3 text-3xl font-bold leading-tight text-text-primary sm:text-4xl">インジケーター</h2>
               <p className="mt-3 font-display text-sm font-black uppercase tracking-[0.18em] text-primary">ENTRY / MICRO / CNN F&G</p>
               <p className="mt-5 text-sm leading-8 text-text-secondary">
-                TUTTO Indicatorで表示される主要な確認項目を、実際のMT5表示に近いUI Exampleとして整理しています。
+                TUTTO Indicatorで表示される主要な確認項目を、公開可能な範囲で整理しています。詳しい表示例はParametersページで確認できます。
               </p>
             </div>
             <div className="flex flex-wrap gap-3 lg:justify-end">
@@ -236,11 +145,6 @@ export default function HomePage() {
                 MT5へのインストール方法
               </Link>
             </div>
-          </div>
-          <div className="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-3">
-            {INDICATOR_ITEMS.map((item, index) => (
-              <IndicatorPanel key={item.label} item={item} index={index} />
-            ))}
           </div>
           <p className="mt-6 border-t border-border pt-5 text-xs leading-6 text-text-secondary">
             ENTRY / MICROの確率表示は、将来の値動きや利益を保証するものではありません。TUTTO Indicatorによる市場構造の観測結果を確認するための補助表示です。
