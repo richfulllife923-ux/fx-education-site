@@ -164,7 +164,7 @@ export default function HomePage() {
         <SectionHeading
           eyebrow="Distribution"
           title="X / YouTube / Website"
-          description="TUTTOの公開活動は、現在の観測、検証の説明、公式Documentationを分けて記録します。Indicatorは、そのFrameworkをChart上で観測するためのToolです。"
+          description="TUTTOの公開活動は、現在の観測、検証の説明、公式Documentationを分けて記録します。"
         />
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
           {DISTRIBUTION_ROLES.map((role) => {
@@ -250,7 +250,7 @@ export default function HomePage() {
       </section>
 
       <section className="container-page py-16 sm:py-24">
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6">
           <div className="card p-6 sm:p-8">
             <p className="eyebrow">Development</p>
             <h2 className="text-2xl font-bold text-text-primary">開発状況</h2>
@@ -258,13 +258,6 @@ export default function HomePage() {
               MT5向けの市場構造観測プラットフォームとして、Framework、アーキテクチャ、表示レイヤーを段階的に構築しています。一般公開前の内部ロジックは掲載しません。
             </p>
             <Link href="/tools" className="btn-secondary mt-6">進捗を見る</Link>
-          </div>
-          <div className="card p-6 sm:p-8">
-            <p className="eyebrow">Coming Soon</p>
-            <h2 className="text-2xl font-bold text-text-primary">Indicator</h2>
-            <p className="mt-3 text-sm leading-7 text-text-secondary">
-              TUTTO Indicatorは開発中です。購入ボタンや配布導線は、検証と公開準備が整うまで追加しません。
-            </p>
           </div>
         </div>
       </section>
