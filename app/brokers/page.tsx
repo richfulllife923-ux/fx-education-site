@@ -104,15 +104,6 @@ export default function BrokersPage() {
         </div>
       </section>
 
-      <section className="container-page mt-12">
-        <div className="rounded-card border border-primary bg-[rgba(59,130,246,0.10)] p-6">
-          <p className="text-sm font-bold text-text-primary">紹介リンクについて</p>
-          <p className="mt-3 text-sm leading-8 text-text-secondary">
-            このページには紹介リンクが含まれています。リンクを経由して口座開設等を行った場合、TUTTOが紹介報酬を受け取る場合があります。紹介報酬の有無にかかわらず、利用するFX会社やサービスは、ご自身で取引条件・リスク・規約等を確認したうえで判断してください。
-          </p>
-        </div>
-      </section>
-
       <section className="container-page mt-16">
         <SectionHeading eyebrow="Checkpoints" title="選ぶときに確認したいこと" description="TUTTOは特定の会社を順位付けしません。比較する観点を分け、自分の取引計画に合うかを確認します。" />
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-5">
