@@ -50,7 +50,7 @@ const BOUNDARIES = [
 export default function MarketLayerPage() {
   return (
     <div className="pb-24">
-      <Breadcrumb items={[{ name: "Framework", path: "/framework" }, { name: "Market Layer", path: "/framework/market-layer" }]} />
+      <Breadcrumb items={[{ name: "Market Layer", path: "/framework/market-layer" }]} />
 
       <section className="container-page pt-6">
         <div className="max-w-4xl">

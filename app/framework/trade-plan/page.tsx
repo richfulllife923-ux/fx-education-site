@@ -65,7 +65,7 @@ const NOT_A_SIGNAL = ["Prediction", "Signal", "Automatic Order", "Guaranteed Out
 export default function TradePlanPage() {
   return (
     <div className="pb-24">
-      <Breadcrumb items={[{ name: "Framework", path: "/framework" }, { name: "Trade Plan", path: "/framework/trade-plan" }]} />
+      <Breadcrumb items={[{ name: "Trade Plan", path: "/framework/trade-plan" }]} />
 
       <section className="container-page pt-6">
         <div className="max-w-4xl">

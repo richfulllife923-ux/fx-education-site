@@ -49,7 +49,7 @@ const BOUNDARIES = [
 export default function StatePage() {
   return (
     <div className="pb-24">
-      <Breadcrumb items={[{ name: "Framework", path: "/framework" }, { name: "STATE", path: "/framework/state" }]} />
+      <Breadcrumb items={[{ name: "STATE", path: "/framework/state" }]} />
 
       <section className="container-page pt-6">
         <div className="max-w-4xl">

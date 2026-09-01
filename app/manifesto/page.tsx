@@ -99,7 +99,7 @@ export default function ManifestoPage() {
               <p>市場を見る方法を学び、自分自身で判断できる状態を目指します。</p>
             </div>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/framework" className="btn-primary">
+              <Link href="/framework/philosophy" className="btn-primary">
                 Frameworkを見る <ArrowRight size={16} strokeWidth={1.8} />
               </Link>
               <Link href="/research" className="btn-secondary">

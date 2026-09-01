@@ -48,7 +48,7 @@ const OBSERVATION_TARGETS = ["Structure", "Acceptance", "Rejection", "Transition
 export default function FrameworkPhilosophyPage() {
   return (
     <div className="pb-24">
-      <Breadcrumb items={[{ name: "Framework", path: "/framework" }, { name: "Philosophy", path: "/framework/philosophy" }]} />
+      <Breadcrumb items={[{ name: "Philosophy", path: "/framework/philosophy" }]} />
 
       <section className="container-page pt-6">
         <div className="max-w-4xl">

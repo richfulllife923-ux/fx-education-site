@@ -55,7 +55,7 @@ const NOT_SIGNAL_RULES = [
 export default function StructureTheoryPage() {
   return (
     <div className="pb-24">
-      <Breadcrumb items={[{ name: "Framework", path: "/framework" }, { name: "Structure Theory", path: "/framework/structure-theory" }]} />
+      <Breadcrumb items={[{ name: "Structure Theory", path: "/framework/structure-theory" }]} />
 
       <section className="container-page pt-6">
         <div className="max-w-4xl">
