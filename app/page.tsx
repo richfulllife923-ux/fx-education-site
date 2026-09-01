@@ -111,41 +111,26 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="container-page py-12 sm:py-16">
-        <div className="card border-primary p-6 sm:p-8">
+      <section className="container-page py-8 sm:py-10">
+        <div className="card bg-surface/70 p-5 sm:p-6">
           <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
               <p className="eyebrow"><Building2 size={14} strokeWidth={1.8} /> Broker Selection</p>
-              <h2 className="text-3xl font-bold leading-tight text-text-primary sm:text-4xl">FX会社を選ぶ</h2>
+              <h2 className="text-2xl font-bold leading-tight text-text-primary sm:text-3xl">FX会社を選ぶ</h2>
               <p className="mt-4 max-w-2xl text-sm leading-8 text-text-secondary">
                 取引環境やサービス内容はFX会社によって異なります。プラットフォームや取引条件を確認し、自分に合った環境を比較できます。
               </p>
             </div>
-            <Link href="/brokers" className="btn-primary min-h-14 px-6 text-base">
+            <Link href="/brokers" className="btn-secondary min-h-12 border-primary/70 px-5">
               FX会社を比較する <ArrowRight size={18} strokeWidth={1.8} />
             </Link>
           </div>
         </div>
       </section>
 
-      <section className="container-page py-12 sm:py-16">
-        <div className="card border-primary p-6 sm:p-8">
-          <p className="eyebrow"><ShieldCheck size={14} strokeWidth={1.8} /> Important Notice</p>
-          <h2 className="mt-3 text-2xl font-bold text-text-primary">TUTTOは投資助言ではありません。</h2>
-          <div className="mt-4 space-y-3 text-sm leading-8 text-text-secondary">
-            <p>
-              TUTTOで公開しているFramework、Indicator、動画、ライブ配信、記事、その他の情報は、市場構造を観測し学習するための教育・研究目的の情報です。特定の金融商品の売買、投資判断、エントリー、決済、利益を指示または保証するものではありません。
-            </p>
-            <p>
-              TUTTOは、売買シグナル、自動売買命令、投資助言、利益保証を提供しません。表示される情報や解説は、判断材料を整理するための補助であり、最終的な判断と責任は利用者自身にあります。
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="container-page pb-16 sm:pb-24">
-        <div className="card border-primary p-6 sm:p-8">
-          <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
+      <section className="container-page py-10 pb-16 sm:py-14 sm:pb-24">
+        <div className="card border-primary bg-[linear-gradient(135deg,rgba(59,130,246,0.16),rgba(21,28,46,0.88)_44%,rgba(11,16,32,0.96))] p-6 sm:p-8">
+          <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
             <div>
               <p className="eyebrow"><LineChart size={14} strokeWidth={1.8} /> TUTTO Indicator</p>
               <h2 className="mt-3 text-3xl font-bold leading-tight text-text-primary sm:text-4xl">インジケーター</h2>
@@ -163,9 +148,38 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
+          <div className="mt-8 grid grid-cols-1 gap-3 md:grid-cols-3">
+            <div className="rounded-card border border-primary/40 bg-background/55 p-4">
+              <p className="font-display text-xs font-black uppercase tracking-[0.16em] text-primary">ENTRY</p>
+              <h3 className="mt-3 text-sm font-bold leading-6 text-text-primary">中長期エントリーの発生確率</h3>
+            </div>
+            <div className="rounded-card border border-primary/40 bg-background/55 p-4">
+              <p className="font-display text-xs font-black uppercase tracking-[0.16em] text-primary">MICRO</p>
+              <h3 className="mt-3 text-sm font-bold leading-6 text-text-primary">短期エントリーの発生確率</h3>
+            </div>
+            <div className="rounded-card border border-danger/50 bg-background/55 p-4">
+              <p className="font-display text-xs font-black uppercase tracking-[0.16em] text-danger">CNN F&G</p>
+              <h3 className="mt-3 text-sm font-bold leading-6 text-text-primary">Fear / Greed環境の確認</h3>
+            </div>
+          </div>
           <p className="mt-6 border-t border-border pt-5 text-xs leading-6 text-text-secondary">
             ENTRY / MICROの確率表示は、将来の値動きや利益を保証するものではありません。TUTTO Indicatorによる市場構造の観測結果を確認するための補助表示です。
           </p>
+        </div>
+      </section>
+
+      <section className="container-page pb-12 sm:pb-16">
+        <div className="card border-primary p-6 sm:p-8">
+          <p className="eyebrow"><ShieldCheck size={14} strokeWidth={1.8} /> Important Notice</p>
+          <h2 className="mt-3 text-2xl font-bold text-text-primary">TUTTOは投資助言ではありません。</h2>
+          <div className="mt-4 space-y-3 text-sm leading-8 text-text-secondary">
+            <p>
+              TUTTOで公開しているFramework、Indicator、動画、ライブ配信、記事、その他の情報は、市場構造を観測し学習するための教育・研究目的の情報です。特定の金融商品の売買、投資判断、エントリー、決済、利益を指示または保証するものではありません。
+            </p>
+            <p>
+              TUTTOは、売買シグナル、自動売買命令、投資助言、利益保証を提供しません。表示される情報や解説は、判断材料を整理するための補助であり、最終的な判断と責任は利用者自身にあります。
+            </p>
+          </div>
         </div>
       </section>
 
