@@ -68,6 +68,31 @@ const ENTRY_COLORS = [
   },
 ];
 
+const TP_LINES = [
+  {
+    label: "TP1",
+    title: "最初の目標",
+    description: "Entry後に、まず確認する目標ラインです。",
+  },
+  {
+    label: "TP2",
+    title: "次の目標",
+    description: "相場の動きが続いた場合に確認する、次の目標ラインです。",
+  },
+  {
+    label: "TP3",
+    title: "最終目標",
+    description: "TUTTO Indicatorで表示する最終の目標ラインです。",
+  },
+];
+
+const STOP_LOSS_NOTES = [
+  "固定された値幅だけで決めるものではありません",
+  "Entryごとに損切り位置は異なります",
+  "相場の動きに合わせて確認します",
+  "一時的な値動きだけでは判断しません",
+];
+
 function Mt5IndicatorPanel({ parameter }: { parameter: (typeof PARAMETERS)[number] }) {
   const isFearGreed = parameter.tone === "fear";
   const statusClass = parameter.state === "CONFIRMING" || parameter.state === "NEUTRAL" ? "text-yellow-300" : parameter.state === "EARLY" ? "text-red-300" : "text-slate-200";
@@ -184,6 +209,52 @@ export default function IndicatorPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="container-page mt-16">
+        <SectionHeading
+          eyebrow="Usage"
+          title="TPラインの役目"
+          description="TPラインは、Entry後に価格が進んだときの目標位置を確認するためのラインです。相場の動きに合わせて、どこまで価格が進んでいるのかを段階的に確認できます。"
+        />
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+          {TP_LINES.map((tpLine) => (
+            <div key={tpLine.label} className="card p-6">
+              <p className="font-display text-xs font-black uppercase tracking-[0.16em] text-primary">{tpLine.label}</p>
+              <h3 className="mt-3 text-lg font-bold text-text-primary">{tpLine.title}</h3>
+              <p className="mt-3 text-sm leading-7 text-text-secondary">{tpLine.description}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-5 text-sm leading-7 text-text-secondary">TPラインは、価格の到達や利益を保証するものではありません。</p>
+      </section>
+
+      <section className="container-page mt-16">
+        <SectionHeading
+          eyebrow="Usage"
+          title="損切りラインについて"
+          description="損切りラインは、Entryの根拠となっていた相場の動きが崩れたときの目安となるラインです。単純に価格が少し逆方向へ動いただけで、すぐに損切りと判断するものではありません。"
+        />
+        <div className="card p-6">
+          <p className="font-display text-xs font-black uppercase tracking-[0.16em] text-primary">STOP LOSS</p>
+          <h3 className="mt-3 text-lg font-bold text-text-primary">Entryの前提が崩れたときの目安</h3>
+          <p className="mt-3 text-sm leading-7 text-text-secondary">
+            TUTTO Indicatorでは、Entryの根拠となっていた相場の動きが維持されているかを確認します。
+          </p>
+          <p className="mt-3 text-sm leading-7 text-text-secondary">
+            一時的にラインを越えただけではなく、相場の動きが明確に崩れたと判断された場合に、損切りの目安として確認します。
+          </p>
+          <ul className="mt-5 grid grid-cols-1 gap-3 border-t border-border pt-5 md:grid-cols-2">
+            {STOP_LOSS_NOTES.map((note) => (
+              <li key={note} className="text-sm leading-7 text-text-secondary">
+                ・{note}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <p className="mt-5 text-sm leading-7 text-text-secondary">
+          損切りラインは損失を防ぐことを保証するものではありません。実際の取引判断やリスク管理は利用者自身で行う必要があります。
+        </p>
       </section>
     </div>
   );
