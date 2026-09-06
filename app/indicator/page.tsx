@@ -256,6 +256,45 @@ export default function IndicatorPage() {
           損切りラインは損失を防ぐことを保証するものではありません。実際の取引判断やリスク管理は利用者自身で行う必要があります。
         </p>
       </section>
+
+      <section className="container-page mt-16" aria-labelledby="indicator-human-heading">
+        <p className="eyebrow">TUTTO + HUMAN</p>
+        <h2 id="indicator-human-heading" className="text-3xl font-bold leading-tight text-text-primary sm:text-4xl">
+          なぜEAではなく、Indicatorなのか
+        </h2>
+        <div className="mt-6 max-w-3xl space-y-4 text-sm leading-7 text-text-secondary">
+          <p>
+            TUTTOは、すべてを自動で判断して取引するEAとしてではなく、
+            人間が市場を確認し、自分でも検証したうえで判断できるIndicatorとして開発しています。
+          </p>
+          <p>
+            TUTTOが市場構造を観測し、ENTRY・MICRO・Geometryなどの情報を表示する。
+          </p>
+          <p>
+            そして最後に、それを採用するかどうかを決めるのは人間です。
+          </p>
+          <p>自分の考えとTUTTOの観測結果が合っているかを確認する。</p>
+          <p>
+            納得できたときに、ロットや資金管理、リスクを自分で考えてから行動する。
+          </p>
+        </div>
+        <div className="mt-8 max-w-3xl border-t border-border pt-6">
+          <h3 className="text-xl font-bold text-text-primary">TUTTO <span className="text-primary">+</span> Human</h3>
+          <div className="mt-4 space-y-4 text-sm leading-7 text-text-secondary">
+            <p>
+              TUTTOの表示だけに判断を任せるのではなく、
+              市場構造の観測結果と、人間の経験・検証・資金管理を組み合わせる。
+            </p>
+            <p>
+              これをTUTTOでは<strong className="font-semibold text-text-primary">「人間プラスの法則」</strong>と考えています。
+            </p>
+            <p>TUTTOは取引を自動化するためのものではありません。</p>
+            <p>
+              人間がより深く市場を観測し、自分自身で判断するための補助ツールです。
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
