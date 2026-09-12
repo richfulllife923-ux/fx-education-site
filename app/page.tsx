@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { Activity, ArrowRight, BookOpen, Boxes, Building2, ExternalLink, FlaskConical, LineChart, PlayCircle, Radar, ShieldCheck } from "lucide-react";
+import { ArrowRight, BookOpen, Building2, ExternalLink, FlaskConical, LineChart, PlayCircle, Radar, ShieldCheck } from "lucide-react";
 import { buildMetadata } from "@/lib/seo";
 import SectionHeading from "@/components/SectionHeading";
 import PostCard from "@/components/PostCard";
-import { PrincipleCard } from "@/components/Diagram";
 import { getAllPosts } from "@/lib/posts";
 
 export const metadata = buildMetadata({
@@ -12,38 +11,6 @@ export const metadata = buildMetadata({
     "TUTTOは、市場がどの構造を受け入れ、どの構造を拒否したのかを可視化するために開発中のMT5 Market Structure Platformです。",
   path: "/",
 });
-
-const THEORY_POINTS = [
-  "価格を予測するのではなく、採用された構造を観測する",
-  "複数時間軸の役割を分け、判断の混線を減らす",
-  "公開サイトでは内部アルゴリズムではなく思想と進捗を説明する",
-];
-
-const FEATURES = [
-  {
-    icon: Radar,
-    title: "Market Observation",
-    description: "市場が反応した構造、拒否した構造、保留中の構造を分けて観測する設計です。",
-  },
-  {
-    icon: Boxes,
-    title: "Layered Structure",
-    description: "Execution、Swing、Structure、Macroを分離し、時間足だけに支配されない見方を目指します。",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Risk First",
-    description: "売買シグナルではなく、判断前に構造とリスクを確認するためのプラットフォームです。",
-  },
-];
-
-const EVIDENCE_FLOW = [
-  { label: "PRE-OBSERVATION", description: "先出し観測" },
-  { label: "MARKET REACTION", description: "市場反応" },
-  { label: "RUNTIME EVIDENCE", description: "経過記録" },
-  { label: "ANSWER CHECK", description: "答え合わせ" },
-  { label: "STRUCTURE VERIFICATION", description: "構造検証" },
-];
 
 const DISTRIBUTION_ROLES = [
   {
@@ -182,40 +149,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="border-y border-border bg-surface py-16 sm:py-24">
-        <div className="container-page">
-          <div className="grid gap-10 lg:grid-cols-[0.86fr_1.14fr] lg:items-start">
-            <div>
-              <p className="eyebrow"><Radar size={14} strokeWidth={1.8} /> OBSERVATION → EVIDENCE</p>
-              <h2 className="max-w-2xl text-3xl font-bold leading-tight text-text-primary sm:text-4xl">
-                先に観測し、<br />市場の反応を後から検証する。
-              </h2>
-              <div className="mt-5 space-y-4 text-sm leading-8 text-text-secondary">
-                <p>
-                  TUTTOは、市場が動いた後に「ここが重要だった」と説明するためのFrameworkではありません。
-                </p>
-                <p>
-                  市場の結果がまだ分からない段階でStructureやGeometryの観測ポイントを記録し、その後に市場が実際にどう扱ったかを確認します。
-                </p>
-                <p>
-                  未来価格を保証するのではなく、市場がどの構造を採用したかを観測・検証します。
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 lg:grid-cols-5">
-              {EVIDENCE_FLOW.map((step, index) => (
-                <div key={step.label} className="card relative p-4 sm:min-h-[150px]">
-                  <span className="font-display text-xs font-black text-primary">0{index + 1}</span>
-                  <h3 className="mt-4 text-sm font-bold leading-6 text-text-primary">{step.label}</h3>
-                  <p className="mt-2 text-sm leading-6 text-text-secondary">{step.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className="container-page py-16 sm:py-24">
         <SectionHeading
           eyebrow="Distribution"
@@ -259,38 +192,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="container-page py-16 sm:py-24">
-        <SectionHeading eyebrow="About" title="TUTTO Framework" description="TUTTOは、売買ボタンを押すためのEAではなく、チャート上で市場構造を観測し、トレーダーが計画を立てるためのフレームワークです。" />
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-          {FEATURES.map((feature) => (
-            <PrincipleCard key={feature.title} icon={feature.icon} title={feature.title} description={feature.description} />
-          ))}
-        </div>
-      </section>
-
-      <section className="border-y border-border bg-surface py-16 sm:py-24">
-        <div className="container-page grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-          <SectionHeading eyebrow="Theory" title="Framework" description="TUTTO Frameworkは、未来価格を断定するものではありません。観測対象を明確にし、どの構造が市場に扱われているかを整理します。" />
-          <div className="space-y-3">
-            {THEORY_POINTS.map((point, index) => (
-              <div key={point} className="card flex gap-4 p-5">
-                <span className="font-display text-lg font-black text-primary">0{index + 1}</span>
-                <p className="text-sm leading-7 text-text-secondary">{point}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="container-page py-16 sm:py-24">
-        <SectionHeading eyebrow="Features" title="特徴" description="派手な予測表示ではなく、構造、状態、計画を読みやすく分けて表示することを重視しています。" />
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-          <PrincipleCard icon={LineChart} title="構造の可視化" description="価格帯、波、状態を分け、チャート上で判断の根拠を見えるようにします。" />
-          <PrincipleCard icon={Activity} title="状態管理" description="採用、拒否、保留といった市場反応を観測し、判断の前提を整理します。" tone="success" />
-          <PrincipleCard icon={BookOpen} title="学習可能な設計" description="ブラックボックスではなく、何を見ているのかを理解できるUIを目指します。" tone="warning" />
-        </div>
-      </section>
-
       <section className="border-y border-border bg-surface py-16 sm:py-24">
         <div className="container-page">
           <SectionHeading eyebrow="Latest" title="ブログ最新記事" />
@@ -305,18 +206,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="container-page py-16 sm:py-24">
-        <div className="grid gap-6">
-          <div className="card p-6 sm:p-8">
-            <p className="eyebrow">Development</p>
-            <h2 className="text-2xl font-bold text-text-primary">開発状況</h2>
-            <p className="mt-3 text-sm leading-7 text-text-secondary">
-              MT5向けの市場構造観測プラットフォームとして、Framework、アーキテクチャ、表示レイヤーを段階的に構築しています。一般公開前の内部ロジックは掲載しません。
-            </p>
-            <Link href="/tools" className="btn-secondary mt-6">進捗を見る</Link>
-          </div>
-        </div>
-      </section>
     </>
   );
 }
