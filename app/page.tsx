@@ -2,8 +2,6 @@ import Link from "next/link";
 import { ArrowRight, BookOpen, Building2, ExternalLink, FlaskConical, LineChart, PlayCircle, Radar, ShieldCheck } from "lucide-react";
 import { buildMetadata } from "@/lib/seo";
 import SectionHeading from "@/components/SectionHeading";
-import PostCard from "@/components/PostCard";
-import { getAllPosts } from "@/lib/posts";
 
 export const metadata = buildMetadata({
   title: "TUTTO",
@@ -40,8 +38,6 @@ const DISTRIBUTION_ROLES = [
 ];
 
 export default function HomePage() {
-  const latest = getAllPosts().slice(0, 3);
-
   return (
     <>
       <section className="relative overflow-hidden border-b border-border bg-background">
@@ -189,20 +185,6 @@ export default function HomePage() {
               </div>
             );
           })}
-        </div>
-      </section>
-
-      <section className="border-y border-border bg-surface py-16 sm:py-24">
-        <div className="container-page">
-          <SectionHeading eyebrow="Latest" title="ブログ最新記事" />
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-            {latest.map((post) => (
-              <PostCard key={post.slug} post={post} />
-            ))}
-          </div>
-          <div className="mt-10 text-center">
-            <Link href="/blog" className="btn-primary">ブログを見る <ArrowRight size={16} strokeWidth={1.8} /></Link>
-          </div>
         </div>
       </section>
 
