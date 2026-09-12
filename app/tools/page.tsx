@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import Breadcrumb from "@/components/Breadcrumb";
 import SectionHeading from "@/components/SectionHeading";
 import { buildMetadata } from "@/lib/seo";
@@ -9,8 +11,8 @@ export const metadata = buildMetadata({
 });
 
 const ROADMAP = [
-  { label: "Architecture", state: "Completed", text: "観測エンジンと表示レイヤーの責任分離を整理。" },
-  { label: "Indicator", state: "In development", text: "MT5上で構造を可視化するための実装を段階的に構築中。" },
+  { label: "Architecture", state: "Completed", text: "観測エンジンと表示レイヤーの責任分離を整理。", href: "/framework/market-layer" },
+  { label: "Indicator", state: "In development", text: "MT5上で構造を可視化するための実装を段階的に構築中。", href: "/indicator" },
   { label: "Public release", state: "Coming soon", text: "検証とドキュメント整備後に公開予定。" },
 ];
 
@@ -23,10 +25,15 @@ export default function ToolsPage() {
       </section>
       <section className="container-page mt-12 space-y-4">
         {ROADMAP.map((item) => (
-          <div key={item.label} className="card grid gap-3 p-5 sm:grid-cols-[160px_160px_1fr] sm:items-center">
+          <div key={item.label} className="card grid gap-3 p-5 sm:grid-cols-[160px_160px_1fr_auto] sm:items-center">
             <p className="font-display font-bold text-text-primary">{item.label}</p>
             <span className="badge w-fit">{item.state}</span>
             <p className="text-sm leading-7 text-text-secondary">{item.text}</p>
+            {item.href && (
+              <Link href={item.href} className="inline-flex w-fit items-center gap-1 text-xs font-semibold text-primary transition-colors hover:text-text-primary">
+                見る <ArrowRight size={13} strokeWidth={1.8} />
+              </Link>
+            )}
           </div>
         ))}
       </section>
