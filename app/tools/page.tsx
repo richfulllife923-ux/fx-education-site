@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import Breadcrumb from "@/components/Breadcrumb";
 import SectionHeading from "@/components/SectionHeading";
 import { buildMetadata } from "@/lib/seo";
@@ -24,18 +23,25 @@ export default function ToolsPage() {
         <SectionHeading eyebrow="Development" title="開発状況" description="TUTTOは現在、Market Structure Observation Frameworkとして段階的に開発中です。" />
       </section>
       <section className="container-page mt-12 space-y-4">
-        {ROADMAP.map((item) => (
-          <div key={item.label} className="card grid gap-3 p-5 sm:grid-cols-[160px_160px_1fr_auto] sm:items-center">
-            <p className="font-display font-bold text-text-primary">{item.label}</p>
-            <span className="badge w-fit">{item.state}</span>
-            <p className="text-sm leading-7 text-text-secondary">{item.text}</p>
-            {item.href && (
-              <Link href={item.href} className="inline-flex w-fit items-center gap-1 text-xs font-semibold text-primary transition-colors hover:text-text-primary">
-                見る <ArrowRight size={13} strokeWidth={1.8} />
-              </Link>
-            )}
-          </div>
-        ))}
+        {ROADMAP.map((item) => {
+          const content = (
+            <>
+              <p className={`font-display font-bold ${item.href ? "text-primary transition-colors group-hover:text-text-primary" : "text-text-primary"}`}>{item.label}</p>
+              <span className="badge w-fit">{item.state}</span>
+              <p className="text-sm leading-7 text-text-secondary">{item.text}</p>
+            </>
+          );
+
+          return item.href ? (
+            <Link key={item.label} href={item.href} className="card group grid gap-3 p-5 hover:border-primary sm:grid-cols-[160px_160px_1fr] sm:items-center">
+              {content}
+            </Link>
+          ) : (
+            <div key={item.label} className="card grid gap-3 p-5 sm:grid-cols-[160px_160px_1fr] sm:items-center">
+              {content}
+            </div>
+          );
+        })}
       </section>
     </div>
   );
