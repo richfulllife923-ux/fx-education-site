@@ -102,9 +102,6 @@ export default function ManifestoPage() {
               <Link href="/framework/philosophy" className="btn-primary">
                 Frameworkを見る <ArrowRight size={16} strokeWidth={1.8} />
               </Link>
-              <Link href="/research" className="btn-secondary">
-                Researchへ進む
-              </Link>
             </div>
           </div>
         </div>

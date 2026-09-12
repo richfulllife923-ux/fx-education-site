@@ -12,7 +12,6 @@ const STATIC_PATHS = [
   "/framework/market-layer",
   "/framework/state",
   "/framework/trade-plan",
-  "/research",
   "/indicator",
   "/roadmap",
   "/brokers",
