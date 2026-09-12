@@ -149,6 +149,7 @@ export default function HomePage() {
         <SectionHeading
           eyebrow="Distribution"
           title="X / YouTube / Website"
+          titleClassName="text-lime-400"
           description="TUTTOの公開活動は、現在の観測、検証の説明、公式Documentationを分けて記録します。"
         />
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
