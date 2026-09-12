@@ -10,8 +10,8 @@ export const metadata = buildMetadata({
 });
 
 const ROADMAP = [
-  { label: "Architecture", state: "Completed", text: "観測エンジンと表示レイヤーの責任分離を整理。", href: "/framework/market-layer" },
-  { label: "Indicator", state: "In development", text: "MT5上で構造を可視化するための実装を段階的に構築中。", href: "/indicator" },
+  { label: "Architecture", state: "Completed", text: "観測エンジンと表示レイヤーの責任分離を整理。", href: "/framework/market-layer", titleClass: "text-yellow-400 group-hover:text-yellow-300" },
+  { label: "Indicator", state: "In development", text: "MT5上で構造を可視化するための実装を段階的に構築中。", href: "/indicator", titleClass: "text-red-400 group-hover:text-red-300" },
   { label: "Public release", state: "Coming soon", text: "検証とドキュメント整備後に公開予定。" },
 ];
 
@@ -26,7 +26,7 @@ export default function ToolsPage() {
         {ROADMAP.map((item) => {
           const content = (
             <>
-              <p className={`font-display font-bold ${item.href ? "text-primary transition-colors group-hover:text-text-primary" : "text-text-primary"}`}>{item.label}</p>
+              <p className={`font-display font-bold transition-colors ${item.titleClass ?? "text-text-primary"}`}>{item.label}</p>
               <span className="badge w-fit">{item.state}</span>
               <p className="text-sm leading-7 text-text-secondary">{item.text}</p>
             </>
