@@ -2,7 +2,7 @@
 import { useId, useState } from "react";
 import { useRouter } from "next/navigation";
 import { normalizeStockInput } from "@/lib/stock-analysis";
-export default function StockSearch({ initialValue = "" }: { initialValue?: string }) {
+export default function StockSearch({ initialValue = "", destination = "/stock-analysis/analyze/" }: { initialValue?: string; destination?: string }) {
   const id = useId();
   const router = useRouter();
   const [error, setError] = useState("");
@@ -15,7 +15,7 @@ export default function StockSearch({ initialValue = "" }: { initialValue?: stri
       if (!input) { setError("銘柄名・証券コード・Tickerを入力してください。"); return; }
       if (input.length > 100) { setError("100文字以内で入力してください。"); return; }
       setError("");
-      router.push("/stock-analysis/analyze/?"+new URLSearchParams({ symbol: input }).toString());
+      router.push(destination+"?"+new URLSearchParams({ symbol: input }).toString());
     }}>
       <label htmlFor={id} className="mb-2 block text-sm font-semibold">銘柄名・証券コード・Ticker</label>
       <div className="flex min-w-0 flex-col gap-3 sm:flex-row">
@@ -28,6 +28,6 @@ export default function StockSearch({ initialValue = "" }: { initialValue?: stri
       <p id={id+"-help"} className="mt-3 text-xs leading-6 text-text-secondary">例：トヨタ / 7203 / NVDA / キオクシア</p>
       <p id={id+"-error"} role="alert" className="mt-2 text-sm text-red-300">{error}</p>
     </form>
-    <p className="mt-4 text-xs leading-6 text-text-secondary">企業データの取得・分析サービスは準備中です。現在は入力した銘柄の分析項目を確認できます。</p>
+    <p className="mt-4 text-xs leading-6 text-text-secondary">日本株はEDINET一次資料をもとに分析し、出典・期間を表示します。米国株の分析は一次資料接続の確認中のため一時停止しています。</p>
   </section>;
 }

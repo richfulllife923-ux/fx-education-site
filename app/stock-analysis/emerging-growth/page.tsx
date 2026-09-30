@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import EmergingClient from "@/components/stock-analysis/EmergingClient";
 import { buildMetadata } from "@/lib/seo";
 import { StockHero, StockLink } from "@/components/stock-analysis/StockUI";
 export const metadata = buildMetadata({ title: "成長企業発掘", description: "広く認知されていない企業の事業・成長・Cash Flowの構造変化を研究します。", path: "/stock-analysis/emerging-growth/" });
@@ -22,5 +24,6 @@ export default function EmergingGrowthPage() {
       <p className="mt-3 text-sm leading-8 text-text-secondary">企業候補の自動探索は準備中です。現時点では、確認済みの探索結果はありません。</p>
       <div className="mt-5"><StockLink href="/stock-analysis/#stock-input">銘柄を入力して分析</StockLink></div>
     </section>
+    <Suspense fallback={<p role="status">読み込み中…</p>}><EmergingClient /></Suspense>
   </>;
 }

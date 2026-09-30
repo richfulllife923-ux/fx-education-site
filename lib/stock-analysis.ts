@@ -16,52 +16,72 @@ export const analysisSections = [
 
 export type SectionId = (typeof analysisSections)[number]["id"];
 export type Evidence = {
-  label: string;
-  value: string;
-  kind: "FACT" | "CALCULATION" | "INFERENCE" | "UNKNOWN";
-  sourceUrl: string;
-  sourceTitle: string;
-  asOf: string;
-  period?: string;
-  currency?: string;
-  unit?: string;
+  label: string; value: string;
+  kind: "FACT" | "SOURCE CLAIM" | "CALCULATION" | "INFERENCE" | "UNKNOWN";
+  sourceUrl: string; sourceTitle: string; asOf: string;
+  period?: string; currency?: string; unit?: string; retrievedAt?: string;
+  field?: string; filingDate?: string; formula?: string; relatedFields?: string[];
+  confidence?: "CONFIRMED" | "SUPPORTED" | "MIXED" | "UNVERIFIED" | "CONTRADICTED";
+  inputs?: { name:string; value:number|null; period:string|null; basis:string; currency:string|null; field:string; asOf:string|null; sourceUrl:string }[];
 };
+export type ReportIssue = { code:string; message:string; symbol?:string };
 export type StockReport = {
-  companyName: string;
-  symbol: string;
-  analyzedAt: string;
+  companyName: string; symbol: string; analyzedAt: string;
   sections: Partial<Record<SectionId, Evidence[]>>;
+  metadata?: { provider:string; retrievedAt:string; providerUpdatedAt:string|null;
+    fiscalDate:string|null; currency:string|null; priceAsOf:string|null; issues:ReportIssue[]; mode?:"FREE"|"COMMERCIAL"; valuationStatus?:"LIMITED"|"AVAILABLE" };
+  emerging?: { observation:string; evidence:Evidence[]; missing:string[]; risks:Evidence[];
+    classification:"UNVERIFIED"; nextConfirmation:string };
 };
 export const watchlistCategories = ["AI", "Semiconductor", "Japan", "US", "Growth", "Value", "Cash Flow", "Turnaround"] as const;
 export type WatchlistEntry = {
-  companyName: string;
-  symbol: string;
-  categories: (typeof watchlistCategories)[number][];
-  researchReason: string;
-  sourceUrl: string;
-  asOf: string;
+  companyName:string; symbol:string; categories:(typeof watchlistCategories)[number][];
+  researchReason:string; sourceUrl:string; asOf:string; risk?:string; nextConfirmation?:string; evidence?:Evidence[];
 };
 export type AnalysisResult =
-  | { status: "ready"; report: StockReport }
-  | { status: "unavailable" | "not-found" | "error"; message: string };
-
-/** A provider must resolve company names/codes with market disambiguation,
- * return sourced, dated DTOs, and keep all credentials on a server.
- * Static-export frontend ships with this explicitly unconfigured adapter.
- */
+  | { status:"ready"; report:StockReport }
+  | { status:"unavailable" | "not-found" | "error"; message:string; code?:string; retryable?:boolean;
+      candidates?:{symbol:string;name:string;exchange:string;currency:string|null}[] };
+export type ComparisonResult = { status:"ready"; a:AnalysisResult; b:AnalysisResult; warnings:string[] } |
+  { status:"error" | "unavailable"; message:string; code?:string };
+export type WatchlistResult = {status:"ready";entries:WatchlistEntry[];issues:ReportIssue[]} |
+  {status:"unavailable"|"error";message:string;code?:string};
 export interface StockAnalysisAdapter {
-  analyze(input: string): Promise<AnalysisResult>;
-  watchlist(): Promise<WatchlistEntry[]>;
+  analyze(input:string,signal?:AbortSignal):Promise<AnalysisResult>;
+  compare(a:string,b:string,signal?:AbortSignal):Promise<ComparisonResult>;
+  watchlist(signal?:AbortSignal):Promise<WatchlistResult>;
 }
-export const stockAnalysisAdapter: StockAnalysisAdapter = {
-  async analyze() {
-    return { status: "unavailable", message: "企業データの取得・分析サービスは準備中です。入力した銘柄について、株価・財務数値・分析結果はまだ取得していません。" };
-  },
-  async watchlist() { return []; },
+async function api<T>(endpoint:string,body?:unknown,signal?:AbortSignal):Promise<T> {
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),65000);
+  const abort=()=>controller.abort(); signal?.addEventListener("abort",abort,{once:true});
+  if (signal?.aborted) controller.abort();
+  try {
+    const response=await fetch("/api/stock-analysis/"+endpoint,{
+      method:body===undefined?"GET":"POST",headers:body===undefined?undefined:{"Content-Type":"application/json"},
+      body:body===undefined?undefined:JSON.stringify(body),signal:controller.signal,cache:"no-store",
+    });
+    if (!response.headers.get("content-type")?.includes("application/json"))
+      return {status:"unavailable",code:"CONFIGURATION_REQUIRED",message:"分析APIが未設定です。企業データは取得していません。管理者によるサーバー設定が必要です。"} as T;
+    const result=await response.json() as Record<string,unknown>;
+    if (!["ready","unavailable","not-found","error"].includes(String(result.status))) throw new Error("Invalid API response");
+    const ready=result.status==="ready";
+    if(ready && endpoint==="analyze" && (!result.report || typeof result.report!=="object" ||
+      typeof (result.report as Record<string,unknown>).symbol!=="string" ||
+      !(result.report as Record<string,unknown>).sections)) throw new Error("Invalid report");
+    if(ready && endpoint==="compare" && (!result.a || !result.b || !Array.isArray(result.warnings))) throw new Error("Invalid comparison");
+    if(ready && endpoint==="watchlist" && (!Array.isArray(result.entries) || !Array.isArray(result.issues))) throw new Error("Invalid watchlist");
+    return result as T;
+  } catch {
+    return {status:"error",code:"DATA_PROVIDER_ERROR",retryable:true,message:"データを取得できませんでした。接続を確認し、時間をおいて再試行してください。"} as T;
+  } finally { clearTimeout(timeout); signal?.removeEventListener("abort",abort); }
+}
+export const stockAnalysisAdapter:StockAnalysisAdapter={
+  analyze:(input,signal)=>api<AnalysisResult>("analyze",{input},signal),
+  compare:(a,b,signal)=>api<ComparisonResult>("compare",{a,b},signal),
+  watchlist:signal=>api<WatchlistResult>("watchlist",undefined,signal),
 };
-export function normalizeStockInput(value: string): string {
-  return value.normalize("NFKC").trim();
-}
+export function normalizeStockInput(value:string):string { return value.normalize("NFKC").trim(); }
+
 export const comparisonAxes = [
   ["Business", "製品・顧客・バリューチェーン上の位置"],
   ["Revenue", "収益源・セグメント・売上推移"],
