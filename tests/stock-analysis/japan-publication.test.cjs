@@ -60,3 +60,11 @@ test("an explicitly configured legacy commercial key cannot bypass the closed US
  assert.equal(response.status,503);assert.equal((await response.json()).code,"CONFIGURATION_REQUIRED");assert.equal(calls,0);
  }finally{global.fetch=before;}
 });
+
+test("Pages API calls native fetch with a valid global receiver (TEST DATA only)",async()=>{
+ const before=global.fetch;let calls=0,invalidReceiver=false;
+ global.fetch=async function(url){"use strict";calls++;if(this!==undefined && this!==globalThis){invalidReceiver=true;throw new TypeError("Illegal invocation");}assert.equal(new URL(url).hostname,"api.edinet-fsa.go.jp");return new Response("TEST DATA denied",{status:403});};
+ try{const response=await onRequest({request:request("analyze",{input:"7203.JP"}),env:{...env,EDINET_API_KEY:"TEST_DATA_NATIVE_RECEIVER"}});
+ const result=await response.json();assert.equal(invalidReceiver,false,"Native fetch must not receive a provider instance as this");assert.equal(result.code,"CONFIGURATION_REQUIRED");assert.equal(response.status,503);assert.equal(calls,1);
+ }finally{global.fetch=before;}
+});

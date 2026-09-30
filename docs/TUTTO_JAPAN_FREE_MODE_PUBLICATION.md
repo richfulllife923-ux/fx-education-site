@@ -44,7 +44,7 @@ Cloudflare secret/settings confirmation is a prerequisite to pushing main becaus
 
 ## Local acceptance evidence
 
-- Local unit/contract tests: 87/87 PASS.
+- Local unit/contract tests: 88/88 PASS.
 - TypeScript: PASS.
 - Next production static build: PASS, 34 pages.
 - Live browser publication audit: 26 cases PASS.
@@ -61,7 +61,7 @@ Cloudflare secret/settings confirmation is a prerequisite to pushing main becaus
 - Web API ESM function bundle: no Node-specific import, test import or new runtime dependency.
 - Secret/contact exposure scan across source/client output: none.
 - EDINET parser, ZIP/transport, latest-year selection, issuer/index data and SEC adapter: unchanged in this publication phase.
-- Homepage order, IMPORTANT NOTICE, Distribution, Indicator, Framework and Broker content: unchanged.
+- Homepage: Hero / Broker Selection / Stock Analysis / Indicator after the Owner-requested removal of the duplicate Manifesto card. Hero Manifesto CTA, IMPORTANT NOTICE, Distribution, Indicator, Framework and Broker content: unchanged.
 
 The ignored output directory records current live browser evidence and local audit details. Actual production availability is confirmed only by post-deployment smoke tests.
 
@@ -81,3 +81,9 @@ Official references:
 - [Cloudflare Pages Functions bindings and secrets](https://developers.cloudflare.com/pages/functions/bindings/)
 - [Cloudflare Pages Git integration](https://developers.cloudflare.com/pages/configuration/git-integration/)
 - [EDINET API v2 specification](https://disclosure2dl.edinet-fsa.go.jp/guide/static/disclosure/download/ESE140206.pdf)
+
+## Cloudflare native fetch boundary
+
+The first production smoke test returned DATA_PROVIDER_ERROR for Japan before a successful upstream response. Node tests tolerated a native fetch stored and invoked as a provider method, while native browser/Workers fetch rejects the provider instance as its receiver. A regression test reproduces that failure, and the Pages API now passes an arrow wrapper calling globalThis.fetch. EDINET parser, annual selection, transport implementation, rate limits, redirect rejection and the SEC gate remain unchanged. The wrapped form also succeeds with a real Chromium native fetch against an inline data URL, without external requests.
+
+[Cloudflare illegal invocation guidance](https://developers.cloudflare.com/workers/observability/errors/#illegal-invocation-errors) describes the receiver constraint. Post-fix production smoke evidence is recorded separately; a local PASS alone does not establish production success.

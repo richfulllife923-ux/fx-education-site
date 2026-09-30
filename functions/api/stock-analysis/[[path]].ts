@@ -32,9 +32,11 @@ async function configured(env:Env):Promise<AnalysisService> {
   let service=sessions.get(key);
   if (!service) {
     if (sessions.size>=2) sessions.delete(sessions.keys().next().value!);
+    // Native Workers fetch rejects a provider instance as its receiver.
+    const serverFetch:typeof fetch=(input,init)=>globalThis.fetch(input,init);
     service=new AnalysisService(commercial?
-      new EodhdProvider(env.EODHD_API_KEY!,fetch,()=>new Date(),env.EODHD_CACHE_APPROVED==="true"):
-      new FreeProvider(env.SEC_CONTACT_EMAIL,env.EDINET_API_KEY,index??undefined,fetch,()=>new Date(),1100,env.SEC_LIVE_ENABLED==="true" && env.SEC_PUBLIC_RELEASE_APPROVED==="true"));
+      new EodhdProvider(env.EODHD_API_KEY!,serverFetch,()=>new Date(),env.EODHD_CACHE_APPROVED==="true"):
+      new FreeProvider(env.SEC_CONTACT_EMAIL,env.EDINET_API_KEY,index??undefined,serverFetch,()=>new Date(),1100,env.SEC_LIVE_ENABLED==="true" && env.SEC_PUBLIC_RELEASE_APPROVED==="true"));
     sessions.set(key,service);
   }
   return service;
