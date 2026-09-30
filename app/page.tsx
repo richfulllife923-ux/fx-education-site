@@ -57,9 +57,9 @@ export default function HomePage() {
               TUTTOは、市場がどの構造を受け入れ、どの構造を拒否したのかを可視化するために開発中のMT5 Market Structure Platformです。
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/manifesto" className="btn-primary">Manifestoを読む <ArrowRight size={16} strokeWidth={1.8} /></Link>
-              <Link href="/blog" className="btn-secondary">ブログを見る</Link>
-              <Link href="/tools" className="btn-ghost">開発状況</Link>
+              <Link href="/manifesto" className="main-cta cta-manifesto">Manifestoを見る <ArrowRight size={16} strokeWidth={1.8} /></Link>
+              <Link href="/blog" className="main-cta cta-manifesto">ブログを見る <ArrowRight size={16} /></Link>
+              <Link href="/tools" className="main-cta cta-manifesto">開発状況 <ArrowRight size={16} /></Link>
             </div>
           </div>
           <div className="relative mx-auto hidden w-full max-w-[320px] lg:block" aria-hidden="true">
@@ -73,6 +73,14 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="container-page pt-8 sm:pt-10">
+        <div className="card p-5 sm:p-6">
+          <p className="eyebrow">TUTTO Manifesto</p>
+          <h2 className="text-2xl font-bold sm:text-3xl">TUTTO Manifesto</h2>
+          <p className="mt-4 text-sm leading-8 text-text-secondary">市場を予測するのではない。市場が採用した構造を観測する。</p>
+          <Link href="/manifesto" className="main-cta cta-manifesto mt-5">Manifestoを見る <ArrowRight size={16} /></Link>
+        </div>
+      </section>
       <section className="container-page py-8 sm:py-10">
         <div className="card bg-surface/70 p-5 sm:p-6">
           <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
@@ -83,13 +91,26 @@ export default function HomePage() {
                 取引環境やサービス内容はFX会社によって異なります。プラットフォームや取引条件を確認し、自分に合った環境を比較できます。
               </p>
             </div>
-            <Link href="/brokers" className="btn-secondary min-h-12 border-primary/70 px-5">
+            <Link href="/brokers" className="main-cta cta-broker">
               FX会社を比較する <ArrowRight size={18} strokeWidth={1.8} />
             </Link>
           </div>
         </div>
       </section>
 
+      <section className="container-page pb-4 sm:pb-6">
+        <div className="card border-emerald-600/60 p-5 sm:p-6">
+          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <p className="eyebrow text-emerald-400">TUTTO STOCK ANALYSIS</p>
+              <h2 className="text-2xl font-bold sm:text-3xl">TUTTO 株式分析</h2>
+              <p className="mt-4 max-w-2xl text-sm leading-8 text-text-secondary">企業の事業、業績、Cash Flow、成長性、バリュエーション、リスクを整理し、企業の現在地を構造的に分析します。</p>
+              <p className="mt-3 max-w-2xl text-sm leading-8 text-text-secondary">有名企業だけでなく、まだ市場で十分に認知されていない成長企業も研究対象として探索します。</p>
+            </div>
+            <Link href="/stock-analysis/" className="main-cta cta-stock">株式分析を見る <ArrowRight size={18} /></Link>
+          </div>
+        </div>
+      </section>
       <section className="container-page py-10 pb-16 sm:py-14 sm:pb-24">
         <div className="card border-primary bg-[linear-gradient(135deg,rgba(59,130,246,0.16),rgba(21,28,46,0.88)_44%,rgba(11,16,32,0.96))] p-6 sm:p-8">
           <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
@@ -102,11 +123,11 @@ export default function HomePage() {
               </p>
             </div>
             <div className="flex flex-wrap gap-3 lg:justify-end">
-              <Link href="/indicator" className="btn-primary">
+              <Link href="/indicator" className="main-cta cta-indicator">
                 Indicatorを見る <ArrowRight size={16} strokeWidth={1.8} />
               </Link>
-              <Link href="/indicator/install" className="btn-secondary">
-                MT5へのインストール方法
+              <Link href="/indicator/install" className="main-cta cta-indicator">
+                MT5へのインストール方法 <ArrowRight size={16} />
               </Link>
             </div>
           </div>

@@ -79,3 +79,26 @@ h4 {
   }
 }
 
+
+/* Scoped to the new stock pages and homepage's primary entry points. */
+.main-cta {
+  @apply inline-flex min-h-12 max-w-full shrink-0 items-center justify-center gap-2 rounded-button px-5 py-3 text-sm font-semibold text-white transition-colors;
+}
+.main-cta svg, .main-cta > span { flex-shrink: 0; }
+.cta-manifesto { background-color: #2563eb; }
+.cta-broker { background-color: #b45309; }
+.cta-stock { background-color: #047857; }
+.cta-indicator { background-color: #dc2626; }
+.main-cta:hover { filter: brightness(1.12); }
+.main-cta:focus-visible, .stock-input:focus-visible, .stock-nav:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 3px;
+}
+.stock-input {
+  @apply min-h-12 rounded-button border border-border bg-background px-4 py-3 text-base text-text-primary;
+}
+.stock-input::placeholder { color: var(--color-text-secondary); font-size: 0.875rem; }
+.stock-nav {
+  @apply inline-flex items-center gap-2 rounded-button border border-emerald-700 bg-emerald-700 px-3 py-2 text-white;
+}
+.stock-nav:hover { background-color: #047857; }
