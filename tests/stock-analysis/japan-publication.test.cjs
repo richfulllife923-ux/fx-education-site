@@ -68,3 +68,11 @@ test("Pages API calls native fetch with a valid global receiver (TEST DATA only)
  const result=await response.json();assert.equal(invalidReceiver,false,"Native fetch must not receive a provider instance as this");assert.equal(result.code,"CONFIGURATION_REQUIRED");assert.equal(response.status,503);assert.equal(calls,1);
  }finally{global.fetch=before;}
 });
+
+test("Pages API rejects official-source redirects with Workers-compatible manual mode",async()=>{
+ const before=global.fetch;let calls=0;
+ global.fetch=async(url,options)=>{calls++;assert.equal(new URL(url).hostname,"api.edinet-fsa.go.jp");assert.equal(options.redirect,"manual");return new Response("TEST DATA redirect",{status:302,headers:{Location:"https://unofficial.invalid/do-not-follow"}});};
+ try{const response=await onRequest({request:request("analyze",{input:"7203.JP"}),env:{...env,EDINET_API_KEY:"TEST_DATA_WORKERS_REDIRECT"}});
+ const result=await response.json();assert.equal(response.status,502);assert.equal(result.code,"DATA_PROVIDER_ERROR");assert.ok(!result.report);assert.equal(calls,1);assert.ok(!JSON.stringify(result).includes("unofficial.invalid"));
+ }finally{global.fetch=before;}
+});

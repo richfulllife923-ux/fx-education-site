@@ -29,3 +29,6 @@ next-env.d.ts
 /.stock-test-output/
 .env.*
 !.env.example
+
+# Local Cloudflare runtime cache
+/.wrangler/

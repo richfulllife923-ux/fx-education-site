@@ -33,7 +33,15 @@ async function configured(env:Env):Promise<AnalysisService> {
   if (!service) {
     if (sessions.size>=2) sessions.delete(sessions.keys().next().value!);
     // Native Workers fetch rejects a provider instance as its receiver.
-    const serverFetch:typeof fetch=(input,init)=>globalThis.fetch(input,init);
+    const serverFetch:typeof fetch=async(input,init)=>{
+      // Workers supports manual/follow only; preserve rejection without forwarding secrets.
+      const response=await globalThis.fetch(input,init?.redirect==="error"?{...init,redirect:"manual"}:init);
+      if(init?.redirect==="error" && response.status>=300 && response.status<400){
+        await response.body?.cancel();
+        throw new StockError("DATA_PROVIDER_ERROR","一次資料APIに接続できませんでした。");
+      }
+      return response;
+    };
     service=new AnalysisService(commercial?
       new EodhdProvider(env.EODHD_API_KEY!,serverFetch,()=>new Date(),env.EODHD_CACHE_APPROVED==="true"):
       new FreeProvider(env.SEC_CONTACT_EMAIL,env.EDINET_API_KEY,index??undefined,serverFetch,()=>new Date(),1100,env.SEC_LIVE_ENABLED==="true" && env.SEC_PUBLIC_RELEASE_APPROVED==="true"));

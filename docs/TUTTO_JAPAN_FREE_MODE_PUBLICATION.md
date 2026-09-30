@@ -44,7 +44,7 @@ Cloudflare secret/settings confirmation is a prerequisite to pushing main becaus
 
 ## Local acceptance evidence
 
-- Local unit/contract tests: 88/88 PASS.
+- Local unit/contract tests: 89/89 PASS.
 - TypeScript: PASS.
 - Next production static build: PASS, 34 pages.
 - Live browser publication audit: 26 cases PASS.
@@ -87,3 +87,5 @@ Official references:
 The first production smoke test returned DATA_PROVIDER_ERROR for Japan before a successful upstream response. Node tests tolerated a native fetch stored and invoked as a provider method, while native browser/Workers fetch rejects the provider instance as its receiver. A regression test reproduces that failure, and the Pages API now passes an arrow wrapper calling globalThis.fetch. EDINET parser, annual selection, transport implementation, rate limits, redirect rejection and the SEC gate remain unchanged. The wrapped form also succeeds with a real Chromium native fetch against an inline data URL, without external requests.
 
 [Cloudflare illegal invocation guidance](https://developers.cloudflare.com/workers/observability/errors/#illegal-invocation-errors) describes the receiver constraint. Post-fix production smoke evidence is recorded separately; a local PASS alone does not establish production success.
+The remaining immediate failure was reproduced in official workerd: redirect="error" is rejected before network I/O. The same single official EDINET request with redirect="manual" returned HTTP 200 / metadata.status=200. The API wrapper now translates the reject-redirect contract to manual mode and explicitly rejects all 3xx responses without following Location. This preserves the official-host and secret-forwarding boundary without changing PrimaryHttp or EDINET parsing/selection. A separate synthetic 302 regression verifies exactly one call and no redirected fetch. Runtime diagnostic evidence is kept in the ignored edinet-worker-runtime-probe.json.
+The corrected Pages Functions also passed live EDINET E2E in official workerd (Wrangler 4.145.0, compatibility date 2026-09-01): 7203 and 285A HTTP 200 / FY2026 / 12 sections; NVDA and AAPL HTTP 503 / dedicated unavailable code. The temporary dev runtime/cache stays Git-ignored and adds no package dependency.
