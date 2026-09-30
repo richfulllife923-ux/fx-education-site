@@ -90,7 +90,7 @@ const server=http.createServer(async(req,res)=>{
    }
    results.push({regressionWidth:width,routes:routes.length,status:"PASS",preservedKnownOverflow:width===768||width===1280});
   }
-  await page.goto(base+"/");assert.deepEqual((await page.locator("main h2").allTextContents()).slice(0,4),["TUTTO Manifesto","FX会社を選ぶ","TUTTO 株式分析","インジケーター"]);
+  await page.goto(base+"/");assert.deepEqual((await page.locator("main h2").allTextContents()).slice(0,4),["FX会社を選ぶ","TUTTO 株式分析","インジケーター","TUTTOは投資助言ではありません。"]);
   assert.deepEqual(errors,[]);assert.equal(secCalls,0);
   const report={testedAt:new Date().toISOString(),results,browserErrors:errors,secLiveRequests:secCalls,edinetRequests:requests};
   const text=JSON.stringify(report,null,2);for(const secret of [env.EDINET_API_KEY,env.SEC_CONTACT_EMAIL])if(secret)assert.ok(!text.includes(secret),"Private value in audit output");

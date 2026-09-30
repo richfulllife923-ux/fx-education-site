@@ -73,14 +73,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="container-page pt-8 sm:pt-10">
-        <div className="card p-5 sm:p-6">
-          <p className="eyebrow">TUTTO Manifesto</p>
-          <h2 className="text-2xl font-bold sm:text-3xl">TUTTO Manifesto</h2>
-          <p className="mt-4 text-sm leading-8 text-text-secondary">市場を予測するのではない。市場が採用した構造を観測する。</p>
-          <Link href="/manifesto" className="main-cta cta-manifesto mt-5">Manifestoを見る <ArrowRight size={16} /></Link>
-        </div>
-      </section>
       <section className="container-page py-8 sm:py-10">
         <div className="card bg-surface/70 p-5 sm:p-6">
           <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
