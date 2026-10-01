@@ -44,12 +44,45 @@ const server=http.createServer(async(req,res)=>{
    await page.waitForFunction(()=>!document.querySelector('[role="status"]')?.textContent.includes("取得・照合しています"),{timeout:65000});
    const result=reports.get(input);assert.equal(result?.status,"ready","Japan live analysis must be ready");
    const report=result.report;assert.equal(report.metadata.provider,"EDINET");assert.equal(report.metadata.fiscalDate,"2026-03-31");assert.equal(report.metadata.valuationStatus,"LIMITED");
+   const debt=report.sections.finance.find(row=>row.label==="Debt");
+   const toyota=report.symbol==="7203.JP",expectedDebt=toyota?43205469000000:1253189000000;
+   assert.equal(Number(debt.value.replace(/ JPY$/,"").replace(/,/g,"")),expectedDebt);
+   assert.equal(debt.debt.sourceType,toyota?"SOURCE_DECLARED_TOTAL":"CALCULATED_FROM_COMPONENTS");
+   assert.equal(debt.kind,toyota?"FACT":"CALCULATION");assert.equal(debt.debt.scope,"CONSOLIDATED");
+   assert.equal(debt.debt.doubleCount,"NO");assert.ok(debt.debt.checks.every(c=>c.passed));
+   assert.equal(debt.debt.fiscalDate,"2026-03-31");assert.equal(report.researchStatus.dataCompleteness.debt,"AVAILABLE");
+   assert.equal(report.researchStatus.status,"STAY");assert.ok(report.researchStatus.pendingReasons.some(s=>s.includes("重大リスク")));
+   assert.ok(debt.debt.components.every(c=>c.fiscalDate==="2026-03-31"&&c.currency==="JPY"));
+   if(toyota){assert.equal(debt.debt.validationValue,expectedDebt);assert.equal(debt.debt.supplemental.length,2);}
+   else{assert.equal(debt.inputs.length,4);assert.notEqual(expectedDebt,1075906000000);assert.ok(debt.debt.checks.some(c=>c.id==="D2/lease-exclusion-confirmation"));}
    assert.equal(Object.keys(report.sections).length,12);assert.equal(await page.locator("main h2").count(),13);
    assert.ok(report.sections.performance.find(row=>row.label==="Revenue").sourceUrl.includes(report.symbol==="7203.JP"?"S100Y8NY":"S100YJ18"));
-   await page.getByText("FACT",{exact:true}).first().waitFor();await page.getByText("CALCULATION",{exact:true}).first().waitFor();
+      const expectedStatus=report.sections.finance.find(row=>row.label==="Debt")?.kind==="UNKNOWN"?"GRAY":"STAY";
+   assert.equal(report.researchStatus.status,expectedStatus);
+   if(expectedStatus==="GRAY")assert.ok(report.researchStatus.nextChecks[0].includes("有利子負債"));
+   await page.locator('[data-research-status="'+expectedStatus+'"]').waitFor();
+   assert.equal(await page.locator('[data-key-numbers] dt').count(),5);
+   const closed=await page.locator("main").innerText();
+   for(const raw of ["FACT","CALCULATION","CONFIRMED","UNKNOWN","S100YJ18","S100Y8NY","retrievedAt","SOURCE_DECLARED_TOTAL","CALCULATED_FROM_COMPONENTS","FINANCIAL_BUSINESS"])
+    assert.ok(!closed.includes(raw),"Raw metadata exposed by default: "+raw);
+   const sources=await page.locator('main a[href]').evaluateAll(links=>links.map(link=>link.href));
+   assert.ok(sources.every(url=>!url.includes("WZEK0040")&&!url.includes("/api/v2/documents/")&&!url.toLowerCase().includes(".zip")));
+   const cf=page.locator("section").filter({has:page.getByRole("heading",{name:"キャッシュフロー",exact:true})});
+   await cf.locator("details > summary").first().click();
+   const details=await cf.innerText();assert.ok(details.includes("FACT"));assert.ok(details.includes("CALCULATION"));assert.ok(details.includes("文書ID"));
+   await cf.locator("details > summary").first().click();
+   const finance=page.locator("section").filter({has:page.getByRole("heading",{name:"財務",exact:true})});
+   const financeClosed=await finance.innerText();assert.ok(financeClosed.includes(toyota?"43兆2054億円":"1兆2531億円"));
+   assert.ok(!financeClosed.includes("Current Debt"));assert.ok(!financeClosed.includes("金融事業"));
+   if(!toyota)assert.ok(financeClosed.includes("構成要素から算出"));
+   await finance.locator("details > summary").first().click();const debtDetails=await finance.innerText();
+   assert.ok(debtDetails.includes(debt.debt.sourceType));assert.ok(debtDetails.includes("重複確認：NO"));
+   if(toyota){assert.ok(debtDetails.includes("金融事業"));assert.ok(debtDetails.includes("自動車等"));}
+   await finance.locator("details > summary").first().click();
+   if(input==="7203"||input==="285A"){await finance.scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,"debt-"+input+"-finance-375.png")});}
    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-   results.push({input,status:"PASS",symbol:report.symbol,fiscalDate:report.metadata.fiscalDate});
-   if(input==="7203"||input==="285A"){fs.writeFileSync(path.join(output,"japan-publication-"+input+"-report.json"),JSON.stringify(report,null,2));await page.screenshot({path:path.join(output,"japan-publication-"+input+"-375.png")});}
+   results.push({input,status:"PASS",symbol:report.symbol,fiscalDate:report.metadata.fiscalDate,researchStatus:report.researchStatus.status,debtValue:expectedDebt,debtSourceType:debt.debt.sourceType});
+   if(input==="7203"||input==="285A"){fs.writeFileSync(path.join(output,"japan-publication-"+input+"-report.json"),JSON.stringify(report,null,2));await page.locator("[data-research-status]").scrollIntoViewIfNeeded();await page.screenshot({path:path.join(output,"research-status-"+input+"-375.png")});}
   }
   for(const input of ["NVDA","NVIDIA","AAPL","Apple","MSFT","GOOGL","UNKNOWNZZZ"]){
    await page.goto(base+"/stock-analysis/analyze/?"+new URLSearchParams({symbol:input}),{waitUntil:"networkidle"});
@@ -64,7 +97,7 @@ const server=http.createServer(async(req,res)=>{
   for(const [a,b,japanCount]of [["7203","285A",2],["7203","NVDA",1],["NVDA","AAPL",0]]){
    await page.goto(base+"/stock-analysis/compare/?"+new URLSearchParams({a,b}),{waitUntil:"networkidle"});
    await page.waitForFunction(()=>!document.body.textContent.includes("企業データを取得・照合しています"),{timeout:65000});
-   const body=await page.locator("main").innerText();if(japanCount)assert.ok(body.includes("2026-03-31"));
+   const body=await page.locator("main").innerText();if(japanCount)assert.ok(body.includes("2026年3月期"));
    if(japanCount<2)assert.ok(body.includes("米国株の一次資料接続は現在メンテナンス中"));
    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));results.push({comparison:a+" vs "+b,status:"PASS"});
   }
@@ -91,10 +124,33 @@ const server=http.createServer(async(req,res)=>{
    results.push({regressionWidth:width,routes:routes.length,status:"PASS",preservedKnownOverflow:width===768||width===1280});
   }
   await page.goto(base+"/");assert.deepEqual((await page.locator("main h2").allTextContents()).slice(0,4),["FX会社を選ぶ","TUTTO 株式分析","インジケーター","TUTTOは投資助言ではありません。"]);
+
+  // Explicit TEST DATA UI cases only. Actual EDINET E2E above is independent and must pass first.
+  const {evaluateResearchStatus}=require("../../lib/research-status.ts");
+  const testCondition=()=>({state:"MET",reason:"TEST DATA attestation",evidenceRefs:["TEST DATA"]});
+  const testBase={provider:"READY",identity:"VERIFIED",latestAnnual:"AVAILABLE",primaryEvidence:"AVAILABLE",dataIntegrity:"VALID",
+   debt:"AVAILABLE",operatingCF:"AVAILABLE",freeCF:"AVAILABLE",cashFlowMissingSeverity:"NOT_MAJOR",
+   majorRisk:"CLEAR",counterThesisMajorRisk:"CLEAR",valuation:"AVAILABLE",growthMode:"STANDARD",sourceFiscalYear:"2026-03-31",
+   conditions:Object.fromEntries(["business","financials","cashFlow","balanceSheet","risk","counterThesis","valuation","growth"].map(key=>[key,testCondition()])),
+   ownerDecisionsRequired:[]};
+  for(const [expected,patch]of [["GREEN",{}],["STAY",{valuation:"MISSING"}],["GRAY",{debt:"MISSING"}]]){
+   const report={...reports.get("285A").report,companyName:"TEST DATA — Status rendering only",researchStatus:evaluateResearchStatus({...testBase,...patch})};
+   await page.route("**/api/stock-analysis/analyze",route=>route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({status:"ready",report})}));
+   await page.setViewportSize({width:375,height:900});
+   await page.goto(base+"/stock-analysis/analyze/?symbol=TEST",{waitUntil:"networkidle"});
+   await page.locator('[data-research-status="'+expected+'"]').waitFor();
+   assert.ok((await page.locator("main").innerText()).includes("TEST DATA"));
+   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+   await page.locator("[data-research-status]").scrollIntoViewIfNeeded();
+   await page.screenshot({path:path.join(output,"TEST-DATA-status-"+expected+"-375.png")});
+   results.push({testDataOnly:true,statusUI:expected,status:"PASS"});
+   await page.unroute("**/api/stock-analysis/analyze");
+  }
+
   assert.deepEqual(errors,[]);assert.equal(secCalls,0);
   const report={testedAt:new Date().toISOString(),results,browserErrors:errors,secLiveRequests:secCalls,edinetRequests:requests};
   const text=JSON.stringify(report,null,2);for(const secret of [env.EDINET_API_KEY,env.SEC_CONTACT_EMAIL])if(secret)assert.ok(!text.includes(secret),"Private value in audit output");
-  fs.writeFileSync(path.join(output,"japan-publication-browser-results.json"),text);
+  fs.writeFileSync(path.join(output,"research-status-live-browser-results.json"),text);
   console.log(JSON.stringify({cases:results.length,secLiveRequests:secCalls,browserErrors:errors.length,status:"PASS",JapanFiscalEnd:"2026-03-31",regressionWidths:[320,375,768,1280]}));
  }finally{global.fetch=originalFetch;if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}
 })().catch(error=>{let message=String(error.message??"Browser verification failed");for(const secret of [env.EDINET_API_KEY,env.SEC_CONTACT_EMAIL])if(secret)message=message.split(secret).join("[REDACTED]");console.error(message.slice(0,1500));process.exitCode=1;});

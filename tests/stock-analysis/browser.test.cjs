@@ -63,7 +63,7 @@ const server=http.createServer(async(req,res)=>{
     }
     results.push("10 routes / no NEW horizontal overflow at "+width+"px: PASS");
   }
-  await page.goto(base+"/");assert.deepEqual((await page.locator("main h2").allTextContents()).slice(0,4),["TUTTO Manifesto","FX会社を選ぶ","TUTTO 株式分析","インジケーター"]);
+  await page.goto(base+"/");assert.deepEqual((await page.locator("main h2").allTextContents()).slice(0,4),["FX会社を選ぶ","TUTTO 株式分析","インジケーター","TUTTOは投資助言ではありません。"]);
   await page.goto(base+"/stock-analysis/");const input=page.getByLabel("銘柄名・証券コード・Ticker",{exact:true});
   await input.fill("  ");await input.press("Enter");await page.getByText("銘柄名・証券コード・Tickerを入力してください。",{exact:true}).waitFor();
   await input.fill("トヨタ");await input.press("Enter");await page.waitForURL(url=>url.searchParams.get("symbol")==="トヨタ");
@@ -76,9 +76,11 @@ const server=http.createServer(async(req,res)=>{
     await page.goto(base+"/stock-analysis/analyze/?"+new URLSearchParams({symbol}),{waitUntil:"networkidle"});
     await page.getByText(/TEST DATA/).first().waitFor();
     assert.equal(await page.locator("main h2").count(),13);
-    await page.getByText("Counter-Thesis（必須）",{exact:false}).first().waitFor();
-    await page.getByText("SOURCE CLAIM",{exact:true}).first().waitFor();
-    assert.ok(await page.getByText("CALCULATION",{exact:true}).count()>0);
+    await page.locator("dt").filter({hasText:"この見方が崩れる条件"}).first().waitFor();
+    const closed=await page.locator("main").innerText();assert.ok(!closed.includes("SOURCE CLAIM"));assert.ok(!closed.includes("CALCULATION"));
+    const cf=page.locator("section").filter({has:page.getByRole("heading",{name:"キャッシュフロー",exact:true})});
+    await cf.locator("details > summary").first().click();
+    const audit=await cf.innerText();assert.ok(audit.includes("SOURCE CLAIM"));assert.ok(audit.includes("CALCULATION"));
   }
   results.push("TEST DATA browser → Pages handler → real adapter normalization → engine → 12-section UI for 7203/NVDA/285A/AAPL: PASS (not live E2E)");
   for(const width of [320,375,768,1280]){
@@ -100,7 +102,7 @@ const server=http.createServer(async(req,res)=>{
   results.push("Ambiguous candidate selection and re-analysis: PASS");
   mode="partial";
   await page.goto(base+"/stock-analysis/analyze/?symbol=NVDA",{waitUntil:"networkidle"});
-  await page.getByText(/PARTIAL_DATA/).waitFor();
+  await page.getByText("一部の項目は未取得です。",{exact:true}).waitFor();
   assert.equal(await page.locator("main h2").count(),13);
   await page.setViewportSize({width:375,height:900});await page.screenshot({path:path.join(output,"partial-mobile.png")});
   results.push("Partial-data warning keeps financial results and sections visible: PASS");

@@ -1,3 +1,4 @@
+import type { DebtEvidence } from "../../lib/stock-debt";
 /** Canonical provider-independent model. null means unavailable, never zero. */
 export type Basis = "annual" | "quarterly" | "half-year" | "TTM" | "instant";
 export type Source = {
@@ -6,6 +7,7 @@ export type Source = {
   currency: string | null; unit: string; filingDate?: string | null; classification?:"FACT"|"SOURCE CLAIM"; start?:string|null; form?:string; accession?:string; contextRef?:string;
 };
 export type Datum = { value: number | null; source: Source };
+export type DebtDatum = Datum & Partial<DebtEvidence>;
 export type Candidate = {
   symbol: string; code: string; exchange: "US" | "TSE" | "JP"; name: string;
   country: string; currency: string | null; cik?:string; edinetCode?:string;
@@ -14,7 +16,7 @@ export type FinancialPeriod = {
   end: string; basis: "annual" | "quarterly" | "half-year"; currency: string | null;
   revenue: Datum; grossProfit: Datum; operatingIncome: Datum; netIncome: Datum;
   operatingCF: Datum; investingCF: Datum; financingCF: Datum; capex: Datum;
-  cash: Datum; investments: Datum; debt: Datum; equity: Datum; assets: Datum;
+  cash: Datum; investments: Datum; debt: DebtDatum; equity: Datum; assets: Datum;
   receivables: Datum; inventory: Datum; shares: Datum; sbc: Datum; liabilities?:Datum; eps?:Datum; currentDebt?:Datum; noncurrentDebt?:Datum;
 };
 export type CompanyData = {

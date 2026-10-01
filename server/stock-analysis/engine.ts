@@ -1,5 +1,6 @@
 import type { Evidence, StockReport, SectionId } from "../../lib/stock-analysis";
-import type { CompanyData, Datum } from "./model";
+import type { DebtEvidence } from "../../lib/stock-debt";
+import type { CompanyData, Datum, DebtDatum } from "./model";
 import { freeCashFlow, growth, margin, netCash, ratio, type Calculation } from "./calculations";
 export function display(value:number|null,unit=""):string {
   return value===null?"未取得":new Intl.NumberFormat("ja-JP",{maximumFractionDigits:2}).format(value)+(unit?" "+unit:"");
@@ -11,6 +12,16 @@ function observed(label:string,datum:Datum):Evidence {
     period:s.basis+" / "+(s.start?s.start+" → ":"")+(s.period??"基準日未確認"),currency:s.currency??undefined,unit:s.unit,
     retrievedAt:s.retrievedAt,field:s.field,confidence:datum.value===null?"UNVERIFIED":s.classification==="FACT"?"CONFIRMED":"SUPPORTED",
     filingDate:s.filingDate??undefined};
+}
+function debtEvidence(datum:DebtDatum):Evidence {
+  const item=observed("Debt",datum);
+  if(!datum.sourceType)return item;
+  const metadata={sourceType:datum.sourceType,sourceField:datum.sourceField!,fiscalDate:datum.fiscalDate!,currency:datum.currency??null,scope:datum.scope!,confidence:datum.confidence!,components:datum.components??[],checks:datum.checks??[],doubleCount:datum.doubleCount??"UNVERIFIED",validationFormula:datum.validationFormula,validationValue:datum.validationValue,supplemental:datum.supplemental??[]} satisfies DebtEvidence;
+  return {...item,debt:metadata,debtRole:"PRIMARY",kind:datum.value===null?"UNKNOWN":datum.sourceType==="CALCULATED_FROM_COMPONENTS"?"CALCULATION":"FACT",confidence:metadata.confidence,
+    ...(datum.sourceType==="CALCULATED_FROM_COMPONENTS"?{formula:metadata.validationFormula,inputs:metadata.components.map(c=>({name:c.name,value:c.value,period:c.fiscalDate,basis:"annual",currency:c.currency,field:c.sourceField,asOf:datum.source.asOf,sourceUrl:c.sourceUrl}))}:{})};
+}
+function supplementalDebt(datum:DebtDatum):Evidence[] {
+  return (datum.supplemental??[]).flatMap(s=>[s.current,s.noncurrent].map(c=>({...observed(c.name,{value:c.value,source:{...datum.source,field:c.sourceField,contextRef:c.contextRef,period:c.fiscalDate,currency:c.currency}}),debtRole:"SUPPLEMENTAL" as const})));
 }
 function calculated(label:string,calc:Calculation):Evidence {
   const item=observed(label,{value:calc.value,source:calc.source});
@@ -61,9 +72,9 @@ export function buildReport(company:CompanyData,now=new Date().toISOString()):St
   if (metrics && latest) {
     add("performance",metrics.grossMargin,metrics.operatingMargin,metrics.netMargin);
     add("cash-flow",metrics.cfConversion,explanation("FCFの限界","Total CapExを控除したFCFです。維持投資と成長投資は分離できていません。持続的な分配可能利益とは断定しません。","UNKNOWN",[metrics.fcf]));
-    add("finance",observed("Cash",latest.cash),observed("Debt",latest.debt),observed("Equity",latest.equity),observed("Total Assets",latest.assets),...(latest.liabilities?[observed("Total Liabilities",latest.liabilities)]:[]),
-      ...(latest.currentDebt?[observed("Current Debt（全有利子負債の代用にはしない）",latest.currentDebt)]:[]),
-      ...(latest.noncurrentDebt?[observed("Noncurrent Debt（全有利子負債の代用にはしない）",latest.noncurrentDebt)]:[]),metrics.netCash);
+    add("finance",observed("Cash",latest.cash),debtEvidence(latest.debt),observed("Equity",latest.equity),observed("Total Assets",latest.assets),...(latest.liabilities?[observed("Total Liabilities",latest.liabilities)]:[]),
+      ...(latest.currentDebt?[{...observed("Current Debt（全有利子負債の代用にはしない）",latest.currentDebt),debtRole:"BREAKDOWN" as const}]:[]),
+      ...(latest.noncurrentDebt?[{...observed("Noncurrent Debt（全有利子負債の代用にはしない）",latest.noncurrentDebt),debtRole:"BREAKDOWN" as const}]:[]),...supplementalDebt(latest.debt),metrics.netCash);
   } else {
     ["performance","cash-flow","finance"].forEach(id=>add(id as SectionId,explanation("財務データ","対応する財務データが未取得です。企業開示で確認してください。","UNKNOWN")));
   }

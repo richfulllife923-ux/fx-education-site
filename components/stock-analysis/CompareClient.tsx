@@ -2,9 +2,10 @@
 import { useEffect,useId,useState } from "react";
 import { useRouter,useSearchParams } from "next/navigation";
 import { comparisonAxes,normalizeStockInput,stockAnalysisAdapter,type ComparisonResult,type SectionId } from "@/lib/stock-analysis";
+import { ResearchStatusCard } from "./ResearchStatusCard";
 import { ResultStatus } from "./AnalysisClient";
 import { StockLink } from "./StockUI";
-import EvidenceView from "./EvidenceView";
+import { EvidenceList } from "./EvidenceView";
 import { isUsPrimaryUnavailable } from "@/lib/stock-analysis-status";
 const sectionForAxis:SectionId[]=["business","revenue","growth","performance","cash-flow","finance","valuation","risk","earnings"];
 export default function CompareClient() {
@@ -15,7 +16,7 @@ export default function CompareClient() {
   useEffect(()=>{let active=true;const controller=new AbortController();setResult(null);
     if(valid)stockAnalysisAdapter.compare(a,b,controller.signal).then(value=>{if(active)setResult(value);});
     return()=>{active=false;controller.abort();};},[a,b,valid,attempt]);
-  const results=result?.status==="ready"?[result.a,result.b]:[null,null];
+  const results=result?.status==="ready"?[result.a,result.b]:result?[result,result]:[null,null];
   const retry=()=>setAttempt(value=>value+1);
   return <>
     <form className="card p-5 sm:p-8" onSubmit={event=>{
@@ -38,7 +39,7 @@ export default function CompareClient() {
     </form>
     <p className="mt-6 text-sm leading-7 text-text-secondary" role="status">{valid?"比較対象："+a+" / "+b+"。企業と市場を提供元データで照合します。":"比較する2銘柄を入力してください。"}</p>
     {valid && result && result.status!=="ready" && <div className="card mt-4 p-5" role="status">
-      <p>{result.message}</p><button className="stock-nav mt-3" onClick={retry}>再試行</button>
+      {result.researchStatus && <ResearchStatusCard value={result.researchStatus}/>}<p>{result.message}</p><button className="stock-nav mt-3" onClick={retry}>再試行</button>
     </div>}
     {result?.status==="ready" && <div className="card mt-4 p-5" role="status">{result.warnings.map((warning,index)=><p className="text-sm leading-7 text-amber-200" key={index}>{warning}</p>)}</div>}
     {valid && <div className="mt-4 grid gap-4 sm:grid-cols-2">{results.map((report,index)=>{
@@ -54,7 +55,7 @@ export default function CompareClient() {
       <div className="mt-4 grid gap-4 sm:grid-cols-2">{results.map((report,column)=><div key={column} className="min-w-0 rounded-card border border-border p-4 text-sm">
         <p className="break-words font-semibold">{column===0?a||"銘柄A":b||"銘柄B"}</p>
         {report?.status==="ready" && report.report.sections[sectionForAxis[index]]?.length?
-          <dl className="mt-2 space-y-4">{report.report.sections[sectionForAxis[index]]!.map((item,i)=><EvidenceView item={item} key={i}/>)}</dl>:
+          <div className="mt-2"><EvidenceList items={report.report.sections[sectionForAxis[index]]!} focusPeriod={report.report.metadata?.fiscalDate}/></div>:
           <p className="mt-2 text-text-secondary">{isUsPrimaryUnavailable(report)?"米国株は一次資料接続の確認中のため比較を保留しています。":"未取得"}</p>}
       </div>)}</div>
     </section>)}</div>

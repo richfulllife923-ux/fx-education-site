@@ -1,3 +1,4 @@
+import { applyEdinetDebt, debtConcepts } from "./edinet-debt";
 import { emptyPeriod,type FinancialField } from "./primary-model";
 import { StockError,dateOrNull,numberOrNull,type FinancialPeriod,type Source } from "./model";
 export type EdinetFiling={docID:string;edinetCode:string;secCode:string;filerName:string;docTypeCode:string;periodStart:string|null;periodEnd:string|null;
@@ -22,7 +23,7 @@ const mappings:Partial<Record<FinancialField,string[]>>={
 const reviewedExtensions:Record<string,string[]>={E02144:["TotalNetRevenuesIFRS"]};
 const instant=new Set(["cash","debt","equity","assets","liabilities","inventory","receivables"]);
 type Context={start:string|null;end:string;id:string;allowed:boolean};
-type Fact={name:string;value:number|null;unit:string;context:Context;prefix:string};
+type Fact={name:string;value:number|null;unit:string;unitRef:string;context:Context;prefix:string};
 function attrs(text:string):Record<string,string> {
   const output:Record<string,string>={};
   for(const match of text.matchAll(/([\w.:-]+)\s*=\s*(['"])([\s\S]*?)\2/g))output[match[1]]=match[3];
@@ -61,7 +62,7 @@ export function normalizeEdinetXbrl(xml:string,filing:EdinetFiling,retrievedAt:s
     if(/unitNumerator/.test(body) && measures.length===2 && /^[A-Z]{3}$/.test(measures[0]) && measures[1]==="shares")units.set(id,measures[0]+"/shares");
   }
   const facts:Fact[]=[];
-  const whitelist=new Set(Object.values(mappings).flat());
+  const whitelist=new Set([...Object.values(mappings).flat(),...debtConcepts]);
   for(const match of xml.matchAll(/<([\w.-]+):([\w.-]+)\b([^>]*)>([^<]*)<\/\1:\2>/g)){
     if(!whitelist.has(match[2]))continue;
     const uri=namespaces[match[1]]??"";
@@ -69,7 +70,7 @@ export function normalizeEdinetXbrl(xml:string,filing:EdinetFiling,retrievedAt:s
     if(!reviewed && !/^https?:\/\/disclosure\.edinet-fsa\.go\.jp\/taxonomy\/(?:jppfs|jpigp)\//.test(uri) && !/^https?:\/\/(?:www\.)?xbrl\.ifrs\.org\/taxonomy\//.test(uri))continue;
     const attributes=attrs(match[3]),context=contexts.get(attributes.contextRef),unit=units.get(attributes.unitRef);
     if(!context?.allowed || !unit)continue;
-    facts.push({name:match[2],prefix:match[1],value:attributes["xsi:nil"]==="true"?null:numberOrNull(match[4].trim()),context,unit});
+    facts.push({name:match[2],prefix:match[1],value:attributes["xsi:nil"]==="true"?null:numberOrNull(match[4].trim()),context,unit,unitRef:attributes.unitRef});
   }
   const isAnnual=["120","130"].includes(filing.docTypeCode),isHalf=["160","170"].includes(filing.docTypeCode);
   const basis:FinancialPeriod["basis"]=isAnnual?"annual":isHalf?"half-year":"quarterly";
@@ -95,6 +96,7 @@ export function normalizeEdinetXbrl(xml:string,filing:EdinetFiling,retrievedAt:s
         field:found.prefix+":"+found.name+" / context="+found.context.id,contextRef:found.context.id,start:found.context.start,
         currency,unit:field==="eps"?"per share":"currency"}};
     }
+    applyEdinetDebt(xml,filing,period,facts);
     return period;
   }).sort((a,b)=>b.end.localeCompare(a.end));
 }

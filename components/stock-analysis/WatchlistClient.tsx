@@ -2,7 +2,10 @@
 import { useEffect,useState } from "react";
 import { stockAnalysisAdapter,type WatchlistResult } from "@/lib/stock-analysis";
 import { StockLink } from "./StockUI";
+import { ResearchStatusCard } from "./ResearchStatusCard";
 import USMaintenanceNotice from "./USMaintenanceNotice";
+import { EvidenceList } from "./EvidenceView";
+import { publicSourceUrl } from "@/lib/stock-analysis-presentation";
 import { usPrimaryUnavailableCode } from "@/lib/stock-analysis-status";
 export default function WatchlistClient() {
   const [result,setResult]=useState<WatchlistResult|null>(null),[attempt,setAttempt]=useState(0);
@@ -10,16 +13,17 @@ export default function WatchlistClient() {
     stockAnalysisAdapter.watchlist(controller.signal).then(value=>{if(active)setResult(value);});
     return()=>{active=false;controller.abort();};},[attempt]);
   if(result?.status==="ready" && (result.entries.length || result.issues.some(issue=>issue.code===usPrimaryUnavailableCode))) return <>
-    {result.issues.filter(issue=>issue.code!==usPrimaryUnavailableCode).map((issue,index)=><p className="mb-4 text-sm text-amber-200" role="status" key={index}>{issue.message}</p>)}
-    {result.issues.filter(issue=>issue.code===usPrimaryUnavailableCode).map((issue,index)=><article className="card mb-5 p-6" key={index}><h2 className="text-xl font-bold">{issue.symbol??"米国株"}</h2><USMaintenanceNotice message={issue.message}/></article>)}
+    {result.issues.filter(issue=>issue.code!==usPrimaryUnavailableCode).map((issue,index)=><article className="card mb-4 min-w-0 p-5" role="status" key={index}><p>{issue.symbol}</p>{issue.researchStatus && <ResearchStatusCard value={issue.researchStatus} compact/>}<p className="mt-3 text-sm text-amber-200">{issue.message}</p></article>)}
+    {result.issues.filter(issue=>issue.code===usPrimaryUnavailableCode).map((issue,index)=><article className="card mb-5 p-6" key={index}><h2 className="text-xl font-bold">{issue.symbol??"米国株"}</h2>{issue.researchStatus && <ResearchStatusCard value={issue.researchStatus} compact/>}<USMaintenanceNotice message={issue.message}/></article>)}
     <div className="grid gap-5 md:grid-cols-2">{result.entries.map(entry=><article key={entry.symbol} className="card p-6">
       <h2 className="text-xl font-bold">{entry.companyName}</h2><p className="mt-2 text-sm">{entry.symbol} / {entry.categories.join(" / ")}</p>
+      {entry.researchStatus && <ResearchStatusCard value={entry.researchStatus} compact/>}
       <p className="my-4 text-sm leading-7 text-text-secondary">{entry.researchReason}</p>
-      {entry.evidence?.map((item,index)=><p className="text-sm leading-7" key={index}>{item.label}：{item.value} / {item.period} / {item.kind}</p>)}
+      <div className="my-4"><EvidenceList items={entry.evidence??[]} extraMetadata={entry}/></div>
       <p className="mt-3 text-sm leading-7 text-text-secondary">Risk / Counter-thesis：{entry.risk}</p>
       <p className="mt-3 text-sm leading-7 text-text-secondary">Next confirmation：{entry.nextConfirmation}</p>
-      <p className="my-4 text-xs text-text-secondary">提供元更新日：{entry.asOf}</p>
-      <a className="stock-nav mb-4" href={entry.sourceUrl} target="_blank" rel="noopener noreferrer">研究資料の入口 →</a>
+
+      {publicSourceUrl(entry.sourceUrl) && <a className="stock-nav mb-4" href={publicSourceUrl(entry.sourceUrl)!} target="_blank" rel="noopener noreferrer">研究資料の入口 →</a>}
       <StockLink href={"/stock-analysis/analyze/?"+new URLSearchParams({symbol:entry.symbol})}>個別分析を見る</StockLink>
     </article>)}</div>
   </>;

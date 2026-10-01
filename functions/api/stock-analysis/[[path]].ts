@@ -95,7 +95,7 @@ export async function onRequest({request,env}:Context):Promise<Response> {
     }
     if(typeof data.input!=="string")throw new StockError("INVALID_INPUT","銘柄名またはコードを入力してください。");
     // Emerging shares the same complete analysis; never returns an unsupported screening verdict.
-    const result=await service.analyze(data.input);
+    const result=await service.analyze(data.input,endpoint==="emerging"?"EMERGING":"STANDARD");
     return json(result,result.status==="ready"?200:["CONFIGURATION_REQUIRED","US_PRIMARY_SOURCE_TEMPORARILY_UNAVAILABLE"].includes(result.code??"")?503:result.code==="RATE_LIMITED"?429:result.code==="SYMBOL_NOT_FOUND"?404:result.code==="AMBIGUOUS_SYMBOL"?409:result.code==="INVALID_INPUT"?400:502);
   } catch (error) {
     const result=failure(error);
