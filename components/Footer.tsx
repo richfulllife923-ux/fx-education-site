@@ -53,9 +53,15 @@ export default function Footer() {
             <ul className="space-y-2.5">
               {col.links.map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="text-sm text-text-secondary hover:text-text-primary">
-                    {l.label}
-                  </Link>
+                  {l.href === "/sitemap.xml" ? (
+                    <a href={l.href} className="text-sm text-text-secondary hover:text-text-primary">
+                      {l.label}
+                    </a>
+                  ) : (
+                    <Link href={l.href} className="text-sm text-text-secondary hover:text-text-primary">
+                      {l.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
