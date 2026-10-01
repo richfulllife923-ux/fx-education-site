@@ -11,7 +11,7 @@ function observed(label:string,datum:Datum):Evidence {
     sourceUrl:s.url,sourceTitle:s.title,asOf:s.asOf??"提供元更新日未取得",
     period:s.basis+" / "+(s.start?s.start+" → ":"")+(s.period??"基準日未確認"),currency:s.currency??undefined,unit:s.unit,
     retrievedAt:s.retrievedAt,field:s.field,confidence:datum.value===null?"UNVERIFIED":s.classification==="FACT"?"CONFIRMED":"SUPPORTED",
-    filingDate:s.filingDate??undefined};
+    filingDate:s.filingDate??undefined,...(s.correction?{correction:s.correction}:{})};
 }
 function debtEvidence(datum:DebtDatum):Evidence {
   const item=observed("Debt",datum);

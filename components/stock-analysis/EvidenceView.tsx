@@ -36,6 +36,7 @@ export function EvidenceDisclosure({items,extraMetadata}:{items:Evidence[];extra
           {!!item.relatedFields?.length && <><dt>参照データ</dt><dd className="break-all">{item.relatedFields.join(" / ")}</dd></>}
         </dl>
         {!!item.inputs?.length && <div className="mt-3"><p className="font-semibold">入力値</p>{item.inputs.map((input,i)=><p className="mt-2 break-all" key={i}>{input.name}：{input.value??"未取得"} / {input.basis} / {input.period??"未確認"} / {input.currency??"未確認"} / {input.field}</p>)}</div>}
+        {item.correction && <details className="mt-3"><summary className="cursor-pointer">訂正書類と原文の照合</summary><pre className="mt-2 max-w-full whitespace-pre-wrap break-all">{JSON.stringify(item.correction,null,2)}</pre></details>}
         {item.debt && <div className="mt-3 min-w-0 space-y-2">
           <p>Debt Source type：{item.debt.sourceType} / {item.debt.sourceType==="CALCULATED_FROM_COMPONENTS"?"構成要素から算出":item.debt.sourceType==="SOURCE_DECLARED_TOTAL"?"原文正式合計":"未確認"}</p>
           <p>Primary scope：{item.debt.scope} / {item.debt.fiscalDate}</p>

@@ -5,7 +5,8 @@ import type { EdinetFiling } from "./edinet-xbrl";
 
 // Reviewed D1-D3 concepts. Whitelisting only makes a fact eligible for the checks below.
 export const debtConcepts = ["InterestBearingLiabilitiesCLIFRS","InterestBearingLiabilitiesNCLIFRS",
-  "BondsAndBorrowingsCLIFRS","BondsAndBorrowingsNCLIFRS","LeaseLiabilitiesCLIFRS","LeaseLiabilitiesNCLIFRS"];
+  "BondsAndBorrowingsCLIFRS","BondsAndBorrowingsNCLIFRS","LeaseLiabilitiesCLIFRS","LeaseLiabilitiesNCLIFRS",
+  "ShortTermLoansPayable","CurrentPortionOfLongTermLoansPayable","LongTermLoansPayable","CurrentPortionOfBonds","BondsPayable","LeaseObligationsCL","LeaseObligationsNCL"];
 export type DebtFact = {name:string;prefix:string;value:number|null;unit:string;unitRef:string;context:{id:string;start:string|null;end:string}};
 type Note = {name:string;contextRef:string;html:string;text:string};
 type Cell = {text:string};
@@ -25,7 +26,7 @@ function note(xml:string,name:string,filing:EdinetFiling,ns:Record<string,string
   const found=matches.filter(m=>{
     const a=attributes(m[3]),uri=ns[m[1]]??"";
     const issuerExtension=new RegExp("^https?://disclosure\\.edinet-fsa\\.go\\.jp/jpcrp\\d+/asr/\\d+/"+filing.edinetCode+"-000/"+filing.periodEnd+"/\\d+/"+filing.submitDateTime.slice(0,10)+"$").test(uri);
-    const validNoteNamespace=name==="NotesBorrowingsAndOtherFinancialLiabilitiesConsolidatedFinancialStatementsIFRSTextBlock"?issuerExtension:name==="ManagementAnalysisOfFinancialPositionOperatingResultsAndCashFlowsTextBlock"?/^https?:\/\/disclosure\.edinet-fsa\.go\.jp\/taxonomy\/jpcrp\/\d{4}-\d{2}-\d{2}\/jpcrp_cor$/.test(uri):standardFinancial(uri);
+    const validNoteNamespace=["AnnexedConsolidatedDetailedScheduleOfBorrowingsTextBlock","AnnexedConsolidatedDetailedScheduleOfCorporateBondsTextBlock","ConsolidatedBalanceSheetTextBlock"].includes(name)?/^https?:\/\/disclosure\.edinet-fsa\.go\.jp\/taxonomy\/(?:jpcrp|jppfs)\/\d{4}-\d{2}-\d{2}\/(?:jpcrp|jppfs)_cor$/.test(uri):name==="NotesBorrowingsAndOtherFinancialLiabilitiesConsolidatedFinancialStatementsIFRSTextBlock"?issuerExtension:name==="ManagementAnalysisOfFinancialPositionOperatingResultsAndCashFlowsTextBlock"?/^https?:\/\/disclosure\.edinet-fsa\.go\.jp\/taxonomy\/jpcrp\/\d{4}-\d{2}-\d{2}\/jpcrp_cor$/.test(uri):standardFinancial(uri);
     if(!validNoteNamespace)return false;
     const expected=filingDate?"FilingDateInstant":"CurrentYearDuration";
     if(a.contextRef!==expected)return false;
@@ -110,6 +111,7 @@ function supplement(n:Note|null,p:FinancialPeriod,s:Source):DebtEvidence["supple
 }
 /** Issuer-reviewed D1-D3 application. Financial values outside Debt are never modified. */
 export function applyEdinetDebt(xml:string,filing:EdinetFiling,p:FinancialPeriod,facts:DebtFact[]):void {
+  if(applyJapanGaapSingleBorrowing(xml,filing,p,facts))return;
   if(p.basis!=="annual"||p.end!==filing.periodEnd||!filing.periodStart||!dateOrNull(p.end)||!["E02144","E35948"].includes(filing.edinetCode))return;
   const ns=namespaces(xml),s={...p.debt.source,period:p.end,start:null,currency:p.currency};
   const yenUnits=new Set<string>();
@@ -166,4 +168,43 @@ export function applyEdinetDebt(xml:string,filing:EdinetFiling,p:FinancialPeriod
     p.currentDebt=make([0,2],"Current Debt");p.noncurrentDebt=make([1,3],"Noncurrent Debt");
   }
   primary(hasDeclared?declared?.value??null:noteTotal??sum,declared||noteTotal!==null?"SOURCE_DECLARED_TOTAL":"CALCULATED_FROM_COMPONENTS",declared?declared.prefix+":"+declared.name+" / context="+declared.context.id:noteTotal!==null?borrowings!.name+" / 有利子負債合計 / "+p.end:"calculated_from_bonds_borrowings_and_leases / "+p.end,components,"BondsAndBorrowingsCLIFRS + BondsAndBorrowingsNCLIFRS + LeaseLiabilitiesCLIFRS + LeaseLiabilitiesNCLIFRS",sum);
+}
+/** Narrow generic Japan-GAAP contract: a complete borrowing schedule with one short-term line,
+ * zero ending bonds explicitly disclosed, and a dated consolidated BS cross-check.
+ * Other schedules stay UNVERIFIED rather than guessed component sums. */
+function applyJapanGaapSingleBorrowing(xml:string,filing:EdinetFiling,p:FinancialPeriod,facts:DebtFact[]):boolean {
+  if(p.basis!=="annual"||p.end!==filing.periodEnd||!filing.periodStart||p.currency!=="JPY")return false;
+  const ns=namespaces(xml),standard=(prefix:string)=>/^https?:\/\/disclosure\.edinet-fsa\.go\.jp\/taxonomy\/jppfs\/\d{4}-\d{2}-\d{2}\/jppfs_cor$/.test(ns[prefix]??"");
+  const eligible=facts.filter(f=>standard(f.prefix)&&f.name==="ShortTermLoansPayable"&&f.context.id==="CurrentYearInstant"&&f.context.start===null&&f.context.end===p.end);
+  if(!eligible.length)return false;
+  const fact=eligible.length===1?eligible[0]:undefined,s=p.debt.source;
+  const borrowing=note(xml,"AnnexedConsolidatedDetailedScheduleOfBorrowingsTextBlock",filing,ns),bonds=note(xml,"AnnexedConsolidatedDetailedScheduleOfCorporateBondsTextBlock",filing,ns),bs=note(xml,"ConsolidatedBalanceSheetTextBlock",filing,ns);
+  const validUnit=!!fact&&[...xml.matchAll(/<(?:[\w.-]+:)?unit\b([^>]*)>([\s\S]*?)<\/(?:[\w.-]+:)?unit>/g)].filter(u=>attributes(u[1]).id===fact.unitRef).some(u=>{
+    const m=[...u[2].matchAll(/<(?:[\w.-]+:)?measure>([^<]*)<\/(?:[\w.-]+:)?measure>/g)];const parts=m[0]?.[1].trim().split(":");return m.length===1&&!/divide|unitNumerator|unitDenominator/.test(u[2])&&parts?.[1]==="JPY"&&ns[parts[0]]==="http://www.xbrl.org/2003/iso4217";
+  });
+  const endingTables=(n:Note|null)=>n?tables(n).filter(rows=>rows[0]?.filter(c=>compact(c.text)==="当期末残高(百万円)").length===1):[];
+  const schedules=endingTables(borrowing),rows=schedules.length===1?schedules[0]:[],column=rows[0]?.findIndex(c=>compact(c.text)==="当期末残高(百万円)")??-1;
+  const items=rows.slice(1).filter(r=>!r.every(c=>c===r[0])||!compact(r[0]?.text??"").startsWith("(注)")),single=items.length===2&&compact(items[0][0]?.text??"")==="短期借入金"&&compact(items[1][0]?.text??"")==="合計";
+  const borrowed=column>=0?millions(items[0]?.[column]?.text):null,total=column>=0?millions(items[1]?.[column]?.text):null;
+  const bondTables=endingTables(bonds),bondRows=bondTables.length===1?bondTables[0]:[],bondColumn=bondRows[0]?.findIndex(c=>compact(c.text)==="当期末残高(百万円)")??-1;
+  // A source cell marked dash is explicitly no ending balance; an absent cell is never zero.
+  const zeroCell=(v:string|undefined)=>v!==undefined&&/^(?:-|−|―|—|0)$/.test(compact(v));
+  const zeroBonds=bondColumn>=0&&bondRows.length>1&&bondRows.slice(1).every(r=>zeroCell(r[bondColumn]?.text))&&compact(bondRows.at(-1)?.[0]?.text??"")==="合計";
+  const bsValues=bs?tables(bs).flatMap(rows=>{if(!/(?:単位|金額):百万円/.test(compact(rows.flatMap(r=>r.map(c=>c.text)).join(" "))))return [];const c=fiscalColumn(rows,p.end);return c===null?[]:rows.filter(r=>compact(r[0]?.text??"")==="短期借入金").map(r=>millions(r[c]?.text.replace(/^(?:\s*※\d+\s*,?)+\s*/,"")));}):[];
+  const bsValue=bsValues.length===1?bsValues[0]:null;
+  const otherFacts=facts.filter(f=>debtConcepts.includes(f.name)&&f.name!=="ShortTermLoansPayable"&&f.context.end===p.end&&f.context.start===null);
+  const unexpectedBs=bs?tables(bs).some(rows=>{const c=fiscalColumn(rows,p.end);return c!==null&&rows.some(r=>/借入|リース|社債|有利子|金融負債/.test(compact(r[0]?.text??""))&&compact(r[0]?.text??"")!=="短期借入金"&&!zeroCell(r[c]?.text));}):true;
+  const formalTotalPresent=facts.some(f=>["InterestBearingLiabilitiesLiabilitiesIFRS","BondsAndBorrowingsLiabilitiesIFRS"].includes(f.name)&&f.context.end===p.end&&f.context.start===null);
+  const checks:DebtEvidence["checks"]=[
+    {id:"D1/no-unvalidated-formal-total",passed:!formalTotalPresent,detail:"未検証の正式合計が併存する場合は、それを無視して単一成分へ切り替えません。"},
+    {id:"D1/structured-quality",passed:!!fact&&validUnit&&fact.unit==="JPY"&&fact.value!==null&&Number.isSafeInteger(fact.value)&&fact.value>=0,detail:"一意な標準JPPFS・連結当期末・正式JPY unit。"},
+    {id:"D2/complete-borrowing-schedule",passed:single&&borrowed!==null&&total===borrowed&&borrowed===fact?.value,detail:"当期末残高列の短期借入金と合計を照合。未対応の内訳は合算しません。",sourceField:borrowing?.name},
+    {id:"D2/explicit-ending-bonds",passed:zeroBonds,detail:"当期末社債残高は全行と合計で明示的に残高なし。未記載をゼロにしません。",sourceField:bonds?.name},
+    {id:"D2/consolidated-bs",passed:bsValue!==null&&bsValue===borrowed&&!unexpectedBs,detail:"同年度の連結貸借対照表と一致し、他のDebt行に未照合残高がないことを確認。",sourceField:bs?.name},
+    {id:"D2/no-double-count",passed:otherFacts.length===0&&single&&zeroBonds&&!unexpectedBs,detail:"短期借入金を一度のみ採用。社債・リース・他要素との未確認重複があれば保留。"}
+  ];
+  const confirmed=checks.every(c=>c.passed),part=component("Short-term borrowings",fact,p,s),value=confirmed?fact!.value:null;
+  p.debt={value,source:{...s,currency:p.currency,start:null,field:(fact?fact.prefix+":"+fact.name:"unverified.short_term_borrowings")+" / validated borrowing + bond schedules",contextRef:"CurrentYearInstant"},
+    sourceType:confirmed?"CALCULATED_FROM_COMPONENTS":"UNVERIFIED",sourceField:part.sourceField,fiscalDate:p.end,currency:p.currency,scope:"CONSOLIDATED",confidence:confirmed?"CONFIRMED":"UNVERIFIED",components:[part],checks,doubleCount:confirmed?"NO":"UNVERIFIED",validationFormula:"validated short-term borrowings (complete schedules; no ending bonds)",validationValue:value,supplemental:[]};
+  p.currentDebt=datum({...part,value},s);return true;
 }

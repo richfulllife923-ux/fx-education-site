@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { analysisSections, normalizeStockInput, stockAnalysisAdapter, type AnalysisResult } from "@/lib/stock-analysis";
-import { fiscalPeriodLabel, publicSectionTitle } from "@/lib/stock-analysis-presentation";
+import { fiscalPeriodLabel, publicSectionTitle, sectionPlaceholder } from "@/lib/stock-analysis-presentation";
 import { ResearchStatusCard, KeyNumbers } from "./ResearchStatusCard";
 import SummaryScoreCard from "./SummaryScoreCard";
 import { summaryScoreForReport } from "@/lib/summary-score-report";
@@ -87,7 +87,7 @@ export default function AnalysisClient() {
             {section.id==="scenarios" && <p className="mt-3 text-sm leading-7 text-text-secondary">Bull / Base / Bearは条件別Scenarioです。将来の株価や利益を保証しません。</p>}
             {section.id==="notes" && <p className="mt-3 text-sm leading-7 text-text-secondary">出典と確認事項は詳細データで確認できます。公開資料をもとにTUTTOが整理・算定しています。</p>}
             {evidence?.length?<div className="mt-5"><EvidenceList items={evidence} focusPeriod={result?.status==="ready"?result.report.metadata?.fiscalDate:undefined} auditOnly={section.id==="notes"}/></div>:
-              <p className="mt-5 text-sm leading-7 text-text-secondary">未取得 — 一次資料を確認してから表示します。</p>}
+              <p data-state={sectionPlaceholder(result).state} className="mt-5 text-sm leading-7 text-text-secondary">{sectionPlaceholder(result).label}</p>}
           </section>;
         })}
       </div>}

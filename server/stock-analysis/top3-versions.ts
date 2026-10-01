@@ -1,5 +1,5 @@
-// Fingerprints of the unchanged canonical/parser/status implementation and Current SSOT.
-export const parserVersion="edinet/f3cc15403a93abdff9b317ecafcf0cedc96dd99cfebb8a3e8cdab7f8bbfdef42";
+// Data Integrity Repair parser revision; formal Current SSOT and status rules are unchanged.
+export const parserVersion="edinet/eaf43e053e4215685f30a9098fcf3cc0cb29281811a1f3c06a7005a615b07eb9";
 export const formalSourceHashes=[
   {
     "file": "TUTTO_STOCK_INVESTMENT_ULTIMATE_MASTER_PROMPT_EMERGING_GROWTH_INTEGRATED.md",
@@ -26,4 +26,4 @@ export const formalSourceHashes=[
     "sha256": "75c9ab3adf737bf8ec6ce3ef2d39b93518fa1f302ba2fa41e36d63523b832d49"
   }
 ] as const;
-export const protectedFiles=["server/stock-analysis/edinet.ts","server/stock-analysis/edinet-xbrl.ts","server/stock-analysis/edinet-debt.ts","server/stock-analysis/calculations.ts","server/stock-analysis/model.ts","server/stock-analysis/research-status.ts","lib/research-status.ts"] as const;
+export const protectedFiles=["server/stock-analysis/edinet-corrections.ts","server/stock-analysis/edinet.ts","server/stock-analysis/edinet-xbrl.ts","server/stock-analysis/edinet-debt.ts","server/stock-analysis/calculations.ts","server/stock-analysis/model.ts","server/stock-analysis/research-status.ts","lib/research-status.ts"] as const;

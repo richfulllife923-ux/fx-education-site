@@ -1,3 +1,4 @@
+import type {CorrectionProvenance} from "../server/stock-analysis/model";
 import type { DebtEvidence } from "./stock-debt";
 import { unavailableResearchStatus } from "./research-status";
 import type { ResearchStatusResult } from "./research-status";
@@ -19,6 +20,7 @@ export const analysisSections = [
 
 export type SectionId = (typeof analysisSections)[number]["id"];
 export type Evidence = {
+  correction?:CorrectionProvenance;
   label: string; value: string;
   debt?:DebtEvidence; debtRole?:"PRIMARY"|"BREAKDOWN"|"SUPPLEMENTAL";
   kind: "FACT" | "SOURCE CLAIM" | "CALCULATION" | "INFERENCE" | "UNKNOWN";

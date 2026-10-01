@@ -45,7 +45,26 @@ export function documentId(item:Evidence):string|undefined{
   return [item.sourceTitle,item.sourceUrl,item.field??""].join(" ").match(/\bS[0-9A-Z]{7}\b/)?.[0];
 }
 const numeric=/^([+-]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?)\s*(JPY|per share)?$/;
+export type PublicDataState="DATA_MISSING"|"DATA_LOADING"|"DATA_AVAILABLE"|"CALCULATION_NOT_APPLICABLE"|"CALCULATION_UNVERIFIED"|"FORMAL_STATUS_UNVERIFIED";
+export function publicDataState(item:Evidence):PublicDataState{
+  if(item.kind!=="UNKNOWN")return "DATA_AVAILABLE";
+  if(item.formula){
+    if(!item.inputs?.length||item.inputs.some(input=>input.value===null||input.value===undefined))return "DATA_MISSING";
+    // Read the existing calculator's outcome. Financial formulas/thresholds remain unchanged.
+    if(item.formula==="operatingCF / netIncome"&&item.value.includes("分母または比較条件が不適切")&&item.inputs[1]?.value!==undefined&&item.inputs[1].value!==null&&item.inputs[1].value<=0)return "CALCULATION_NOT_APPLICABLE";
+    return "CALCULATION_UNVERIFIED";
+  }
+  return item.unit==="currency"||item.unit==="per share"?"DATA_MISSING":"FORMAL_STATUS_UNVERIFIED";
+}
+export function sectionPlaceholder(result:{status:string}|null):{state:PublicDataState;label:string}{
+  if(!result)return {state:"DATA_LOADING",label:"一次資料を取得中 — 分析データを確認しています。"};
+  if(result.status!=="ready")return {state:"CALCULATION_UNVERIFIED",label:"分析データを確認できませんでした。上部の取得状況を確認してください。"};
+  return {state:"DATA_MISSING",label:"未取得 — 一次資料を確認してから表示します。"};
+}
 export function publicValue(item:Evidence):string{
+  const state=publicDataState(item);
+  if(state==="CALCULATION_NOT_APPLICABLE")return "算定対象外";
+  if(state==="CALCULATION_UNVERIFIED")return "算定保留";
   if(item.kind==="UNKNOWN" && (item.unit==="currency" || item.unit==="per share" || item.formula))return "未取得";
   if(/^(Bull|Base|Bear)：/.test(item.label))return item.value.replace(/^基準：\d{4}-\d{2}-\d{2} annual \/ [^。]+。/,"");
   const match=numeric.exec(item.value);if(!match)return item.value;

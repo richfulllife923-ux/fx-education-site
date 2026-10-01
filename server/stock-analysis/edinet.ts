@@ -1,3 +1,4 @@
+import { resolveCorrectionMetadata, bindCorrectionXbrl } from "./edinet-corrections";
 import issuers from "./edinet-issuers.json";
 import bundledIndex from "./edinet-filings.json";
 import { PrimaryHttp } from "./primary-http";
@@ -59,7 +60,8 @@ export class EdinetProvider implements StockProvider {
     for(let date=covered;date<=today;date=next(date)){
       const update=await this.list(date);indexed=mergeEdinetRows(indexed,update.data).filter(row=>row.edinetCode===identity.edinetCode);
     }
-    const ordered=indexed.filter(isDisclosed).filter(row=>row.periodEnd && row.periodEnd<=today && row.submitDateTime.slice(0,10)<=today).sort((a,b)=>b.periodEnd!.localeCompare(a.periodEnd!)||b.submitDateTime.localeCompare(a.submitDateTime));
+    const resolved=resolveCorrectionMetadata(indexed.filter(isDisclosed).filter(row=>row.submitDateTime.slice(0,10)<=today));
+    const ordered=resolved.filter(isDisclosed).filter(row=>row.periodEnd && row.periodEnd<=today && row.submitDateTime.slice(0,10)<=today).sort((a,b)=>b.periodEnd!.localeCompare(a.periodEnd!)||b.submitDateTime.localeCompare(a.submitDateTime));
     const selected:EdinetFiling[]=[];
     for(const row of ordered){
       const group=["120","130"].includes(row.docTypeCode)?"annual":["160","170"].includes(row.docTypeCode)?"half":"quarter";
@@ -70,35 +72,50 @@ export class EdinetProvider implements StockProvider {
     if(!selected.length)throw new StockError("FINANCIALS_UNAVAILABLE","対象企業の有価証券報告書・半期報告書を公式索引で確認できませんでした。");
     const issues:CompanyData["issues"]=[{code:"VALUATION_UNAVAILABLE",message:"FREE MODE：財務分析は利用可能、市場価格ベース指標は未接続です。VALUATION_STATUS = LIMITED。"},
       {code:"EARNINGS_UNAVAILABLE",message:"提出済み報告書から次回決算予定日を推測しません。企業IRで確認してください。"}];
+    const verified=new Map<string,EdinetFiling>();
+    const verify=async (original:EdinetFiling):Promise<EdinetFiling>=>{
+      if(verified.has(original.docID))return verified.get(original.docID)!;
+      const checked=await this.list(original.submitDateTime.slice(0,10));
+      const raw=checked.data.map(parseEdinetRow).find(item=>item?.docID===original.docID);
+      if(!raw||raw.edinetCode!==identity.edinetCode||raw.secCode!==identity.code+"0"||!isDisclosed(raw))
+        throw new StockError("DATA_PROVIDER_ERROR","訂正関係・最新書類の開示状態がUNVERIFIEDです。旧値へ代用しません。");
+      const bound=resolveCorrectionMetadata([...indexed.filter(r=>r.docID!==raw.docID),raw]).find(r=>r.docID===raw.docID)!;
+      if(bound.periodStart!==original.periodStart||bound.periodEnd!==original.periodEnd||bound.docTypeCode!==original.docTypeCode||bound.parentDocID!==original.parentDocID||bound.submitDateTime!==original.submitDateTime)
+        throw new StockError("DATA_PROVIDER_ERROR","選択後に書類metadataが変更されました。旧値へ代用しません。");
+      verified.set(bound.docID,bound);return bound;
+    };
+    const load=async (candidate:EdinetFiling):Promise<{retrievedAt:string;periods:FinancialPeriod[]}>=>{
+      const row=await verify(candidate),cacheKey=[row.docID,row.periodStart,row.periodEnd,row.docTypeCode,row.edinetCode].join("|");
+      // Revalidate all ancestors even when a correction's normalized facts are cached.
+      const parent=["130","150","170"].includes(row.docTypeCode)?resolved.find(r=>r.docID===row.parentDocID):undefined;
+      const base=parent?await load(parent):undefined;
+      let cached=this.parsed.get(cacheKey);if(cached)return cached;
+      if(row.xbrlFlag!=="1")throw new StockError("FINANCIALS_UNAVAILABLE","最新書類にXBRLがありません。旧値へ代用しません。");
+      const zip=await this.http.get("https://api.edinet-fsa.go.jp/api/v2/documents/"+row.docID+"?type=1&Subscription-Key="+encodeURIComponent(this.key!),"edinet-xbrl."+cacheKey,7*86400000);
+      const entries=await readZip(zip.bytes,name=>/^XBRL\/PublicDoc\/[^/]+\.xbrl$/i.test(name));
+      if(entries.length!==1)throw new StockError("FINANCIALS_UNAVAILABLE","連結XBRL本文を一意に選べませんでした。");
+      const xml=new TextDecoder("utf-8",{fatal:true}).decode(entries[0].bytes);
+      cached={retrievedAt:zip.retrievedAt,periods:parent&&base?bindCorrectionXbrl(xml,row,parent,base.periods,zip.retrievedAt):normalizeEdinetXbrl(xml,row,zip.retrievedAt)};
+      if(this.parsed.size>=8)this.parsed.delete(this.parsed.keys().next().value!);this.parsed.set(cacheKey,cached);return cached;
+    };
     const periods:FinancialPeriod[]=[],filings:NonNullable<CompanyData["filings"]>=[];
     let retrievedAt=this.clock().toISOString(),verifiedLatest:EdinetFiling|undefined;
     // Recheck each selected document's submission-day metadata to catch withdrawal/header edits in older lists.
     for(const original of selected){
-      const checked=await this.list(original.submitDateTime.slice(0,10));
-      const row=checked.data.map(parseEdinetRow).find(item=>item?.docID===original.docID);
-      retrievedAt=checked.retrievedAt;
-      if(!row || row.edinetCode!==identity.edinetCode || row.secCode!==identity.code+"0" || !isDisclosed(row)){
-        issues.push({code:"FINANCIALS_UNAVAILABLE",message:original.docID+"は取下げ・非開示・識別情報変更のため使用しません。"});continue;
-      }
+      const row=await verify(original);
+      retrievedAt=this.clock().toISOString();
       if(!verifiedLatest || row.submitDateTime>verifiedLatest.submitDateTime)verifiedLatest=row;
-      const source=edinetSource(row,checked.retrievedAt,"instant",row.periodEnd);
+      const source=edinetSource(row,retrievedAt,"instant",row.periodEnd);
       filings.push({url:source.url,title:source.title,filed:row.submitDateTime.slice(0,10),period:row.periodEnd,amended:["130","150","170"].includes(row.docTypeCode)});
       if(row.xbrlFlag!=="1"){
         issues.push({code:"FINANCIALS_UNAVAILABLE",message:row.docID+"にXBRLがありません。訂正前の数値で代用しません。"});continue;
       }
       try{
-        const cacheKey=[row.docID,row.periodStart,row.periodEnd,row.docTypeCode,row.edinetCode].join("|");
-        let cached=this.parsed.get(cacheKey);
-        if(!cached){
-          const zip=await this.http.get("https://api.edinet-fsa.go.jp/api/v2/documents/"+row.docID+"?type=1&Subscription-Key="+encodeURIComponent(this.key),
-            "edinet-xbrl."+cacheKey,7*86400000);
-          const entries=await readZip(zip.bytes,name=>/^XBRL\/PublicDoc\/[^/]+\.xbrl$/i.test(name));
-          if(entries.length!==1)throw new StockError("FINANCIALS_UNAVAILABLE","連結XBRL本文を一意に選べませんでした。");
-          cached={retrievedAt:zip.retrievedAt,periods:normalizeEdinetXbrl(new TextDecoder("utf-8",{fatal:true}).decode(entries[0].bytes),row,zip.retrievedAt)};
-          if(this.parsed.size>=8)this.parsed.delete(this.parsed.keys().next().value!);this.parsed.set(cacheKey,cached);
-        }
+        const cached=await load(row);
+        for(let parentID=row.parentDocID;parentID;){const parent=verified.get(parentID);if(!parent)break;const originalSource=edinetSource(parent,cached.retrievedAt,"instant",parent.periodEnd);if(!filings.some(f=>f.url===originalSource.url))filings.push({url:originalSource.url,title:originalSource.title,filed:parent.submitDateTime.slice(0,10),period:parent.periodEnd,amended:["130","150","170"].includes(parent.docTypeCode)});parentID=parent.parentDocID;}
         periods.push(...cached.periods);
       }catch(error){
+        if(["130","150","170"].includes(row.docTypeCode))throw new StockError("DATA_PROVIDER_ERROR","訂正書類 "+row.docID+" のbindingがUNVERIFIEDです。訂正前の値へ代用しません。");
         if(error instanceof StockError && ["RATE_LIMITED","CONFIGURATION_REQUIRED"].includes(error.code))throw error;
         issues.push({code:"FINANCIALS_UNAVAILABLE",message:row.docID+"のXBRLを安全に正規化できませんでした。数値は未取得です。"});
       }

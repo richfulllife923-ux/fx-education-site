@@ -8,9 +8,11 @@ const current={docID:"S100NEW1",edinetCode:"E02144",secCode:"72030",filerName:"T
 const old={...current,docID:"S100OLD1",periodStart:"2024-04-01",periodEnd:"2025-03-31",submitDateTime:"2025-06-18 15:30"};
 function xbrl(row){
  const half=["160","170"].includes(row.docTypeCode),end=half?"2025-09-30":row.periodEnd;
- return '<xbrli:xbrl xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:jppfs_cor="http://disclosure.edinet-fsa.go.jp/taxonomy/jppfs/2025-11-01/jppfs_cor">'+
+ return '<xbrli:xbrl xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:iso4217="http://www.xbrl.org/2003/iso4217" xmlns:jpdei_cor="http://disclosure.edinet-fsa.go.jp/taxonomy/jpdei/2025-11-01/jpdei_cor" xmlns:jppfs_cor="http://disclosure.edinet-fsa.go.jp/taxonomy/jppfs/2025-11-01/jppfs_cor">'+
  '<xbrli:context id="period"><xbrli:entity><xbrli:identifier>'+row.edinetCode+'-000</xbrli:identifier></xbrli:entity><xbrli:period><xbrli:startDate>'+row.periodStart+'</xbrli:startDate><xbrli:endDate>'+end+'</xbrli:endDate></xbrli:period></xbrli:context>'+
  '<xbrli:unit id="yen"><xbrli:measure>iso4217:JPY</xbrli:measure></xbrli:unit>'+
+ (["130","150","170"].includes(row.docTypeCode)?
+ '<xbrli:context id="FilingDateInstant"><xbrli:entity><xbrli:identifier>'+row.edinetCode+'-000</xbrli:identifier></xbrli:entity><xbrli:period><xbrli:instant>'+row.submitDateTime.slice(0,10)+'</xbrli:instant></xbrli:period></xbrli:context>'+Object.entries({EDINETCodeDEI:row.edinetCode,SecurityCodeDEI:row.secCode,WhetherConsolidatedFinancialStatementsArePreparedDEI:'true',CurrentFiscalYearStartDateDEI:row.periodStart,CurrentPeriodEndDateDEI:row.periodEnd,AmendmentFlagDEI:'true',IdentificationOfDocumentSubjectToAmendmentDEI:row.parentDocID,ReportAmendmentFlagDEI:'true',XBRLAmendmentFlagDEI:'false'}).map(([n,v])=>'<jpdei_cor:'+n+' contextRef="FilingDateInstant">'+v+'</jpdei_cor:'+n+'>').join(''):'')+
  '<jppfs_cor:NetSales contextRef="period" unitRef="yen">100</jppfs_cor:NetSales></xbrli:xbrl>';
 }
 function zip(text){

@@ -1,7 +1,10 @@
 import type { DebtEvidence } from "../../lib/stock-debt";
 /** Canonical provider-independent model. null means unavailable, never zero. */
 export type Basis = "annual" | "quarterly" | "half-year" | "TTM" | "instant";
+export type CorrectionDocument = {docID:string;edinetCode:string;secCode:string;docTypeCode:string;periodStart:string|null;periodEnd:string|null;submittedAt:string};
+export type CorrectionProvenance = {originalDocument:CorrectionDocument;correctionDocument:CorrectionDocument;xbrlFilingDate:string;scope:"XBRL_UNCHANGED"|"XBRL_RESTATED";consolidated:true;currency:string|null;unit:"currency";originalValues:Record<string,number|null>;changedFields:string[];previousCorrection?:CorrectionProvenance};
 export type Source = {
+  correction?:CorrectionProvenance;
   provider: string; url: string; title: string; retrievedAt: string;
   asOf: string | null; field: string; basis: Basis; period: string | null;
   currency: string | null; unit: string; filingDate?: string | null; classification?:"FACT"|"SOURCE CLAIM"; start?:string|null; form?:string; accession?:string; contextRef?:string;
