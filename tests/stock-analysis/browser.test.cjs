@@ -108,16 +108,18 @@ const server=http.createServer(async(req,res)=>{
   results.push("Partial-data warning keeps financial results and sections visible: PASS");
   mode="fixtures";
   await page.goto(base+"/stock-analysis/emerging-growth/?symbol=285A",{waitUntil:"networkidle"});
-  await page.getByText(/分類・認知段階は未確認/).waitFor();
+  await page.waitForURL(url=>/^\/stock-analysis\/watchlist\/?$/.test(url.pathname));
+  await page.getByRole("heading",{name:"TUTTO 注目3銘柄",exact:true}).waitFor();
   await page.screenshot({path:path.join(output,"emerging-mobile.png"),fullPage:true});
-  await page.goto(base+"/stock-analysis/watchlist/",{waitUntil:"networkidle"});await page.getByText("Risk / Counter-thesis：",{exact:false}).first().waitFor();
+  await page.goto(base+"/stock-analysis/watchlist/",{waitUntil:"networkidle"});await page.getByText("現在、候補のEvidenceを確認しています。",{exact:true}).waitFor();
+  assert.equal(await page.locator("[data-featured-candidates] article").count(),0);
   await page.screenshot({path:path.join(output,"watchlist-mobile.png")});
   await page.goto(base+"/stock-analysis/");await input.focus();
   assert.notEqual(await input.evaluate(node=>getComputedStyle(node).outlineStyle),"none");
   for(const button of await page.locator(".main-cta").evaluateAll(nodes=>nodes.map(node=>({height:node.getBoundingClientRect().height,color:getComputedStyle(node).color})))) {
     assert.ok(button.height>=48);assert.equal(button.color,"rgb(255, 255, 255)");
   }
-  results.push("Emerging evidence/missing confirmation, owner watchlist, keyboard focus and CTA: PASS");
+  results.push("Old Emerging URL redirects to the single Watchlist, featured pending state, keyboard focus and CTA: PASS");
   await page.goto(base+"/stock-analysis/analyze/?"+new URLSearchParams({symbol:"A&B / <script>alert(1)</script>"}),{waitUntil:"networkidle"});
   await page.getByText(/対応する日本・米国の普通株を確認できません/).waitFor();
   assert.equal(await page.evaluate(()=>window.__stockTestInjected),false);

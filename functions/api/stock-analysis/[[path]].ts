@@ -1,9 +1,11 @@
+import { featuredFromStore,type ResearchRunStore } from "../../../server/stock-analysis/featured";
 import { FreeProvider } from "../../../server/stock-analysis/free";
 import type { EdinetIndex } from "../../../server/stock-analysis/edinet";
 import { EodhdProvider } from "../../../server/stock-analysis/eodhd";
 import { AnalysisService, failure } from "../../../server/stock-analysis/service";
 import { StockError } from "../../../server/stock-analysis/model";
 export type Env = {
+  TOP3_RESEARCH_RUN?:ResearchRunStore;
   STOCK_DATA_MODE?:"FREE"|"EODHD"; SEC_CONTACT_EMAIL?:string; EDINET_API_KEY?:string;
   SEC_LIVE_ENABLED?:string; SEC_PUBLIC_RELEASE_APPROVED?:string;
   EDINET_FILING_INDEX?:{get(key:string,type:"json"):Promise<EdinetIndex|null>};
@@ -67,11 +69,12 @@ async function limit(request:Request,env:Env):Promise<void> {
 export async function onRequest({request,env}:Context):Promise<Response> {
   try {
     const url=new URL(request.url), endpoint=url.pathname.replace(/\/+$/,"").split("/").pop();
-    if (!["analyze","compare","watchlist","emerging"].includes(endpoint??"")) return json({status:"error",code:"INVALID_INPUT",message:"API endpoint not found."},404);
-    if (request.method!==(endpoint==="watchlist"?"GET":"POST")) return json({status:"error",code:"INVALID_INPUT",message:"HTTP method not supported."},405);
+    if (!["analyze","compare","watchlist","emerging","featured"].includes(endpoint??"")) return json({status:"error",code:"INVALID_INPUT",message:"API endpoint not found."},404);
+    if (request.method!==(["watchlist","featured"].includes(endpoint??"")?"GET":"POST")) return json({status:"error",code:"INVALID_INPUT",message:"HTTP method not supported."},405);
     const origin=request.headers.get("Origin");
     if (origin && origin!==url.origin) return json({status:"error",code:"INVALID_INPUT",message:"同一サイトからのリクエストが必要です。"},403);
     await limit(request,env);
+    if(endpoint==="featured")return json(await featuredFromStore(env.TOP3_RESEARCH_RUN,()=>new Date(),env.EDINET_API_KEY));
     const service=await configured(env);
     if (endpoint==="watchlist") {
       const symbols=(env.TUTTO_WATCHLIST_SYMBOLS??"").split(",").map(value=>value.trim()).filter(Boolean).slice(0,4);

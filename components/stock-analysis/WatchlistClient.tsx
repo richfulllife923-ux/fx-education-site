@@ -1,36 +1,70 @@
 "use client";
-import { useEffect,useState } from "react";
-import { stockAnalysisAdapter,type WatchlistResult } from "@/lib/stock-analysis";
+import { useEffect, useState } from "react";
+import type { FeaturedResult } from "@/lib/top3-selection";
+import { loadFeatured } from "@/lib/featured-client";
 import { StockLink } from "./StockUI";
-import { ResearchStatusCard } from "./ResearchStatusCard";
-import USMaintenanceNotice from "./USMaintenanceNotice";
-import { EvidenceList } from "./EvidenceView";
-import { publicSourceUrl } from "@/lib/stock-analysis-presentation";
-import { usPrimaryUnavailableCode } from "@/lib/stock-analysis-status";
-export default function WatchlistClient() {
-  const [result,setResult]=useState<WatchlistResult|null>(null),[attempt,setAttempt]=useState(0);
-  useEffect(()=>{let active=true;const controller=new AbortController();
-    stockAnalysisAdapter.watchlist(controller.signal).then(value=>{if(active)setResult(value);});
-    return()=>{active=false;controller.abort();};},[attempt]);
-  if(result?.status==="ready" && (result.entries.length || result.issues.some(issue=>issue.code===usPrimaryUnavailableCode))) return <>
-    {result.issues.filter(issue=>issue.code!==usPrimaryUnavailableCode).map((issue,index)=><article className="card mb-4 min-w-0 p-5" role="status" key={index}><p>{issue.symbol}</p>{issue.researchStatus && <ResearchStatusCard value={issue.researchStatus} compact/>}<p className="mt-3 text-sm text-amber-200">{issue.message}</p></article>)}
-    {result.issues.filter(issue=>issue.code===usPrimaryUnavailableCode).map((issue,index)=><article className="card mb-5 p-6" key={index}><h2 className="text-xl font-bold">{issue.symbol??"米国株"}</h2>{issue.researchStatus && <ResearchStatusCard value={issue.researchStatus} compact/>}<USMaintenanceNotice message={issue.message}/></article>)}
-    <div className="grid gap-5 md:grid-cols-2">{result.entries.map(entry=><article key={entry.symbol} className="card p-6">
-      <h2 className="text-xl font-bold">{entry.companyName}</h2><p className="mt-2 text-sm">{entry.symbol} / {entry.categories.join(" / ")}</p>
-      {entry.researchStatus && <ResearchStatusCard value={entry.researchStatus} compact/>}
-      <p className="my-4 text-sm leading-7 text-text-secondary">{entry.researchReason}</p>
-      <div className="my-4"><EvidenceList items={entry.evidence??[]} extraMetadata={entry}/></div>
-      <p className="mt-3 text-sm leading-7 text-text-secondary">Risk / Counter-thesis：{entry.risk}</p>
-      <p className="mt-3 text-sm leading-7 text-text-secondary">Next confirmation：{entry.nextConfirmation}</p>
+import { fiscalPeriodLabel, publicSourceUrl, publicLabel, publicValue } from "@/lib/stock-analysis-presentation";
 
-      {publicSourceUrl(entry.sourceUrl) && <a className="stock-nav mb-4" href={publicSourceUrl(entry.sourceUrl)!} target="_blank" rel="noopener noreferrer">研究資料の入口 →</a>}
-      <StockLink href={"/stock-analysis/analyze/?"+new URLSearchParams({symbol:entry.symbol})}>個別分析を見る</StockLink>
-    </article>)}</div>
-  </>;
-  return <section className="card p-6 sm:p-8"><h2 className="text-xl font-bold">公開できる研究対象を準備中です</h2>
-    <p className="mt-3 text-sm leading-7 text-text-secondary" role="status">{!result?"研究対象の取得状況を確認しています…":result.status!=="ready"?result.message:"管理者による研究対象の登録がありません。架空の銘柄リストは表示しません。"}</p>
-    {result?.status==="ready" && result.issues.map((issue,index)=><p className="mt-3 text-sm text-amber-200" key={index}>{issue.message}</p>)}
-    {result && result.status!=="ready" && <button className="stock-nav mt-3" onClick={()=>setAttempt(value=>value+1)}>再試行</button>}
-    <div className="mt-5"><StockLink href="/stock-analysis/#stock-input">銘柄を入力して分析</StockLink></div>
-  </section>;
+const pendingMessages: Record<FeaturedResult["state"], string> = {
+  COMPLETE: "現在、公開条件を満たす銘柄はありません。",
+  IN_PROGRESS: "現在、候補のEvidenceを確認しています。",
+  RECHECK_REQUIRED: "最新のEvidenceを再確認しています。",
+  COMPARISON_REQUIRED: "候補のEvidenceを比較・確認しています。",
+};
+
+export default function WatchlistClient() {
+  const [result, setResult] = useState<FeaturedResult | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  useEffect(() => {
+    let active = true;
+    const controller = new AbortController();
+    setResult(null);
+    setFailed(false);
+    loadFeatured(controller.signal).then(value => {
+      if (active) setResult(value);
+    }).catch(() => {
+      if (active) { setResult(null); setFailed(true); }
+    });
+    return () => { active = false; controller.abort(); };
+  }, [attempt]);
+
+  return <div className="min-w-0" data-featured-candidates>
+    {!!result?.entries.length && <div className="grid min-w-0 items-start gap-5 lg:grid-cols-3">
+      {result.entries.map((entry, index) => {
+        const growthReview = entry.researchStatus.ruleTrace.find(trace => trace.ruleId === "R8" && trace.inputState === "MET" && trace.result === "PASS");
+        return <article className="card min-w-0 p-5 sm:p-6" key={entry.symbol} data-featured-symbol={entry.symbol}>
+          {/* Ordinal display numbers preserve the engine's order; no UI ranking. */}
+          <p className="mb-2 text-lg font-bold text-emerald-400" aria-label={"表示順 " + (index + 1)}>#{index + 1}</p>
+          <h2 className="break-words text-xl font-bold">{entry.companyName}</h2>
+          <p className="mt-2 text-sm text-text-secondary">{entry.symbol.replace(/\.JP$/, "")} <span className="mx-1" aria-hidden="true">/</span> 業種：未取得</p>
+          <h3 className="mb-2 mt-5 font-semibold">なぜ注目しているか</h3>
+          <p className="text-sm leading-7 text-text-secondary">{growthReview?.reason ?? "成長変化の確認根拠は個別分析でご確認ください。"}</p>
+          <h3 className="mb-2 mt-4 font-semibold">主要Growth Evidence</h3>
+          <ul className="space-y-2 text-sm leading-7">
+            {entry.whyNow.map((evidence, i) => {
+              const source = publicSourceUrl(evidence.sourceUrl);
+              return <li key={i} className="break-words">
+                <span>{publicLabel(evidence.label)}：{publicValue(evidence)}</span>
+                <small className="block text-xs text-text-secondary">
+                  {fiscalPeriodLabel(evidence.period || entry.fiscalDate)}
+                  {source && <> / <a href={source} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2" aria-label={publicLabel(evidence.label) + "の出典を見る"}>出典</a></>}
+                </small>
+              </li>;
+            })}
+          </ul>
+          <div className="mt-5 border-t border-border pt-4" data-research-status={entry.researchStatus.status}>
+            <h3 className="text-xs font-semibold text-text-secondary">Research Evidence Status</h3>
+            <p className={"mt-2 font-bold " + (entry.researchStatus.status === "GREEN" ? "text-emerald-400" : "text-amber-400")}>{entry.researchStatus.publicLabel}</p>
+            <p className="mt-1 text-xs leading-6 text-text-secondary">{entry.researchStatus.shortReason}</p>
+          </div>
+          <div className="mt-5"><StockLink href={"/stock-analysis/analyze/?" + new URLSearchParams({ symbol: entry.symbol })}>詳しく分析する</StockLink></div>
+        </article>;
+      })}
+    </div>}
+    {!result?.entries.length && <div className="text-sm leading-7 text-text-secondary">
+      <p role="status">{failed ? "選抜結果を取得できませんでした。時間をおいて再確認してください。" : result ? pendingMessages[result.state] : "注目銘柄を確認しています…"}</p>
+      {failed && <button className="stock-nav mt-3" onClick={() => setAttempt(value => value + 1)}>再確認</button>}
+    </div>}
+  </div>;
 }

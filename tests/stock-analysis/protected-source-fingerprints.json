@@ -1,0 +1,41 @@
+{
+  "contract": "Owner 2026-10-01: RAW + CANONICAL; CRLF-to-LF only; independently compare bytes",
+  "baselineHead": "13ae9313e735b9bfe6869c444866b3fd67a7b2f6",
+  "files": [
+    {
+      "file": "server/stock-analysis/edinet.ts",
+      "RAW_SHA256": "a7478e15b8c97a7d0473ef40212ab8a41c809b1686c85ae977d490b66221e3d2",
+      "CANONICAL_TEXT_SHA256": "a7478e15b8c97a7d0473ef40212ab8a41c809b1686c85ae977d490b66221e3d2"
+    },
+    {
+      "file": "server/stock-analysis/edinet-xbrl.ts",
+      "RAW_SHA256": "5bf361c1075fe008c01e103c38e400dcb074c639a4d825b4a4903f77478004cd",
+      "CANONICAL_TEXT_SHA256": "5bf361c1075fe008c01e103c38e400dcb074c639a4d825b4a4903f77478004cd"
+    },
+    {
+      "file": "server/stock-analysis/edinet-debt.ts",
+      "RAW_SHA256": "bbc65d30c310b75cb48acf1796fb1bacf3ced8eb000c45f5e17b57460a0e3ad2",
+      "CANONICAL_TEXT_SHA256": "bbc65d30c310b75cb48acf1796fb1bacf3ced8eb000c45f5e17b57460a0e3ad2"
+    },
+    {
+      "file": "server/stock-analysis/calculations.ts",
+      "RAW_SHA256": "68089c32cd9ae8787dc39eb652310977249fb078da1988d4c5f87414b61b1bce",
+      "CANONICAL_TEXT_SHA256": "68089c32cd9ae8787dc39eb652310977249fb078da1988d4c5f87414b61b1bce"
+    },
+    {
+      "file": "server/stock-analysis/model.ts",
+      "RAW_SHA256": "dc95d9db65eecdf19caa0f6d9f392e411eef4d52ca86e74348163eedc819f0a9",
+      "CANONICAL_TEXT_SHA256": "7abbe5349cc3527acd67d423a541168ce4260291fc5f73e012d62b7478bb9377"
+    },
+    {
+      "file": "server/stock-analysis/research-status.ts",
+      "RAW_SHA256": "2bd2220c96ccba1e75b0db496f41cbbb14552117d52941e5c2d362ad4ef3a95c",
+      "CANONICAL_TEXT_SHA256": "1d5af7e83605160a4061216f8b8c77543919f393f6c7b00503646a7db6146091"
+    },
+    {
+      "file": "lib/research-status.ts",
+      "RAW_SHA256": "f093b4515400f1fc821bbf0c499cb353b961d5712cf4f42f56dcdecec17ec94b",
+      "CANONICAL_TEXT_SHA256": "f093b4515400f1fc821bbf0c499cb353b961d5712cf4f42f56dcdecec17ec94b"
+    }
+  ]
+}

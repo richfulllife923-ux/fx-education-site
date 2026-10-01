@@ -102,13 +102,16 @@ const server=http.createServer(async(req,res)=>{
    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));results.push({comparison:a+" vs "+b,status:"PASS"});
   }
   await page.goto(base+"/stock-analysis/watchlist/",{waitUntil:"networkidle"});
-  await page.getByText("トヨタ自動車株式会社",{exact:true}).waitFor();await page.getByText("NVDA.US",{exact:true}).waitFor();
-  await page.getByText(/米国株の一次資料接続は現在メンテナンス中/).first().waitFor();results.push({flow:"MIXED_WATCHLIST",status:"PASS"});
+  await page.getByRole("heading",{name:"TUTTO 注目3銘柄",exact:true}).waitFor();
+  await page.getByText("現在、候補のEvidenceを確認しています。",{exact:true}).waitFor();
+  assert.equal(await page.locator("[data-featured-candidates] article").count(),0);
+  assert.ok(!(await page.locator("main").innerText()).includes("NVDA.US"));
+  results.push({flow:"UNIVERSE_FEATURED_NO_FIXED_WATCHLIST",status:"PASS"});
   for(const input of ["7203","NVDA"]){
    await page.goto(base+"/stock-analysis/emerging-growth/?"+new URLSearchParams({symbol:input}),{waitUntil:"networkidle"});
-   if(input==="7203")await page.getByRole("link",{name:"完全分析・Counter-thesisを見る",exact:true}).waitFor();
-   else await page.getByText(/米国株の一次資料接続は現在メンテナンス中/).first().waitFor();
-   results.push({flow:"EMERGING "+input,status:"PASS"});
+   await page.waitForURL(url=>/^\/stock-analysis\/watchlist\/?$/.test(url.pathname));
+   await page.getByRole("heading",{name:"TUTTO 注目3銘柄",exact:true}).waitFor();
+   results.push({flow:"OLD_EMERGING_URL_TO_WATCHLIST "+input,status:"PASS"});
   }
   const routes=["/","/stock-analysis/","/stock-analysis/analyze/?symbol=7203","/stock-analysis/watchlist/","/stock-analysis/emerging-growth/?symbol=NVDA","/stock-analysis/compare/?a=7203&b=285A","/manifesto/","/brokers/","/indicator/","/framework/structure-theory/"];
   for(const width of [320,375,768,1280]){
