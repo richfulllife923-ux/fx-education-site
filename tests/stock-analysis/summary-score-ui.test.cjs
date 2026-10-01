@@ -1,0 +1,14 @@
+// Isolated UI fixtures: excluded from production.
+require('./register.cjs');
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),Module=require('node:module'),ts=require('typescript'),React=require('react'),{renderToStaticMarkup}=require('react-dom/server');
+const {evaluateSummaryScore,summaryDimensions}=require('../../lib/summary-score.ts');
+const file=path.resolve(__dirname,'../../components/stock-analysis/SummaryScoreCard.tsx');
+const source=fs.readFileSync(file,'utf8').replace('"@/lib/stock-analysis-presentation"',JSON.stringify(path.resolve(__dirname,'../../lib/stock-analysis-presentation.ts')));
+const m=new Module(file,module);m.paths=module.paths;m._compile(ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText,file);const Card=m.exports.default;
+function score(verified){return evaluateSummaryScore(Object.fromEntries(summaryDimensions.map(d=>[d.id,[{id:d.id,state:verified.includes(d.id)?'MET':'UNVERIFIED',weight:1,reason:'ISOLATED TEST DATA',evidenceRefs:['TEST/'+d.id]}]])));}
+const render=v=>renderToStaticMarkup(React.createElement(Card,{value:v,fiscalDate:'2026-03-31'}));
+test('coverage45 is lawful unscored display, not fake45 quality score',()=>{const v=score(['business','cashFlow','risk']),html=render(v);assert.equal(v.coverage,45);assert.equal(v.score,null);assert.ok(html.includes('未算定'));assert.ok(html.includes('45%'));assert.ok(html.includes('data-summary-score="UNSCORED"'));assert.ok(!html.includes('TUTTOまとめ採点 45%'));});
+test('coverage60 renders provisional score and separate coverage',()=>{const v=score(['business','cashFlow','financialHealth','risk']);assert.equal(v.coverage,60);assert.ok(render(v).includes('暫定'));assert.ok(render(v).includes('data-summary-score="PROVISIONAL"'));});
+test('coverage80 renders normal score without provisional claim',()=>{const v=score(summaryDimensions.filter(d=>d.id!=='cashFlow').map(d=>d.id));assert.equal(v.coverage,80);assert.equal(v.display,'NORMAL');assert.ok(render(v).includes('data-summary-score="NORMAL"'));});
+test('unknown dimensions have no aria-valuenow zero; coverage0 remains real coverage',()=>{const html=render(score([]));assert.equal((html.match(/role="progressbar"/g)||[]).length,1);assert.ok(html.includes('Evidence充足度'));assert.ok(html.includes('未確認'));assert.ok(html.includes('投資助言、利益保証、将来価格の保証ではありません。'));assert.ok(html.includes('最終判断は利用者自身で行ってください。'));});
+test('summary is a read-only consumer with no upstream/API change',()=>{const consumer=fs.readFileSync(path.resolve(__dirname,'../../lib/summary-score-report.ts'),'utf8');assert.ok(!consumer.includes('fetch('));assert.ok(!consumer.includes('evaluateResearchStatus('));assert.ok(!consumer.includes('freeCashFlow('));assert.ok(!consumer.includes('selectFeatured('));});

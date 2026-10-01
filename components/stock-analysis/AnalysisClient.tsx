@@ -4,6 +4,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { analysisSections, normalizeStockInput, stockAnalysisAdapter, type AnalysisResult } from "@/lib/stock-analysis";
 import { fiscalPeriodLabel, publicSectionTitle } from "@/lib/stock-analysis-presentation";
 import { ResearchStatusCard, KeyNumbers } from "./ResearchStatusCard";
+import SummaryScoreCard from "./SummaryScoreCard";
+import { summaryScoreForReport } from "@/lib/summary-score-report";
 import StockSearch from "./StockSearch";
 import { EvidenceList } from "./EvidenceView";
 import USMaintenanceNotice from "./USMaintenanceNotice";
@@ -19,12 +21,13 @@ export function useStockReport(symbol:string,mode:"STANDARD"|"EMERGING"="STANDAR
   },[symbol,attempt,mode]);
   return {result,retry:()=>setAttempt(value=>value+1)};
 }
-export function ResultStatus({result,retry,onSelect,keyNumbers=false}:{result:AnalysisResult|null;retry:()=>void;onSelect?:(symbol:string)=>void;keyNumbers?:boolean}) {
+export function ResultStatus({result,retry,onSelect,keyNumbers=false,summaryScore=false}:{result:AnalysisResult|null;retry:()=>void;onSelect?:(symbol:string)=>void;keyNumbers?:boolean;summaryScore?:boolean}) {
   if(isUsPrimaryUnavailable(result) && result?.status!=="ready")return <>{result?.researchStatus && <ResearchStatusCard value={result.researchStatus}/>}<USMaintenanceNotice message={result!.message}/></>;
   if(result?.status==="ready"){
     const report=result.report,metadata=report.metadata;
     return <>
       <p className="mt-2 text-sm text-text-secondary">{report.symbol}</p>
+      {summaryScore && <SummaryScoreCard value={summaryScoreForReport(report)} fiscalDate={metadata?.fiscalDate}/>}
       {report.researchStatus && <ResearchStatusCard value={report.researchStatus}/>}
       {keyNumbers && <KeyNumbers report={report}/>}
       <p className="mt-2 text-sm text-text-secondary">{fiscalPeriodLabel(metadata?.fiscalDate)} / {metadata?.provider??"出典未確認"}</p>
@@ -70,7 +73,7 @@ export default function AnalysisClient() {
     {!valid?<p className="mt-6" role="status">有効な銘柄名・証券コード・Tickerを入力してください。</p>:<>
       <div className="mt-8 card p-5 sm:p-6" role="status" aria-live="polite">
         <p className="break-words text-xl font-semibold">{result?.status==="ready"?result.report.companyName:"入力した銘柄："+symbol}</p>
-        <ResultStatus result={result} retry={retry} keyNumbers onSelect={selected=>router.push("/stock-analysis/analyze/?"+new URLSearchParams({symbol:selected}))} />
+        <ResultStatus result={result} retry={retry} keyNumbers summaryScore onSelect={selected=>router.push("/stock-analysis/analyze/?"+new URLSearchParams({symbol:selected}))} />
         {!usDisabled && result?.status!=="ready" && <p className="mt-2 text-xs text-text-secondary">会社名・市場の確定には企業データの照合が必要です。</p>}
       </div>
       <details className="mt-5"><summary className="cursor-pointer text-sm text-blue-300">別の銘柄を分析する →</summary><div className="mt-3"><StockSearch key={symbol} initialValue={symbol.slice(0,100)}/></div></details>

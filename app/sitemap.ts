@@ -9,7 +9,6 @@ const STATIC_PATHS = [
   "/manifesto",
   "/stock-analysis/",
   "/stock-analysis/watchlist/",
-  "/stock-analysis/compare/",
   "/framework/philosophy",
   "/framework/structure-theory",
   "/framework/market-layer",

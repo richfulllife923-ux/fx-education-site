@@ -40,14 +40,14 @@ const DISTRIBUTION_ROLES = [
 export default function HomePage() {
   return (
     <>
-      <section className="relative overflow-hidden border-b border-border bg-background">
+      <section data-home-hero className="relative overflow-hidden border-b border-border bg-background">
         <div className="pointer-events-none absolute inset-0" aria-hidden>
           <div className="absolute left-1/2 top-0 h-px w-[720px] -translate-x-1/2 bg-gradient-to-r from-transparent via-blue-500/60 to-transparent" />
           <div className="absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(circle_at_50%_0%,rgba(59,130,246,0.18),transparent_58%)]" />
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:48px_48px] opacity-40" />
         </div>
-        <div className="container-page relative grid gap-10 py-20 sm:py-28 lg:grid-cols-[1fr_360px] lg:items-center">
-          <div>
+        <div className="container-page relative grid gap-8 py-16 sm:py-20 md:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] md:items-center lg:gap-10">
+          <div data-hero-text className="relative z-10 min-w-0">
             <p className="eyebrow"><FlaskConical size={14} strokeWidth={1.8} /> Market Structure Observation Framework</p>
             <h1 className="max-w-4xl font-display text-5xl font-black leading-tight text-text-primary sm:text-6xl">TUTTO</h1>
             <p className="mt-5 max-w-2xl text-xl font-semibold leading-relaxed text-text-primary">
@@ -62,13 +62,17 @@ export default function HomePage() {
               <Link href="/tools" className="main-cta cta-manifesto">開発状況 <ArrowRight size={16} /></Link>
             </div>
           </div>
-          <div className="relative mx-auto hidden w-full max-w-[320px] lg:block" aria-hidden="true">
-            <div className="absolute inset-8 rounded-full bg-[rgba(59,130,246,0.10)] blur-3xl" />
+          <div data-hero-visual className="relative mx-auto w-full max-w-[380px] overflow-hidden rounded-card bg-[#030a1c] md:mx-0 md:max-w-none">
             <img
-              src="/images/brand/tutto-geometry-ring.png"
-              alt=""
-              className="relative h-auto w-full rounded-full border border-border opacity-80 shadow-card"
+              src="/images/tutto-hero-geometry.jpg"
+              alt="TUTTO geometry and mathematical structure visual"
+              width={576}
+              height={1024}
+              fetchPriority="high"
+              className="block h-[420px] w-full object-cover object-right saturate-[0.85] brightness-90 sm:h-[500px] md:h-[580px] lg:h-[620px]"
             />
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(3,10,28,0.95)_0%,rgba(3,10,28,0.88)_28%,rgba(3,10,28,0.72)_48%,rgba(3,10,28,0.38)_68%,rgba(3,10,28,0.12)_100%)]"/>
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(11,16,32,0.25)_0%,transparent_24%,transparent_78%,rgba(11,16,32,0.7)_100%)]"/>
           </div>
         </div>
       </section>

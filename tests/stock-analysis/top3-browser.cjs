@@ -45,7 +45,7 @@ const server = http.createServer((req, res) => {
       assert.equal(await page.getByText("TUTTO WATCHLIST", { exact: true }).count(), 1);
       assert.equal(await page.getByText("TUTTOが公開情報・業績・Cash Flow・事業変化などのEvidenceから、現在継続観測している3銘柄です。", { exact: true }).count(), 1);
       const nav = page.getByRole("navigation", { name: "株式分析メニュー", exact: true });
-      assert.deepEqual(await nav.getByRole("link").allTextContents(), ["株式分析トップ →", "銘柄を入力して分析 →", "TUTTO 注目3銘柄 →", "銘柄を比較する →"]);
+      assert.deepEqual(await nav.getByRole("link").allTextContents(), ["株式分析トップ →", "銘柄を入力して分析 →", "TUTTO 注目3銘柄 →"]);
       const text = await page.locator("main").innerText();
       for (const raw of ["FACT", "CALCULATION", "CONFIRMED", "UNVERIFIED", "S100TEST", "snapshotId", "Universe", "管理者", "公開できる研究対象を準備中", "公開候補の確認状況"]) assert.ok(!text.includes(raw), "Default view exposes " + raw);
       for (const chip of ["AI", "Semiconductor", "Japan", "US", "Growth", "Value", "Cash Flow", "Turnaround"]) assert.equal(await page.getByText(chip, { exact: true }).count(), 0);
