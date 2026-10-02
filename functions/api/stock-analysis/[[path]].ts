@@ -1,4 +1,6 @@
-import { featuredFromStore,type ResearchRunStore } from "../../../server/stock-analysis/featured";
+import {EvidenceCollector} from "../../../server/stock-analysis/research-evidence/extraction";
+import type { ResearchRunStore } from "../../../server/stock-analysis/featured";
+import {readGrowthFeatured} from "../../../server/stock-analysis/growth-radar/pipeline";
 import { FreeProvider } from "../../../server/stock-analysis/free";
 import type { EdinetIndex } from "../../../server/stock-analysis/edinet";
 import { EodhdProvider } from "../../../server/stock-analysis/eodhd";
@@ -44,9 +46,11 @@ async function configured(env:Env):Promise<AnalysisService> {
       }
       return response;
     };
+    const evidenceCollector=commercial?undefined:new EvidenceCollector();
+    const evidenceFetch=evidenceCollector?evidenceCollector.wrap(serverFetch):serverFetch;
     service=new AnalysisService(commercial?
       new EodhdProvider(env.EODHD_API_KEY!,serverFetch,()=>new Date(),env.EODHD_CACHE_APPROVED==="true"):
-      new FreeProvider(env.SEC_CONTACT_EMAIL,env.EDINET_API_KEY,index??undefined,serverFetch,()=>new Date(),1100,env.SEC_LIVE_ENABLED==="true" && env.SEC_PUBLIC_RELEASE_APPROVED==="true"));
+      new FreeProvider(env.SEC_CONTACT_EMAIL,env.EDINET_API_KEY,index??undefined,evidenceFetch,()=>new Date(),1100,env.SEC_LIVE_ENABLED==="true" && env.SEC_PUBLIC_RELEASE_APPROVED==="true"),evidenceCollector?company=>evidenceCollector.bundle(company):undefined);
     sessions.set(key,service);
   }
   return service;
@@ -74,7 +78,7 @@ export async function onRequest({request,env}:Context):Promise<Response> {
     const origin=request.headers.get("Origin");
     if (origin && origin!==url.origin) return json({status:"error",code:"INVALID_INPUT",message:"同一サイトからのリクエストが必要です。"},403);
     await limit(request,env);
-    if(endpoint==="featured")return json(await featuredFromStore(env.TOP3_RESEARCH_RUN,()=>new Date(),env.EDINET_API_KEY));
+    if(endpoint==="featured")return json(await readGrowthFeatured(env.TOP3_RESEARCH_RUN));
     const service=await configured(env);
     if (endpoint==="watchlist") {
       const symbols=(env.TUTTO_WATCHLIST_SYMBOLS??"").split(",").map(value=>value.trim()).filter(Boolean).slice(0,4);

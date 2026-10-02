@@ -1,4 +1,5 @@
 import type {CorrectionProvenance} from "../server/stock-analysis/model";
+import type {ResearchEvidenceResult} from "../server/stock-analysis/research-evidence/model";
 import type { DebtEvidence } from "./stock-debt";
 import { unavailableResearchStatus } from "./research-status";
 import type { ResearchStatusResult } from "./research-status";
@@ -32,7 +33,7 @@ export type Evidence = {
 };
 export type ReportIssue = { code:string; message:string; symbol?:string; researchStatus?:ResearchStatusResult };
 export type StockReport = {
-  companyName: string; symbol: string; analyzedAt: string; researchStatus?:ResearchStatusResult;
+  companyName: string; symbol: string; analyzedAt: string; researchStatus?:ResearchStatusResult; researchEvidence?:ResearchEvidenceResult;
   sections: Partial<Record<SectionId, Evidence[]>>;
   metadata?: { provider:string; retrievedAt:string; providerUpdatedAt:string|null;
     fiscalDate:string|null; currency:string|null; priceAsOf:string|null; issues:ReportIssue[]; mode?:"FREE"|"COMMERCIAL"; valuationStatus?:"LIMITED"|"AVAILABLE" };

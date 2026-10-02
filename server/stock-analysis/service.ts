@@ -1,3 +1,6 @@
+import {researchWithEvidence} from "./research-evidence/adapter";
+import type {EvidenceBundle} from "./research-evidence/model";
+import type {CompanyData} from "./model";
 import { researchStatusForCompany, researchStatusForFailure } from "./research-status";
 import type { AnalysisResult, ComparisonResult, ReportIssue, WatchlistEntry, WatchlistResult } from "../../lib/stock-analysis";
 import { usPrimaryUnavailableCode } from "../../lib/stock-analysis-status";
@@ -11,12 +14,13 @@ export function failure(error:unknown):Exclude<AnalysisResult,{status:"ready"}> 
     retryable:["RATE_LIMITED","DATA_PROVIDER_ERROR"].includes(safe.code)};
 }
 export class AnalysisService {
-  constructor(private provider:StockProvider) {}
+  constructor(private provider:StockProvider,private evidence?:(company:CompanyData)=>EvidenceBundle) {}
   async analyze(input:string,growthMode:"STANDARD"|"EMERGING"="STANDARD"):Promise<AnalysisResult> {
     try {
       const candidate=await resolveSymbol(input,this.provider);
       const company=await this.provider.company(candidate);
-      return {status:"ready",report:{...buildReport(company),researchStatus:researchStatusForCompany(company,growthMode)}};
+      const evidenceResult=this.evidence&&company.provider==="EDINET"?researchWithEvidence(company,this.evidence(company),growthMode):{researchStatus:researchStatusForCompany(company,growthMode)};
+      return {status:"ready",report:{...buildReport(company),...evidenceResult}};
     } catch (error) { return failure(error); }
   }
   async compare(a:string,b:string):Promise<ComparisonResult> {

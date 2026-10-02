@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { analysisSections, normalizeStockInput, stockAnalysisAdapter, type AnalysisResult } from "@/lib/stock-analysis";
 import { fiscalPeriodLabel, publicSectionTitle, sectionPlaceholder } from "@/lib/stock-analysis-presentation";
 import { ResearchStatusCard, KeyNumbers } from "./ResearchStatusCard";
+import ResearchEvidenceCard from "./ResearchEvidenceCard";
 import SummaryScoreCard from "./SummaryScoreCard";
 import { summaryScoreForReport } from "@/lib/summary-score-report";
 import StockSearch from "./StockSearch";
@@ -30,6 +31,7 @@ export function ResultStatus({result,retry,onSelect,keyNumbers=false,summaryScor
       {summaryScore && <SummaryScoreCard value={summaryScoreForReport(report)} fiscalDate={metadata?.fiscalDate}/>}
       {report.researchStatus && <ResearchStatusCard value={report.researchStatus}/>}
       {keyNumbers && <KeyNumbers report={report}/>}
+      {report.researchEvidence && <ResearchEvidenceCard value={report.researchEvidence}/>}
       <p className="mt-2 text-sm text-text-secondary">{fiscalPeriodLabel(metadata?.fiscalDate)} / {metadata?.provider??"出典未確認"}</p>
       {metadata?.issues.some(issue=>issue.code==="PARTIAL_DATA") && <p className="mt-2 text-sm text-text-secondary">一部の項目は未取得です。</p>}
       {metadata?.valuationStatus==="LIMITED" && <p className="mt-2 text-xs text-text-secondary">株価を使う評価指標は未取得です。</p>}
