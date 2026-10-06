@@ -13,7 +13,7 @@ type DisplayRow={rank:number;companyName:string;symbol:string;fiscalDate:string;
  observationScore:GrowthFeaturedCandidate['summaryScore'];shortReason:string;
  researchStatus:GrowthFeaturedCandidate['researchStatus']};
 export type PublicationProjection={version:typeof publicationProjectionVersion;run_id:string;generated_at:string;
- source_generation:string;publication_status:'READY'|'HOLD';jev:PublicationContext['jev'];
+ source_generation:string;formal_run_complete:boolean;formal_eligibility_confirmed:boolean;publication_status:'READY'|'HOLD';jev:PublicationContext['jev'];
  universe_count:number;reviewed_count:number;unresolved_count:number;candidate_count:number;selected_count:number;
  full_run_integrity:{algorithm:'SHA-256';serialization:'JSON.stringify';sha256:string;bytes:number;file_sha256?:string;result_sha256:string};
  selected:DisplayRow[];result:Pick<GrowthFeaturedResult,'state'|'message'|'manifest'>;
@@ -43,7 +43,8 @@ export async function createPublicationProjection(full:GrowthSnapshot,context:Pu
  const serialized=JSON.stringify(full),selected=r.selected.map((c,index)=>({rank:index+1,companyName:c.companyName,symbol:c.symbol,fiscalDate:c.fiscalDate,
   observationScore:{...c.summaryScore},shortReason:c.researchStatus.shortReason,researchStatus:{...c.researchStatus}}));
  const p:PublicationProjection={version:publicationProjectionVersion,run_id:m.snapshotId,generated_at:full.generatedAt,source_generation:context.sourceGeneration,
-  publication_status:r.state==='COMPLETE'&&context.jev.pre==='PASS'&&context.jev.post==='PASS'?'READY':'HOLD',jev:{...context.jev},
+  formal_run_complete:full.selectionRun.complete,formal_eligibility_confirmed:r.state==='COMPLETE',
+  publication_status:full.selectionRun.complete&&r.state==='COMPLETE'&&context.jev.pre==='PASS'&&context.jev.post==='PASS'?'READY':'HOLD',jev:{...context.jev},
   universe_count:full.selectionRun.universe.length,reviewed_count:m.coverage.masterReviewed,unresolved_count:full.selectionRun.universe.length-m.coverage.masterReviewed,
   candidate_count:r.candidateCount,selected_count:r.selectedCount,
   full_run_integrity:{algorithm:'SHA-256',serialization:'JSON.stringify',sha256:await digest(serialized),bytes:new TextEncoder().encode(serialized).byteLength,
@@ -59,7 +60,8 @@ export async function validatePublicationProjection(raw:unknown,clock:()=>Date):
  if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('Invalid publication projection');
  const p=raw as PublicationProjection,m=p.currentness?.manifest,coverage=p.result?.manifest?.coverage;
  if(p.version!==publicationProjectionVersion||typeof p.run_id!=='string'||!p.run_id||typeof p.source_generation!=='string'||!p.source_generation||
-  !stamp(p.generated_at)||Date.parse(p.generated_at)>clock().getTime()||!['READY','HOLD'].includes(p.publication_status)||
+  typeof p.formal_run_complete!=='boolean'||typeof p.formal_eligibility_confirmed!=='boolean'||
+  p.formal_eligibility_confirmed!==(p.result?.state==='COMPLETE')||!stamp(p.generated_at)||Date.parse(p.generated_at)>clock().getTime()||!['READY','HOLD'].includes(p.publication_status)||
   !['PASS','HOLD','UNVERIFIED'].includes(p.jev?.pre)||!['PASS','HOLD','UNVERIFIED'].includes(p.jev?.post)||
   ![p.universe_count,p.reviewed_count,p.unresolved_count,p.candidate_count,p.selected_count].every(count)||p.selected_count>3||
   p.reviewed_count+p.unresolved_count!==p.universe_count||p.candidate_count<p.selected_count||
@@ -71,7 +73,7 @@ export async function validatePublicationProjection(raw:unknown,clock:()=>Date):
   p.full_run_integrity?.algorithm!=='SHA-256'||p.full_run_integrity.serialization!=='JSON.stringify'||!sha.test(p.full_run_integrity.sha256)||
   !sha.test(p.full_run_integrity.result_sha256)||!Number.isSafeInteger(p.full_run_integrity.bytes)||p.full_run_integrity.bytes<1||
   p.full_run_integrity.file_sha256!==undefined&&!sha.test(p.full_run_integrity.file_sha256)||!sha.test(p.projection_sha256))throw Error('Invalid publication projection contract');
- const ready=p.result.state==='COMPLETE'&&p.jev.pre==='PASS'&&p.jev.post==='PASS';
+ const ready=p.formal_run_complete&&p.formal_eligibility_confirmed&&p.result.state==='COMPLETE'&&p.jev.pre==='PASS'&&p.jev.post==='PASS';
  if((p.publication_status==='READY')!==ready||p.selected.some((c,i)=>c.rank!==i+1||!c.companyName||!c.symbol||
   !['GREEN','STAY'].includes(c.researchStatus?.status)||typeof c.shortReason!=='string'||!c.observationScore||
   c.observationScore.score!==null&&(!Number.isFinite(c.observationScore.score)||c.observationScore.score<0||c.observationScore.score>100)||

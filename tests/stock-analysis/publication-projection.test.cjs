@@ -55,3 +55,9 @@ test('JEV HOLD/UNVERIFIED, metadata change, day rollover, tampering and invalid 
   const broken=structuredClone(p);mutate(broken);await assert.rejects(validatePublicationProjection(broken,clock));
  }
 });
+
+test('an incomplete formal run cannot open cards even when supplied result and both JEV statuses say PASS',async()=>{
+ const s=snapshot(3),c=context(s);s.selectionRun.complete=false;const p=await createPublicationProjection(s,c);
+ assert.equal(p.formal_run_complete,false);assert.equal(p.publication_status,'HOLD');
+ assert.equal((await readGrowthFeatured({get:async()=>p},clock,async()=>true)).selectedCount,0);
+});
