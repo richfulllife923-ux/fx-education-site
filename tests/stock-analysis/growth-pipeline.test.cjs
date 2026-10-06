@@ -5,10 +5,10 @@ const {projectSnapshot,readGrowthFeatured,saveGrowthSnapshot}=require('../../ser
 const clock=()=>new Date('2026-10-02T00:03:00Z');
 for(const count of [0,1,2,3])test(count+' formal candidates round trip without padding',async()=>{
  const value=snapshot(count),before=structuredClone(value);let saved;
- await saveGrowthSnapshot({put:async(k,v)=>{assert.equal(k,'top3-research-run');saved=v;}},value,clock);
- let requests=0;const result=await readGrowthFeatured({get:async()=>{requests++;return JSON.parse(saved);}},clock);
+ await saveGrowthSnapshot({put:async(k,v)=>{assert.equal(k,'top3-research-run');saved=v;}},value,clock,{result:projectSnapshot(value,clock),sourceGeneration:'ISOLATED-TEST-GENERATION',jev:{pre:'PASS',post:'PASS'}});
+ let requests=0;const result=await readGrowthFeatured({get:async()=>{requests++;return JSON.parse(saved);}},clock,async()=>true);
  assert.equal(requests,1);assert.equal(result.selectedCount,count);assert.equal(result.entries.length,count);
- assert.equal(result.uiState,count?'READY':'NO_QUALIFIED_CANDIDATES');assert.deepEqual(value,before);
+ assert.equal(result.uiState,count?'READY':'VERIFYING');assert.deepEqual(value,before);
 });
 test('4+ uses existing comparisons, never slice or rank by score',()=>{
  const value=snapshot(4),result=projectSnapshot(value,clock);assert.equal(result.state,'COMPARISON_REQUIRED');assert.equal(result.selectedCount,0);
@@ -24,9 +24,9 @@ test('GRAY and absent Master review excluded',()=>{
   const value=snapshot();change(value.selectionRun.audits[0]);assert.equal(projectSnapshot(value,clock).selectedCount,0);
  }
 });
-test('noncandidate Universe members do not make a finished run incomplete',()=>{
+test('unreviewed noncandidate Universe members prevent a formal completion',()=>{
  const value=snapshot(2);value.inputs[1].sources[0].text='売上高が増加した。';const result=projectSnapshot(value,clock);
- assert.equal(result.state,'COMPLETE');assert.equal(result.selectedCount,1);assert.equal(result.candidateCount,1);
+ assert.equal(result.state,'RECHECK_REQUIRED');assert.equal(result.selectedCount,0);assert.equal(result.candidateCount,1);
 });
 test('no fabricated score, Why Now and risk retain exact evidence',()=>{
  const result=projectSnapshot(snapshot(),clock),c=result.selected[0];assert.equal(c.summaryScore.score,null);
@@ -56,10 +56,10 @@ test('Why Now exact spans survive multiple spaces between English sentences',()=
  for(const f of r.facts)assert.equal(f.quote,value.inputs[0].sources[0].text.slice(f.span.start,f.span.end));
 });
 
-test('completed negative audit with no primary source is legal zero, not perpetual incomplete',()=>{
+test('missing primary source cannot become a completed negative audit',()=>{
  const s=snapshot();s.selectionRun.audits[0].report=null;s.selectionRun.audits[0].errors=['LATEST_FORMAL_ANNUAL_UNAVAILABLE'];
  s.inputs[0].sources=[];s.inputs[0].conflicts=['PRIMARY_SOURCE_UNAVAILABLE'];
- const r=projectSnapshot(s,clock);assert.equal(r.state,'COMPLETE');assert.equal(r.selectedCount,0);
+ const r=projectSnapshot(s,clock);assert.equal(r.state,'IN_PROGRESS');assert.equal(r.selectedCount,0);
 });
 
 test('fresh process restore produces the identical saved-snapshot projection',()=>{
@@ -74,4 +74,12 @@ test('R12 may retain lawful historical CF provenance while current business/risk
  Object.assign(p,{documentId:'S100PRIO',url:'https://disclosure2.edinet-fsa.go.jp/WZEK0040.aspx?S100PRIO',fiscalPeriod:'2025-03-31'});
  assert.equal(projectSnapshot(s,clock).selectedCount,1);
  Object.assign(e.provenance[e.business.evidenceRefs[0]],{documentId:p.documentId,url:p.url,fiscalPeriod:p.fiscalPeriod});assert.equal(projectSnapshot(s,clock).selectedCount,0);
+});
+
+test('current interim Why Now remains distinct from latest annual Master fiscal date',()=>{
+ const s=snapshot(),input=s.inputs[0],audit=s.selectionRun.audits[0];
+ const half={...input.sources[0],id:'TEST-current-half',documentId:'S100HALF',url:'https://disclosure2.edinet-fsa.go.jp/WZEK0040.aspx?S100HALF',period:'2026-09-30',filingDate:'2026-10-01'};
+ input.sources.push(half);input.evaluationPeriod=half.period;input.latestDocumentIds.push(half.documentId);audit.latestDocuments.push(half.documentId);
+ const result=projectSnapshot(s,clock);assert.equal(result.selectedCount,1);assert.equal(result.selected[0].fiscalDate,'2026-03-31');assert.equal(result.selected[0].radarWhyNow[0].period,half.period);
+ input.sources.pop();assert.equal(projectSnapshot(s,clock).selectedCount,0);
 });

@@ -1,8 +1,9 @@
-import {selectionVersion,type CandidateAudit,type SelectionRun,type FeaturedCandidate} from "../../../lib/top3-selection";
+import {candidateBlockers,selectionVersion,type CandidateAudit,type SelectionRun,type FeaturedCandidate} from "../../../lib/top3-selection";
 import {summaryScoreForReport} from "../../../lib/summary-score-report";
 import type {GrowthFeaturedCandidate,GrowthFeaturedResult} from "../../../lib/growth-radar-public";
 import {pendingFeatured,type ResearchRunStore} from "../featured";
 import {parserVersion} from "../top3-versions";
+import {createPublicationProjection,readPublicationProjection,type PublicationContext} from './publication-projection';
 import {evidenceRuleVersion} from "../research-evidence/model";
 import {evaluateRadar} from "./engine";
 import {top3FromRadar} from "./adapter";
@@ -51,9 +52,27 @@ function evidenceReviewed(a:CandidateAudit):boolean{
    (a.latestDocuments.includes(p.documentId)||(key==='cashFlowSustainability'&&date(p.fiscalPeriod)&&p.fiscalPeriod<=a.latestAnnual!));});
  });
 }
+/** PUBLICATION_EXCLUSION_CONNECTION_FIX: consume an existing formal negative, never infer one.
+ * One evidenced necessary-gate failure excludes this issuer; unknown/pending is never exclusion.
+ */
+function formalNotMet(a:CandidateAudit):boolean{
+ const e=a.report?.researchEvidence;
+ if(!a.parserValid||a.errors.length||!a.latestAnnual||!e||e.ruleVersion!==evidenceRuleVersion||e.fiscalDate!==a.latestAnnual||
+  a.report?.metadata?.provider!=='EDINET'||a.report.symbol!==a.identity.code+'.JP'||a.report.metadata.fiscalDate!==a.latestAnnual)return false;
+ return ([['business','R11'],['cashFlowSustainability','R12'],['majorRisk','R13'],['counterThesis','R14']] as const).some(([key,rule])=>{
+  const d=e[key];if(d?.status!=='NOT_MET'||d.confidence!=='CONTRADICTED'||!d.evidenceRefs.length)return false;
+  const failed=d.predicateTrace.filter(t=>t.predicate.startsWith(rule+'/')&&t.outcome==='FAIL');
+  if(!failed.length||failed.some(t=>!t.factRefs.length||t.factRefs.some(ref=>!d.evidenceRefs.includes(ref))))return false;
+  return d.evidenceRefs.some(ref=>a.latestDocuments.includes(e.provenance[ref]?.documentId))&&d.evidenceRefs.every(ref=>{
+   const p=e.provenance[ref];return p&&p.companyId===a.identity.edinetCode&&p.securityCode===a.identity.code&&p.ruleVersion===e.ruleVersion&&p.confidence==='CONFIRMED'&&
+    p.url==='https://disclosure2.edinet-fsa.go.jp/WZEK0040.aspx?'+p.documentId&&
+    (a.latestDocuments.includes(p.documentId)||(key==='cashFlowSustainability'&&date(p.fiscalPeriod)&&p.fiscalPeriod<=a.latestAnnual!));
+  });
+ });
+}
 function empty():GrowthFeaturedResult{
  const r=pendingFeatured();
- return {...r,manifest:publicManifest(r.manifest),generatedAt:null,candidateCount:0,selectedCount:0,selected:[],entries:[],uiState:"VERIFYING"};
+ return {...r,manifest:publicManifest(r.manifest),generatedAt:null,freshnessCheckedAt:null,candidateCount:0,selectedCount:0,selected:[],entries:[],uiState:"VERIFYING"};
 }
 function publicManifest(m:SelectionRun['manifest']):GrowthFeaturedResult['manifest']{
  return {universeAsOf:m.universeAsOf,filingCoverageThrough:m.filingCoverageThrough,runStartedAt:m.runStartedAt,runCompletedAt:m.runCompletedAt,coverage:{...m.coverage}};
@@ -73,20 +92,36 @@ export function projectSnapshot(raw:unknown,clock:()=>Date=()=>new Date()):Growt
  const byIdentity=new Map(run.audits.map(a=>[auditKey(a),a]));
  const evaluated=snapshot.inputs.map(i=>{
   const a=byIdentity.get(keyOf(i.identity));
-  const bound=!!a&&a.latestAnnual===i.evaluationPeriod&&i.latestDocumentIds.length===a.latestDocuments.length&&i.latestDocumentIds.every(d=>a.latestDocuments.includes(d));
+  const bound=!!a&&!!a.latestAnnual&&date(i.evaluationPeriod)&&i.evaluationPeriod>=a.latestAnnual&&i.evaluationPeriod<=today&&
+   i.sources.some(s=>s.primaryVerified&&s.period===i.evaluationPeriod&&a.latestDocuments.includes(s.documentId))&&i.latestDocumentIds.length===a.latestDocuments.length&&i.latestDocumentIds.every(d=>a.latestDocuments.includes(d));
   return evaluateRadar({...i,conflicts:[...(i.conflicts??[]),...(bound?[]:["RESEARCH_BINDING_CONFLICT"])]});
  });
- const candidates=evaluated.filter(c=>c.state==="CANDIDATE");
+ const excluded=new Set(run.audits.filter(formalNotMet).map(auditKey));
+ const publicationRun={...run,universe:run.universe.filter(i=>!excluded.has(i.edinetCode+'|'+i.code)),audits:run.audits.filter(a=>!excluded.has(auditKey(a)))};
+ const candidates=evaluated.filter(c=>c.state==="CANDIDATE"&&!excluded.has(keyOf(c.identity)));
  const eligible=candidates.filter(c=>{const a=byIdentity.get(keyOf(c.identity));return !!a&&evidenceReviewed(a);});
  // Every audited issuer must also have a discovery result before publishing the Universe selection.
- const complete=run.complete&&run.audits.every(a=>snapshot.inputs.some(i=>keyOf(i.identity)===auditKey(a)));
- const result=top3FromRadar(eligible,{...run,current:!!current,complete});
+ const complete=run.complete&&run.audits.length===run.universe.length&&
+  run.audits.every(a=>a.errors.length===0&&snapshot.inputs.some(i=>keyOf(i.identity)===auditKey(a)))&&
+  snapshot.inputs.every(i=>!i.conflicts?.length&&i.sources.some(s=>s.primaryVerified))&&
+  evaluated.every(c=>excluded.has(keyOf(c.identity))||c.state!=="VERIFYING");
+ const result=top3FromRadar(eligible,{...publicationRun,current:!!current,complete});
+ // Acquisition/discovery completion is not a source-backed negative eligibility review.
+ // Only source-bound formal NOT_MET is terminal. Unsupported discovery grammar,
+ // missing formal gates and every other unknown still require recheck.
+ const unresolvedEligibility=evaluated.some(c=>!excluded.has(keyOf(c.identity))&&c.state!=="CANDIDATE")||candidates.some(c=>{
+  const a=byIdentity.get(keyOf(c.identity));return !a||!evidenceReviewed(a)||candidateBlockers(a).length>0;
+ });
+ if(complete&&(!run.universe.length||unresolvedEligibility||result.state==="COMPLETE"&&result.entries.length===0&&publicationRun.universe.length>0)){
+  result.state="RECHECK_REQUIRED";result.entries=[];
+  result.message="正式適格性または候補除外の根拠が未確認です。正式0件として確定していません。";
+ }
  const selected:GrowthFeaturedCandidate[]=result.entries.map(entry=>{
   const audit=run.audits.find(a=>a.report?.symbol===entry.symbol)!;
   const radar=candidates.find(c=>keyOf(c.identity)===auditKey(audit))!;
   return publicCard(entry,audit,radar,snapshot.inputs.find(i=>keyOf(i.identity)===auditKey(audit))!);
  });
- return {...result,manifest:publicManifest(result.manifest),entries:selected,selected,selectedCount:selected.length,candidateCount:candidates.length,generatedAt:snapshot.generatedAt,
+ return {...result,manifest:publicManifest(result.manifest),entries:selected,selected,selectedCount:selected.length,candidateCount:candidates.length,generatedAt:snapshot.generatedAt,freshnessCheckedAt:null,
   uiState:selected.length?"READY":result.state==="COMPLETE"?"NO_QUALIFIED_CANDIDATES":"VERIFYING"};
 }
 function publicCard(entry:FeaturedCandidate,audit:CandidateAudit,radar:GrowthRadarCompany,input:RadarInput):GrowthFeaturedCandidate{
@@ -102,16 +137,15 @@ function publicCard(entry:FeaturedCandidate,audit:CandidateAudit,radar:GrowthRad
   }),summaryScore:{score:score.score,coverage:score.coverage,display:score.display},majorRisks:evidence.majorRisk.identifiedRisks??[],
   nextConfirmation:[...status.nextChecks,'次回の正式開示で成長変化とCash Flow・リスク・反対仮説を再確認'],updatedAt:radar.lastEvaluatedAt};
 }
-export async function saveGrowthSnapshot(store:Pick<GrowthSnapshotStore,"put">,snapshot:GrowthSnapshot,clock:()=>Date=()=>new Date()):Promise<GrowthFeaturedResult>{
- const result=projectSnapshot(snapshot,clock);
- // One atomic store value holds the run and its Radar bindings, preventing mixed generations.
- await store.put("top3-research-run",JSON.stringify(snapshot));return result;
+/** Saves only a read-only transport of the supplied, already determined formal result. */
+export async function saveGrowthSnapshot(store:Pick<GrowthSnapshotStore,"put">,snapshot:GrowthSnapshot,clock:()=>Date,context:PublicationContext):Promise<GrowthFeaturedResult>{
+ validate(snapshot,clock);
+ const projection=await createPublicationProjection(snapshot,context);
+ await store.put("top3-research-run",JSON.stringify(projection));return context.result;
 }
-export async function readGrowthFeatured(store?:ResearchRunStore,clock:()=>Date=()=>new Date()):Promise<GrowthFeaturedResult>{
+export async function readGrowthFeatured(store?:ResearchRunStore,clock:()=>Date=()=>new Date(),verify?:(manifest:SelectionRun["manifest"])=>Promise<boolean>):Promise<GrowthFeaturedResult>{
  if(!store)return empty();
  const saved=await store.get("top3-research-run","json");
  if(saved===null||saved===undefined)return empty();
- // Old unconnected runs are not promoted into a Radar result. Refresh must produce the new envelope.
- if(typeof saved==="object"&&!("version" in saved)&&"manifest" in saved)return empty();
- return projectSnapshot(saved,clock);
+ return readPublicationProjection(saved,clock,verify);
 }

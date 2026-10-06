@@ -20,4 +20,9 @@ function snapshot(count=1){
  selectionRun.manifest.freshnessProof={day:'2026-10-02',identityArchiveSha:'a'.repeat(64),dayListSha:'b'.repeat(64)};
  return {version:'growth-radar-public/1',generatedAt:'2026-10-01T16:02:00Z',selectionRun,inputs:companies.map(c=>c.input)};
 }
-module.exports={company,snapshot};
+async function projection(value=snapshot()){
+ const {projectSnapshot}=require('../../server/stock-analysis/growth-radar/pipeline.ts');
+ const {createPublicationProjection}=require('../../server/stock-analysis/growth-radar/publication-projection.ts');
+ return createPublicationProjection(value,{result:projectSnapshot(value,()=>new Date('2026-10-02T00:03:00Z')),sourceGeneration:'ISOLATED-TEST-GENERATION',jev:{pre:'PASS',post:'PASS'}});
+}
+module.exports={company,snapshot,projection};
