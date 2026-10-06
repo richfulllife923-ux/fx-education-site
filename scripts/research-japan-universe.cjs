@@ -10,7 +10,7 @@ const {parserVersion,formalSourceHashes,protectedFiles}=require("../server/stock
 const {EvidenceCollector}=require("../server/stock-analysis/research-evidence/extraction.ts");
 const {radarInputFromCompany,deepResearchCompany}=require("../server/stock-analysis/growth-radar/source.ts");
 const {evaluateRadar}=require("../server/stock-analysis/growth-radar/engine.ts");
-const {saveGrowthSnapshot,snapshotVersion}=require("../server/stock-analysis/growth-radar/pipeline.ts");
+const {saveGrowthSnapshot,projectSnapshot,snapshotVersion}=require("../server/stock-analysis/growth-radar/pipeline.ts");
 const args=process.argv.slice(2),max=Number(args.find(s=>s.startsWith("--max-companies="))?.split("=")[1]??"10");
 if(args.some(s=>!/^--max-companies=\d+$/.test(s))||!Number.isInteger(max)||max<0||max>10000)throw new Error("Only --max-companies=0..10000 is supported. No manual tickers.");
 const root=path.resolve(__dirname,".."),out=path.join(root,".stock-test-output","growth-radar-discovery"),hash=s=>crypto.createHash("sha256").update(s).digest("hex");
@@ -91,7 +91,10 @@ const next=d=>new Date(Date.parse(d)+86400000).toISOString().slice(0,10);
  if(!same)run.manifest.remainingUnknowns.push("Universe/filing change during scan; rerun required");
  const {radarInputs,...selectionRun}=run;
  const snapshot={version:snapshotVersion,generatedAt:new Date().toISOString(),selectionRun,inputs:radarInputs};
- const result=await saveGrowthSnapshot({put:async(_key,value)=>save(path.join(out,"growth-snapshot.json"),JSON.parse(value))},snapshot);
+ const result=projectSnapshot(snapshot);
+ save(path.join(out,"growth-snapshot.json"),snapshot);
+ await saveGrowthSnapshot({put:async(_key,value)=>save(path.join(out,"publication-projection.json"),JSON.parse(value))},snapshot,()=>new Date(),
+  {result,sourceGeneration:store.id,jev:{pre:"UNVERIFIED",post:"UNVERIFIED"}});
  // Public projection intentionally omits private rule/provenance traces; never replace the private manifest with it.
  run.manifest.coverage=result.manifest.coverage;save(checkpoint,run);save(path.join(out,"selection-run.json"),selectionRun);save(path.join(out,"featured-result.json"),result);
  console.log(JSON.stringify({state:result.state,candidateCount:result.candidateCount,entries:result.entries.length,coverage:result.manifest.coverage,output:".stock-test-output/growth-radar-discovery/featured-result.json",published:false}));

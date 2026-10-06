@@ -1,3 +1,4 @@
+import { verifyFeaturedCurrentness } from '../../../server/stock-analysis/top3-freshness';
 import {EvidenceCollector} from "../../../server/stock-analysis/research-evidence/extraction";
 import type { ResearchRunStore } from "../../../server/stock-analysis/featured";
 import {readGrowthFeatured} from "../../../server/stock-analysis/growth-radar/pipeline";
@@ -78,7 +79,7 @@ export async function onRequest({request,env}:Context):Promise<Response> {
     const origin=request.headers.get("Origin");
     if (origin && origin!==url.origin) return json({status:"error",code:"INVALID_INPUT",message:"同一サイトからのリクエストが必要です。"},403);
     await limit(request,env);
-    if(endpoint==="featured")return json(await readGrowthFeatured(env.TOP3_RESEARCH_RUN));
+    if(endpoint==="featured")return json(await readGrowthFeatured(env.TOP3_RESEARCH_RUN,()=>new Date(),manifest=>verifyFeaturedCurrentness(manifest,env.EDINET_API_KEY)));
     const service=await configured(env);
     if (endpoint==="watchlist") {
       const symbols=(env.TUTTO_WATCHLIST_SYMBOLS??"").split(",").map(value=>value.trim()).filter(Boolean).slice(0,4);

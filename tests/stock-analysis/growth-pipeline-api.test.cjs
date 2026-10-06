@@ -1,6 +1,6 @@
 require('./register.cjs');
 const {test}=require('node:test'),assert=require('node:assert/strict');
-const {snapshot}=require('./growth-pipeline-fixtures.cjs');
+const {snapshot,projection}=require('./growth-pipeline-fixtures.cjs');
 const {onRequest}=require('../../functions/api/stock-analysis/[[path]].ts');
 const {loadFeatured}=require('../../lib/featured-client.ts');
 const {projectSnapshot}=require('../../server/stock-analysis/growth-radar/pipeline.ts');
@@ -8,7 +8,7 @@ const now=()=>new Date('2026-10-02T00:03:00Z');
 const req=()=>new Request('https://tutto.test/api/stock-analysis/featured');
 test('real public endpoint reads one snapshot and does not call providers',async()=>{
  let reads=0,requests=0;const before=global.fetch;global.fetch=async()=>{requests++;throw Error('Forbidden public acquisition');};
- try{const value=snapshot(),response=await onRequest({request:req(),env:{TOP3_RESEARCH_RUN:{get:async key=>{assert.equal(key,'top3-research-run');reads++;return value;}},STOCK_RATE_LIMITER:{limit:async()=>({success:true})}}});
+ try{const value=await projection(snapshot()),response=await onRequest({request:req(),env:{TOP3_RESEARCH_RUN:{get:async key=>{assert.equal(key,'top3-research-run');reads++;return value;}},STOCK_RATE_LIMITER:{limit:async()=>({success:true})}}});
  assert.equal(response.status,200);const data=await response.json();assert.equal(reads,1);assert.equal(requests,0);
  assert.equal(data.selectedCount,data.entries.length);assert.ok(!('selectionRun' in data));assert.ok(!('inputs' in data));
  }finally{global.fetch=before;}
@@ -24,7 +24,7 @@ test('client rejects padded, GRAY, malformed, and unsuccessful responses',async(
  try{
   const good=projectSnapshot(snapshot(),now);
   global.fetch=async()=>new Response(JSON.stringify(good));assert.equal((await loadFeatured(new AbortController().signal)).selectedCount,1);
-  for(const change of [r=>r.selectedCount=3,r=>r.entries[0].researchStatus.status='GRAY',r=>r.entries[0].summaryScore.coverage=101,r=>r.uiState='NO_QUALIFIED_CANDIDATES']){
+  for(const change of [r=>r.selectedCount=3,r=>r.entries[0].researchStatus.status='GRAY',r=>r.entries[0].summaryScore.coverage=101,r=>r.entries[0].summaryScore.score=101,r=>r.entries[0].summaryScore.score=-1,r=>r.selected=[{...r.selected[0],symbol:'9999.JP'}],r=>r.uiState='NO_QUALIFIED_CANDIDATES']){
    const bad=structuredClone(good);change(bad);global.fetch=async()=>new Response(JSON.stringify(bad));await assert.rejects(loadFeatured(new AbortController().signal));
   }
   global.fetch=async()=>new Response('{}',{status:503});await assert.rejects(loadFeatured(new AbortController().signal));
