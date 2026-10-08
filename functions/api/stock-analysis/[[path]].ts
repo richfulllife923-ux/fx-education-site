@@ -1,4 +1,4 @@
-import {readPublicObservation} from "../../../server/stock-analysis/public-observation";
+import {readPublicObservation,readTop5Observation,refreshTop5Observation,type ObservationStore} from "../../../server/stock-analysis/public-observation";
 import { verifyFeaturedCurrentness } from '../../../server/stock-analysis/top3-freshness';
 import {EvidenceCollector} from "../../../server/stock-analysis/research-evidence/extraction";
 import type { ResearchRunStore } from "../../../server/stock-analysis/featured";
@@ -9,7 +9,7 @@ import { EodhdProvider } from "../../../server/stock-analysis/eodhd";
 import { AnalysisService, failure } from "../../../server/stock-analysis/service";
 import { StockError } from "../../../server/stock-analysis/model";
 export type Env = {
-  TOP3_RESEARCH_RUN?:ResearchRunStore;
+  TOP3_RESEARCH_RUN?:ObservationStore;
   STOCK_DATA_MODE?:"FREE"|"EODHD"; SEC_CONTACT_EMAIL?:string; EDINET_API_KEY?:string;
   SEC_LIVE_ENABLED?:string; SEC_PUBLIC_RELEASE_APPROVED?:string;
   EDINET_FILING_INDEX?:{get(key:string,type:"json"):Promise<EdinetIndex|null>};
@@ -75,11 +75,15 @@ async function limit(request:Request,env:Env):Promise<void> {
 export async function onRequest({request,env}:Context):Promise<Response> {
   try {
     const url=new URL(request.url), endpoint=url.pathname.replace(/\/+$/,"").split("/").pop();
-    if (!["analyze","compare","watchlist","emerging","featured","observation"].includes(endpoint??"")) return json({status:"error",code:"INVALID_INPUT",message:"API endpoint not found."},404);
-    if (request.method!==(["watchlist","featured","observation"].includes(endpoint??"")?"GET":"POST")) return json({status:"error",code:"INVALID_INPUT",message:"HTTP method not supported."},405);
+    if (!["analyze","compare","watchlist","emerging","featured","observation","observation-v2","observation-refresh"].includes(endpoint??"")) return json({status:"error",code:"INVALID_INPUT",message:"API endpoint not found."},404);
+    if (request.method!==(["watchlist","featured","observation","observation-v2"].includes(endpoint??"")?"GET":"POST")) return json({status:"error",code:"INVALID_INPUT",message:"HTTP method not supported."},405);
     const origin=request.headers.get("Origin");
     if (origin && origin!==url.origin) return json({status:"error",code:"INVALID_INPUT",message:"同一サイトからのリクエストが必要です。"},403);
     await limit(request,env);
+    if(endpoint==="observation-v2" || endpoint==="observation-refresh"){
+      try{return json(await (endpoint==="observation-refresh"?refreshTop5Observation:readTop5Observation)(env.TOP3_RESEARCH_RUN));}
+      catch{return json({status:"unavailable",mode:"PUBLIC_OBSERVATION",message:"評価結果を確認できません。"},503);}
+    }
     if(endpoint==="observation"){
       try{return json(await readPublicObservation(env.TOP3_RESEARCH_RUN));}
       catch{return json({status:"unavailable",mode:"PUBLIC_OBSERVATION",message:"保存済みの評価を取得できません。"},503);}

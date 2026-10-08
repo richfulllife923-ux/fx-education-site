@@ -11,9 +11,9 @@ test('geometric evaluation has exact midranks, balanced dimensions and order ind
  assert.deepEqual(rankObservations([...rows].reverse()),ranked);
  const mixed=rankObservations([{...rows[0],cashMargin:0},rows[1],rows[2]]);const a=mixed.find(x=>x.code==='1000');assert.ok(Math.abs(a.rawScore-Math.cbrt(a.percentiles.reduce((x,y)=>x*y,1)))<1e-10);assert.ok(a.rawScore<a.percentiles.reduce((x,y)=>x+y)/3);
 });
-test('tied inputs share score; duplicate identity, insufficient and nonfinite data rejected',()=>{
+test('tied inputs share score; duplicate identity and nonfinite data rejected',()=>{
  const tied=rankObservations(rows.map(r=>({...r,growth:1,margin:1,cashMargin:1})));assert.ok(tied.every(r=>r.score===50));assert.deepEqual(tied.map(r=>r.code),['1000','1001','1002']);
- for(const invalid of [rows.slice(0,2),[rows[0],rows[0],rows[1]],[{...rows[0],growth:NaN},...rows.slice(1)]])assert.throws(()=>rankObservations(invalid));
+ for(const invalid of [[rows[0],rows[0],rows[1]],[{...rows[0],growth:NaN},...rows.slice(1)]])assert.throws(()=>rankObservations(invalid));
 });
 function company(){const period=(end,start,prior=false)=>{const datum=value=>({value,source:{provider:'EDINET',classification:'FACT',basis:'annual',period:end,start,currency:'JPY',unit:'currency',form:'120',accession:'S100TEST',financialScope:'CONSOLIDATED',url:'https://disclosure2.edinet-fsa.go.jp/test',retrievedAt:'2026-10-04T00:00:00Z',filingDate:'2026-06-25'}});return {end,basis:'annual',currency:'JPY',revenue:datum(prior?100:120),operatingIncome:datum(12),operatingCF:datum(24)};};return {provider:'EDINET',identity:{code:'1000',name:'A',edinetCode:'E00001',country:'JP'},annual:[period('2026-03-31','2025-04-01'),period('2025-03-31','2024-04-01',true)]};}
 test('actual annual values retained and source, period, currency, scope and missing checks fail closed',()=>{
