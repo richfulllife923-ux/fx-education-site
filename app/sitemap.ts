@@ -7,7 +7,6 @@ export const dynamic = "force-static";
 const STATIC_PATHS = [
   "",
   "/manifesto",
-  "/stock-analysis/",
   "/stock-analysis/watchlist/",
   "/framework/philosophy",
   "/framework/structure-theory",
