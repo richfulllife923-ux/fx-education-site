@@ -1,3 +1,4 @@
+import {readPublicObservation} from "../../../server/stock-analysis/public-observation";
 import { verifyFeaturedCurrentness } from '../../../server/stock-analysis/top3-freshness';
 import {EvidenceCollector} from "../../../server/stock-analysis/research-evidence/extraction";
 import type { ResearchRunStore } from "../../../server/stock-analysis/featured";
@@ -74,11 +75,15 @@ async function limit(request:Request,env:Env):Promise<void> {
 export async function onRequest({request,env}:Context):Promise<Response> {
   try {
     const url=new URL(request.url), endpoint=url.pathname.replace(/\/+$/,"").split("/").pop();
-    if (!["analyze","compare","watchlist","emerging","featured"].includes(endpoint??"")) return json({status:"error",code:"INVALID_INPUT",message:"API endpoint not found."},404);
-    if (request.method!==(["watchlist","featured"].includes(endpoint??"")?"GET":"POST")) return json({status:"error",code:"INVALID_INPUT",message:"HTTP method not supported."},405);
+    if (!["analyze","compare","watchlist","emerging","featured","observation"].includes(endpoint??"")) return json({status:"error",code:"INVALID_INPUT",message:"API endpoint not found."},404);
+    if (request.method!==(["watchlist","featured","observation"].includes(endpoint??"")?"GET":"POST")) return json({status:"error",code:"INVALID_INPUT",message:"HTTP method not supported."},405);
     const origin=request.headers.get("Origin");
     if (origin && origin!==url.origin) return json({status:"error",code:"INVALID_INPUT",message:"同一サイトからのリクエストが必要です。"},403);
     await limit(request,env);
+    if(endpoint==="observation"){
+      try{return json(await readPublicObservation(env.TOP3_RESEARCH_RUN));}
+      catch{return json({status:"unavailable",mode:"PUBLIC_OBSERVATION",message:"保存済みの評価を取得できません。"},503);}
+    }
     if(endpoint==="featured")return json(await readGrowthFeatured(env.TOP3_RESEARCH_RUN,()=>new Date(),manifest=>verifyFeaturedCurrentness(manifest,env.EDINET_API_KEY)));
     const service=await configured(env);
     if (endpoint==="watchlist") {
