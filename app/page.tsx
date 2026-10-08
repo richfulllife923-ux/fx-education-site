@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, BookOpen, Building2, ExternalLink, FlaskConical, LineChart, PlayCircle, Radar, ShieldCheck } from "lucide-react";
 import { buildMetadata } from "@/lib/seo";
 import SectionHeading from "@/components/SectionHeading";
+import NumericHeroParticles from "@/components/NumericHeroParticles";
 
 export const metadata = buildMetadata({
   title: "TUTTO",
@@ -40,6 +41,7 @@ const DISTRIBUTION_ROLES = [
 export default function HomePage() {
   return (
     <>
+      <NumericHeroParticles />
       <section data-home-hero className="relative overflow-hidden border-b border-border bg-background">
         <div className="pointer-events-none absolute inset-0" aria-hidden>
           <div className="absolute left-1/2 top-0 h-px w-[720px] -translate-x-1/2 bg-gradient-to-r from-transparent via-blue-500/60 to-transparent" />
