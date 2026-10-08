@@ -1,0 +1,9 @@
+# Public observation v1 — 2026-10-08
+
+Owner's latest instruction authorizes a separate public assessment without full Formal Eligibility. This module does not invoke or alter Formal Research's Selection, Score, Evidence, JEV or eligibility. Formal holdings and unresolved records remain unchanged.
+
+Saved consolidated Japanese annual financial facts are reused. Each observation requires positive revenue for two consecutive full years, finite operating profit and operating cash flow, JPY, annual 120/130 original-source metadata, issuer/document association, and dated facts. Missing or incomparable public inputs are recorded separately and never converted to formal NOT_MET. Comparative prior-year facts keep their original context and period even when published in the latest annual document.
+
+Dimensions: revenue year-on-year growth, operating margin, operating cash flow / revenue. Within the available cohort, each dimension gets the midrank percentile `100 * (number below + equal count / 2) / N`. The attention score is the equal-weight geometric mean of the three percentiles, rounded to an integer for display. Ranking uses the unrounded mean; ties use code order. No price, forecast, debt, risk certification or probability is inferred from this score. Sectors and annual closing dates differ, and annual data does not describe current quarter trading conditions. This deliberately limited model is disclosed in the UI.
+
+The assessment artifact preserves cohort inputs, original fact sources, inclusion decisions and exact ranking. The compact projection carries its digest, immutable research-file digest and generated timestamp. The API only reads the separate `top3-public-observation` key through the existing KV binding. Refresh never recomputes or changes the timestamp. The old `top3-research-run` key and formal API remain intact.
