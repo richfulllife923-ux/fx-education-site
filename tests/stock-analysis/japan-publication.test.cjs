@@ -7,6 +7,8 @@ const {onRequest}=require("../../functions/api/stock-analysis/[[path]].ts");
 const code="US_PRIMARY_SOURCE_TEMPORARILY_UNAVAILABLE";
 const env={STOCK_DATA_MODE:"FREE",SEC_CONTACT_EMAIL:"test-owner@example.invalid",EDINET_API_KEY:"TEST_DATA_JP_KEY",STOCK_RATE_LIMITER:{limit:async()=>({success:true})}};
 const request=(endpoint,body)=>new Request("https://tutto.test/api/stock-analysis/"+endpoint,body===undefined?undefined:{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+// Transport tests must not depend on the bundled index aging past its seven-day gate.
+const currentTestIndex={get:async()=>({version:1,coveredThrough:new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date()),retrievedAt:new Date().toISOString(),filings:[]})};
 test("Japan-only default resolves all supported aliases and unknown JP without any SEC lookup",async()=>{
  let calls=0;const p=new FreeProvider(env.SEC_CONTACT_EMAIL,undefined,undefined,async()=>{calls++;throw new Error("Unexpected outbound");},()=>new Date("2026-10-01"),0);
  for(const [input,expected]of [["7203","7203.JP"],["7203.JP","7203.JP"],["トヨタ","7203.JP"],["Toyota","7203.JP"],["285A","285A.JP"],["285A.JP","285A.JP"],["キオクシア","285A.JP"],["Kioxia","285A.JP"]])assert.equal((await resolveSymbol(input,p)).symbol,expected);
@@ -64,7 +66,7 @@ test("an explicitly configured legacy commercial key cannot bypass the closed US
 test("Pages API calls native fetch with a valid global receiver (TEST DATA only)",async()=>{
  const before=global.fetch;let calls=0,invalidReceiver=false;
  global.fetch=async function(url){"use strict";calls++;if(this!==undefined && this!==globalThis){invalidReceiver=true;throw new TypeError("Illegal invocation");}assert.equal(new URL(url).hostname,"api.edinet-fsa.go.jp");return new Response("TEST DATA denied",{status:403});};
- try{const response=await onRequest({request:request("analyze",{input:"7203.JP"}),env:{...env,EDINET_API_KEY:"TEST_DATA_NATIVE_RECEIVER"}});
+ try{const response=await onRequest({request:request("analyze",{input:"7203.JP"}),env:{...env,EDINET_API_KEY:"TEST_DATA_NATIVE_RECEIVER",EDINET_FILING_INDEX:currentTestIndex}});
  const result=await response.json();assert.equal(invalidReceiver,false,"Native fetch must not receive a provider instance as this");assert.equal(result.code,"CONFIGURATION_REQUIRED");assert.equal(response.status,503);assert.equal(calls,1);
  }finally{global.fetch=before;}
 });
@@ -72,7 +74,7 @@ test("Pages API calls native fetch with a valid global receiver (TEST DATA only)
 test("Pages API rejects official-source redirects with Workers-compatible manual mode",async()=>{
  const before=global.fetch;let calls=0;
  global.fetch=async(url,options)=>{calls++;assert.equal(new URL(url).hostname,"api.edinet-fsa.go.jp");assert.equal(options.redirect,"manual");return new Response("TEST DATA redirect",{status:302,headers:{Location:"https://unofficial.invalid/do-not-follow"}});};
- try{const response=await onRequest({request:request("analyze",{input:"7203.JP"}),env:{...env,EDINET_API_KEY:"TEST_DATA_WORKERS_REDIRECT"}});
+ try{const response=await onRequest({request:request("analyze",{input:"7203.JP"}),env:{...env,EDINET_API_KEY:"TEST_DATA_WORKERS_REDIRECT",EDINET_FILING_INDEX:currentTestIndex}});
  const result=await response.json();assert.equal(response.status,502);assert.equal(result.code,"DATA_PROVIDER_ERROR");assert.ok(!result.report);assert.equal(calls,1);assert.ok(!JSON.stringify(result).includes("unofficial.invalid"));
  }finally{global.fetch=before;}
 });
