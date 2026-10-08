@@ -95,7 +95,7 @@ export default function HomePage() {
       </section>
 
       <section className="container-page pb-4 sm:pb-6">
-        <div className="card border-emerald-600/60 p-5 sm:p-6">
+        <div className="card p-5 sm:p-6" style={{ borderWidth: "1px", borderColor: "rgba(16, 185, 129, 0.5)", backgroundColor: "#182238", boxShadow: "0 14px 40px -28px rgba(0, 0, 0, 0.55), 0 0 18px rgba(16, 185, 129, 0.06)" }}>
           <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
               <p className="eyebrow text-emerald-400">TUTTO STOCK ANALYSIS</p>
@@ -103,7 +103,7 @@ export default function HomePage() {
               <p className="mt-4 max-w-2xl text-sm leading-8 text-text-secondary">企業の事業、業績、Cash Flow、成長性、バリュエーション、リスクを整理し、企業の現在地を構造的に分析します。</p>
               <p className="mt-3 max-w-2xl text-sm leading-8 text-text-secondary">有名企業だけでなく、まだ市場で十分に認知されていない成長企業も研究対象として探索します。</p>
             </div>
-            <Link href="/stock-analysis/watchlist/" className="main-cta cta-stock">注目5銘柄を見る <ArrowRight size={18} /></Link>
+            <Link href="/stock-analysis/watchlist/" className="main-cta cta-stock">注目5銘柄を見る <span className="inline-flex h-[18px] w-[18px] items-center justify-center">→</span></Link>
           </div>
         </div>
       </section>
