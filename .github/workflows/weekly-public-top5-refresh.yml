@@ -1,0 +1,27 @@
+name: Weekly public Top5 refresh
+
+on:
+  schedule:
+    # Mondays 00:00 UTC (09:00 JST)
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Refresh the saved public observation
+        env:
+          REFRESH_URL: https://fx-education-site.pages.dev/api/stock-analysis/observation-refresh
+        run: |
+          response="$(curl --fail-with-body --silent --show-error --max-time 60 "$REFRESH_URL")"
+          printf '%s' "$response" | jq -e '
+            .publication_status == "READY" and
+            (.top5 | type == "array" and length <= 5) and
+            (.generated_at | type == "string")
+          ' >/dev/null
+          printf '%s' "$response" | jq -r '"Public Top5 refresh passed at " + .generated_at + " with " + (.top5 | length | tostring) + " entries."'
