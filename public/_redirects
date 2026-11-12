@@ -1,3 +1,7 @@
 # Keep the original search source; use Top3 as the public stock landing page.
 /stock-analysis /stock-analysis/watchlist/ 302
 /stock-analysis/ /stock-analysis/watchlist/ 302
+
+# Keep the previous temporary route pointed at the canonical Top5 page.
+/stock-analysis/featured-five /stock-analysis/watchlist/ 301
+/stock-analysis/featured-five/ /stock-analysis/watchlist/ 301

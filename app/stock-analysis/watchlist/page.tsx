@@ -1,14 +1,15 @@
-import Link from "next/link";
-import WatchlistClient from "@/components/stock-analysis/WatchlistClient";
+import FeaturedFiveClient from "@/components/stock-analysis/FeaturedFiveClient";
 import { buildMetadata } from "@/lib/seo";
-const description = "年次財務に基づく公開用観測評価。TUTTO 注目5銘柄とTUTTO 注目度。";
-export const metadata = buildMetadata({ title: "TUTTO 注目5銘柄", description, path: "/stock-analysis/watchlist/" });
+
+const description =
+  "企業の業績・財務・成長性・企業価値・リスクを観測する、TUTTOの公開株式ランキングです。";
+
+export const metadata = buildMetadata({
+  title: "TUTTO 注目5銘柄",
+  description,
+  path: "/stock-analysis/watchlist/",
+});
+
 export default function WatchlistPage() {
- return <>
-  <Link href="/stock-analysis/featured-five/" className="mb-4 inline-flex min-h-11 items-center rounded-lg bg-emerald-700 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-300">
-   選出方針と公開ランキングを見る →
-  </Link>
-  <header className="mb-5 sm:mb-8"><h1 className="text-3xl font-bold leading-tight sm:text-5xl">TUTTO 注目5銘柄</h1><p className="mt-3 text-sm leading-7 text-text-secondary">TUTTO独自の計算 × 幾何学的評価から、その時点の注目5銘柄を算出。</p></header>
-  <WatchlistClient />
- </>;
+  return <FeaturedFiveClient />;
 }
