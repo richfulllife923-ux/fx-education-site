@@ -18,7 +18,7 @@ jobs:
         env:
           REFRESH_URL: https://fx-education-site.pages.dev/api/stock-analysis/observation-refresh
         run: |
-          response="$(curl --fail-with-body --silent --show-error --max-time 60 "$REFRESH_URL")"
+          response="$(curl --fail-with-body --silent --show-error --max-time 60 -X POST -H "Content-Type: application/json" --data '{}' "$REFRESH_URL")"
           printf '%s' "$response" | jq -e '
             .publication_status == "READY" and
             (.top5 | type == "array" and length <= 5) and
