@@ -192,6 +192,52 @@
   font-size: 0.8rem;
 }
 
+.earlyDetection {
+  margin-top: 3rem;
+}
+
+.marketBadge {
+  margin-left: 0.6rem;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text-secondary);
+  font-family: var(--font-sans, inherit);
+  font-size: 0.72rem;
+}
+
+.earlyJudgment {
+  margin: 0 0 0.5rem;
+  color: #67e8f9;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.earlyHeadline {
+  margin: 0 0 0.7rem;
+  color: var(--color-text-primary);
+  font-size: 0.88rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.earlySource {
+  margin: 0 0 1rem;
+  color: var(--color-text-secondary);
+  font-size: 0.76rem;
+  line-height: 1.6;
+}
+
+.earlySource a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.earlySource a:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 3px;
+}
+
 .dailyEntry {
   margin-top: 1.2rem;
   padding: 1.25rem;

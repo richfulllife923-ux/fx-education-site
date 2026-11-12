@@ -18,6 +18,124 @@ type DailyViewState =
   | { status: "error" }
   | { status: "ready"; article: PublishedDailyAnalysis };
 
+type EarlyStock = {
+  rank: number;
+  code: string;
+  name: string;
+  market: "JP" | "US";
+  momentumScore: number;
+  dataCoverage: number;
+  classification: string;
+  judgment: string;
+  headline: string;
+  source: { label: string; url: string; publishedDate: string; period: string };
+};
+type EarlyRanking = { updatedAt: string; entries: EarlyStock[] };
+
+type EarlyViewState =
+  | { status: "loading" }
+  | { status: "unavailable" }
+  | { status: "ready"; ranking: EarlyRanking };
+
+const EARLY_CLASSIFICATION_LABELS: Record<string, string> = {
+  VALUE_UP: "企業価値向上の兆候",
+  VALUE_DOWN: "企業価値悪化の兆候",
+  MOMENTUM_UP: "短期業績の改善",
+  MOMENTUM_DOWN: "短期業績の悪化",
+  STRUCTURAL_CHANGE: "産業・事業構造の変化",
+  TEMPORARY: "一時的な変動",
+  UNCONFIRMED: "未確認",
+};
+
+const EARLY_JUDGMENT_LABELS: Record<string, string> = {
+  STRONG_EARLY_CANDIDATE: "強い先行注目候補",
+  EARLY_CANDIDATE: "先行注目候補",
+  WATCH: "継続監視",
+  NEUTRAL: "中立",
+  RISK: "悪化警戒",
+  REJECT: "候補除外",
+  DATA_INSUFFICIENT: "情報不足",
+};
+
+function parseEarlyDetection(value: unknown): EarlyRanking {
+  if (!value || typeof value !== "object") throw new Error("EARLY_DETECTION_UNAVAILABLE");
+  const doc = value as { publication_status?: unknown; generated_at?: unknown; entries?: unknown };
+  if (
+    doc.publication_status !== "READY" ||
+    typeof doc.generated_at !== "string" ||
+    !/^\d{4}-\d{2}-\d{2}T.*(?:Z|[+-]\d{2}:\d{2})$/.test(doc.generated_at) ||
+    !Number.isFinite(Date.parse(doc.generated_at)) ||
+    Date.parse(doc.generated_at) > Date.now() ||
+    !Array.isArray(doc.entries) ||
+    doc.entries.length < 1 ||
+    doc.entries.length > 10
+  ) {
+    throw new Error("EARLY_DETECTION_UNAVAILABLE");
+  }
+  const seen = new Set<string>();
+  let previousScore = 100;
+  const entries = doc.entries.map((item, index) => {
+    if (!item || typeof item !== "object") throw new Error("EARLY_DETECTION_UNAVAILABLE");
+    const row = item as Record<string, unknown>;
+    const source = row.source as Record<string, unknown> | undefined;
+    const codeOk =
+      (row.market === "JP" && typeof row.code === "string" && /^[0-9]{3}[0-9A-Z]$/.test(row.code)) ||
+      (row.market === "US" && typeof row.code === "string" && /^[A-Z]{1,5}(\.[A-Z])?$/.test(row.code));
+    if (
+      row.rank !== index + 1 ||
+      !codeOk ||
+      seen.has(`${row.market}:${row.code}`) ||
+      typeof row.name !== "string" ||
+      !row.name.trim() ||
+      row.name.length >= 160 ||
+      !Number.isInteger(row.momentumScore) ||
+      (row.momentumScore as number) < 0 ||
+      (row.momentumScore as number) > previousScore ||
+      !Number.isInteger(row.dataCoverage) ||
+      (row.dataCoverage as number) < 0 ||
+      (row.dataCoverage as number) > 100 ||
+      typeof row.classification !== "string" ||
+      !(row.classification in EARLY_CLASSIFICATION_LABELS) ||
+      typeof row.judgment !== "string" ||
+      !(row.judgment in EARLY_JUDGMENT_LABELS) ||
+      typeof row.headline !== "string" ||
+      !row.headline.trim() ||
+      row.headline.length > 300 ||
+      !source ||
+      typeof source.label !== "string" ||
+      !source.label.trim() ||
+      typeof source.url !== "string" ||
+      !source.url.startsWith("https://") ||
+      typeof source.publishedDate !== "string" ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(source.publishedDate) ||
+      typeof source.period !== "string" ||
+      !source.period.trim()
+    ) {
+      throw new Error("EARLY_DETECTION_UNAVAILABLE");
+    }
+    seen.add(`${row.market}:${row.code}`);
+    previousScore = row.momentumScore as number;
+    return {
+      rank: row.rank as number,
+      code: row.code as string,
+      name: row.name as string,
+      market: row.market as "JP" | "US",
+      momentumScore: row.momentumScore as number,
+      dataCoverage: row.dataCoverage as number,
+      classification: row.classification as string,
+      judgment: row.judgment as string,
+      headline: row.headline as string,
+      source: {
+        label: source.label as string,
+        url: source.url as string,
+        publishedDate: source.publishedDate as string,
+        period: source.period as string,
+      },
+    };
+  });
+  return { updatedAt: doc.generated_at, entries };
+}
+
 function parseRanking(value: unknown): PublicRanking {
   if (!value || typeof value !== "object") throw new Error("PUBLIC_RANKING_UNAVAILABLE");
   const observation = value as {
@@ -89,6 +207,8 @@ export default function FeaturedFiveClient() {
   const [view, setView] = useState<ViewState>({ status: "loading" });
   const [dailyAttempt, setDailyAttempt] = useState(0);
   const [dailyView, setDailyView] = useState<DailyViewState>({ status: "loading" });
+  const [earlyAttempt, setEarlyAttempt] = useState(0);
+  const [earlyView, setEarlyView] = useState<EarlyViewState>({ status: "loading" });
 
   useEffect(() => {
     const controller = new AbortController();
@@ -150,9 +270,37 @@ export default function FeaturedFiveClient() {
     };
   }, [dailyAttempt]);
 
+  useEffect(() => {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 15000);
+
+    setEarlyView({ status: "loading" });
+    void (async () => {
+      try {
+        const response = await fetch("/api/stock-analysis/early-detection", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (!response.ok) throw new Error("EARLY_DETECTION_UNAVAILABLE");
+        const ranking = parseEarlyDetection((await response.json()) as unknown);
+        if (!controller.signal.aborted) setEarlyView({ status: "ready", ranking });
+      } catch {
+        if (!controller.signal.aborted) setEarlyView({ status: "unavailable" });
+      } finally {
+        window.clearTimeout(timeout);
+      }
+    })();
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [earlyAttempt]);
+
   const ranking = view.status === "ready" ? view.ranking : null;
   const count = ranking?.stocks.length ?? 0;
   const isPartial = count > 0 && count < 5;
+  const earlyRanking = earlyView.status === "ready" ? earlyView.ranking : null;
 
   return (
     <div className={styles.page}>
@@ -237,6 +385,64 @@ export default function FeaturedFiveClient() {
           {ranking && (
             <p className={styles.updated}>
               最終更新：<time dateTime={ranking.updatedAt}>{updatedJst(ranking.updatedAt)}</time>
+            </p>
+          )}
+        </section>
+
+        <section className={styles.earlyDetection} aria-labelledby="early-detection-heading">
+          <div className={styles.sectionHeading}>
+            <p className={styles.eyebrow}>EARLY VALUE DETECTOR</p>
+            <h2 id="early-detection-heading">先行発掘（四半期モメンタム）</h2>
+            <p>
+              上の公開ランキング（年次決算に基づく評価）とは別の、独立した評価です。四半期決算・業績修正・事業環境の変化から、企業価値が変化し始めた兆候を検出します。このスコアは公開ランキングのスコアに加算されません。
+            </p>
+          </div>
+
+          <div className={styles.results} aria-live="polite" aria-busy={earlyView.status === "loading"}>
+            {earlyView.status === "loading" && (
+              <p className={styles.state} role="status">先行発掘データを読み込んでいます…</p>
+            )}
+
+            {earlyView.status === "unavailable" && (
+              <div className={styles.state} role="alert">
+                <p>現在公開中の先行発掘データはありません。</p>
+                <button className={styles.retry} type="button" onClick={() => setEarlyAttempt((value) => value + 1)}>
+                  再読み込み
+                </button>
+              </div>
+            )}
+
+            {earlyRanking && (
+              <ol className={styles.stockGrid}>
+                {earlyRanking.entries.map((stock) => (
+                  <li className={styles.stockCard} key={`${stock.market}:${stock.code}`}>
+                    <p className={styles.rank}>#{stock.rank}</p>
+                    <h3>{stock.name}</h3>
+                    <p className={styles.code}>
+                      {stock.code}
+                      <span className={styles.marketBadge}>{stock.market === "JP" ? "日本株" : "米国株"}</span>
+                    </p>
+                    <p className={styles.earlyJudgment}>
+                      {EARLY_JUDGMENT_LABELS[stock.judgment]}／{EARLY_CLASSIFICATION_LABELS[stock.classification]}
+                    </p>
+                    <p className={styles.earlyHeadline}>{stock.headline}</p>
+                    <p className={styles.earlySource}>
+                      根拠：<a href={stock.source.url} target="_blank" rel="noopener noreferrer">{stock.source.label}</a>
+                      （{stock.source.publishedDate.replaceAll("-", "/")}公表・{stock.source.period}）
+                    </p>
+                    <div className={styles.scoreBlock}>
+                      <span>モメンタム（充足率{stock.dataCoverage}%）</span>
+                      <strong>{stock.momentumScore}</strong>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+
+          {earlyRanking && (
+            <p className={styles.updated}>
+              最終更新：<time dateTime={earlyRanking.updatedAt}>{updatedJst(earlyRanking.updatedAt)}</time>
             </p>
           )}
         </section>
