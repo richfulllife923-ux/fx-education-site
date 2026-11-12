@@ -200,18 +200,77 @@
   background: var(--color-surface);
 }
 
+.dailyEntryState {
+  margin-top: 1.2rem;
+}
+
 .dailyEntry h3 {
   margin: 0;
   color: var(--color-text-primary);
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 700;
+  line-height: 1.6;
 }
 
-.dailyEntry p {
+.dailyEntry p,
+.dailyEntry li {
   margin: 0.6rem 0 0;
   color: var(--color-text-secondary);
   font-size: 0.9rem;
   line-height: 1.8;
+}
+
+.dailyEntry .dailyMeta {
+  color: var(--color-primary);
+  font-size: 0.82rem;
+}
+
+.dailyArticleSection {
+  margin-top: 1.5rem;
+}
+
+.dailyArticleSection h4,
+.dailySources h4 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.dailyEntry ul {
+  margin: 0.35rem 0 0;
+  padding-left: 1.4rem;
+}
+
+.dailyEntry li {
+  padding-left: 0.15rem;
+}
+
+.dailySources {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.dailySources a {
+  color: var(--color-primary);
+  overflow-wrap: anywhere;
+  text-underline-offset: 0.2em;
+}
+
+.dailySources a:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 3px;
+}
+
+.dailyEntry .dailyPublished {
+  margin-top: 1.25rem;
+  font-size: 0.78rem;
+}
+
+.dailyEntryState > .state,
+.dailyEntryState > .state p {
+  color: var(--color-text-secondary);
 }
 
 .notes {

@@ -2,17 +2,17 @@ import { buildMetadata } from "@/lib/seo";
 import SectionHeading from "@/components/SectionHeading";
 import StockSearch from "@/components/stock-analysis/StockSearch";
 import { StockHero, StockLink } from "@/components/stock-analysis/StockUI";
-export const metadata = buildMetadata({ title: "TUTTO 株式分析", description: "事業、業績、Cash Flow、成長性、財務、Valuation、Riskから企業の現在地を観察する教育・研究情報。", path: "/stock-analysis/" });
+export const metadata = buildMetadata({ title: "TUTTO 市場分析", description: "事業、業績、Cash Flow、成長性、財務、Valuation、Riskから企業の現在地を観察する教育・研究情報。", path: "/stock-analysis/" });
 export default function StockAnalysisPage() {
   return <>
-    <StockHero title="TUTTO 株式分析" english="TUTTO Stock Analysis" description="企業を「上がる / 下がる」だけで見るのではなく、事業、売上、利益、Cash Flow、成長性、財務、Valuation、Riskを整理し、企業の現在地を観察します。" />
+    <StockHero title="TUTTO 市場分析" english="TUTTO Market Analysis" description="企業を「上がる / 下がる」だけで見るのではなく、事業、売上、利益、Cash Flow、成長性、財務、Valuation、Riskを整理し、企業の現在地を観察します。" />
     <StockSearch />
     <section className="mt-12">
       <SectionHeading eyebrow="Research / Education" title="企業を知る、変化を見つける" description="一次資料を優先し、事実・計算・推論を分けて整理します。確認できない情報を推測で埋めません。" />
       <div className="grid gap-5 md:grid-cols-2">
         {[
           ["#stock-input", "銘柄を入力して分析", "会社名・証券コード・Tickerから、企業の事業と分析項目を確認します。", "銘柄を入力して分析"],
-          ["/stock-analysis/watchlist/", "TUTTO 注目3銘柄", "公開情報・業績・Cash Flow・事業変化のEvidenceから、現在継続観測している銘柄を確認します。", "注目3銘柄を見る"],
+          ["/stock-analysis/watchlist/", "TUTTO 注目5銘柄", "公開情報・業績・Cash Flow・事業変化のEvidenceから、現在継続観測している銘柄を確認します。", "注目5銘柄を見る"],
         ].map(([href, title, description, cta]) => <article key={href} className="card flex min-w-0 flex-col p-5 sm:p-6">
           <h2 className="text-xl font-bold">{title}</h2><p className="mb-6 mt-3 text-sm leading-7 text-text-secondary">{description}</p>
           <div className="mt-auto"><StockLink href={href}>{cta}</StockLink></div>

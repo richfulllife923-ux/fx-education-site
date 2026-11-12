@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { parsePublishedDailyAnalysis, type PublishedDailyAnalysis } from "@/lib/daily-analysis-content";
 import styles from "./FeaturedFiveClient.module.css";
 
 type PublicStock = { rank: number; code: string; name: string; score: number };
@@ -10,6 +11,12 @@ type ViewState =
   | { status: "loading" }
   | { status: "error" }
   | { status: "ready"; ranking: PublicRanking };
+
+type DailyViewState =
+  | { status: "loading" }
+  | { status: "empty" }
+  | { status: "error" }
+  | { status: "ready"; article: PublishedDailyAnalysis };
 
 function parseRanking(value: unknown): PublicRanking {
   if (!value || typeof value !== "object") throw new Error("PUBLIC_RANKING_UNAVAILABLE");
@@ -80,6 +87,8 @@ function updatedJst(value: string) {
 export default function FeaturedFiveClient() {
   const [attempt, setAttempt] = useState(0);
   const [view, setView] = useState<ViewState>({ status: "loading" });
+  const [dailyAttempt, setDailyAttempt] = useState(0);
+  const [dailyView, setDailyView] = useState<DailyViewState>({ status: "loading" });
 
   useEffect(() => {
     const controller = new AbortController();
@@ -108,6 +117,39 @@ export default function FeaturedFiveClient() {
     };
   }, [attempt]);
 
+  useEffect(() => {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 15000);
+
+    setDailyView({ status: "loading" });
+    void (async () => {
+      try {
+        const response = await fetch("/api/daily-analysis", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (!response.ok) throw new Error("DAILY_ANALYSIS_UNAVAILABLE");
+        const result = (await response.json()) as { status?: unknown; article?: unknown };
+        if (result.status === "empty") {
+          if (!controller.signal.aborted) setDailyView({ status: "empty" });
+          return;
+        }
+        const article = parsePublishedDailyAnalysis(result.article);
+        if (result.status !== "ready" || !article) throw new Error("DAILY_ANALYSIS_INVALID");
+        if (!controller.signal.aborted) setDailyView({ status: "ready", article });
+      } catch {
+        if (!controller.signal.aborted) setDailyView({ status: "error" });
+      } finally {
+        window.clearTimeout(timeout);
+      }
+    })();
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [dailyAttempt]);
+
   const ranking = view.status === "ready" ? view.ranking : null;
   const count = ranking?.stocks.length ?? 0;
   const isPartial = count > 0 && count < 5;
@@ -119,7 +161,7 @@ export default function FeaturedFiveClient() {
           <p className={styles.eyebrow}>TUTTO MARKET OBSERVATION</p>
           <h1>TUTTO 注目5銘柄</h1>
           <p className={styles.lead}>
-            企業の決算・財務・成長性・企業価値・リスクを扱う、TUTTO投資術の株式分析を紹介します。
+            企業の決算・財務・成長性・企業価値・リスクを扱う、TUTTO市場分析を公開しています。
           </p>
           <p className={styles.intro}>
             下の順位と注目度は、保存済みの公開評価データを表示しています。
@@ -201,13 +243,60 @@ export default function FeaturedFiveClient() {
 
         <section className={styles.dailyAnalysis} aria-labelledby="daily-analysis-heading">
           <div className={styles.sectionHeading}>
-            <p className={styles.eyebrow}>DAILY STOCK ANALYSIS</p>
-            <h2 id="daily-analysis-heading">毎日のTUTTO株式分析</h2>
+            <p className={styles.eyebrow}>TUTTO DAILY MARKET ANALYSIS</p>
+            <h2 id="daily-analysis-heading">毎日のTUTTO市場分析</h2>
           </div>
-          <article className={styles.dailyEntry} aria-labelledby="daily-entry-heading">
-            <h3 id="daily-entry-heading">本日の分析</h3>
-            <p>企業の業績・財務・成長性・企業価値・リスクを日々分析し、この欄に掲載します。</p>
-          </article>
+          <div className={styles.dailyEntryState} aria-live="polite" aria-busy={dailyView.status === "loading"}>
+            {dailyView.status === "loading" && (
+              <p className={styles.state} role="status">毎日の市場分析を読み込んでいます…</p>
+            )}
+            {dailyView.status === "empty" && (
+              <p className={styles.state} role="status">本日の分析はまだ公開されていません。</p>
+            )}
+            {dailyView.status === "error" && (
+              <div className={styles.state} role="alert">
+                <p>毎日の市場分析を取得できませんでした。</p>
+                <button className={styles.retry} type="button" onClick={() => setDailyAttempt((value) => value + 1)}>
+                  再読み込み
+                </button>
+              </div>
+            )}
+            {dailyView.status === "ready" && (
+              <article className={styles.dailyEntry} aria-labelledby="daily-entry-heading">
+                <h3 id="daily-entry-heading">{dailyView.article.title}</h3>
+                <p className={styles.dailyMeta}>
+                  <time dateTime={dailyView.article.date}>{dailyView.article.date.replaceAll("-", "/")} JST</time>
+                  <span aria-hidden="true"> · </span>
+                  {dailyView.article.companyName}（{dailyView.article.ticker}）
+                </p>
+                <p>{dailyView.article.introduction}</p>
+                {dailyView.article.sections.map((section) => (
+                  <section className={styles.dailyArticleSection} key={section.heading}>
+                    <h4>{section.heading}</h4>
+                    {section.paragraphs.map((paragraph, index) => <p key={`${section.heading}-p-${index}`}>{paragraph}</p>)}
+                    {section.points.length > 0 && (
+                      <ul>
+                        {section.points.map((point, index) => <li key={`${section.heading}-i-${index}`}>{point}</li>)}
+                      </ul>
+                    )}
+                  </section>
+                ))}
+                <div className={styles.dailySources}>
+                  <h4>参照した公式資料</h4>
+                  <ul>
+                    {dailyView.article.sources.map((source) => (
+                      <li key={source.url}>
+                        <a href={source.url} target="_blank" rel="noopener noreferrer">{source.label}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <p className={styles.dailyPublished}>
+                  公開更新：<time dateTime={dailyView.article.publishedAt}>{updatedJst(dailyView.article.publishedAt)}</time>
+                </p>
+              </article>
+            )}
+          </div>
         </section>
 
         <aside className={styles.notes} aria-label="重要な注記">

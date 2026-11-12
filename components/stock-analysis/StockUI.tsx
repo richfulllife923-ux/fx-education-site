@@ -12,6 +12,6 @@ export function StockHero({ title, english, description }: { title: string; engl
 export function ResearchDisclaimer() {
   return <aside className="mt-12 border-t border-border pt-6 text-xs leading-6 text-text-secondary">
     <p className="mb-2 font-semibold text-text-primary">Research / Education purpose</p>
-    <p>TUTTO 株式分析は、企業・市場を研究するための教育・分析情報です。特定銘柄の売買を推奨するものではなく、投資助言、利益保証、将来価格の保証を行うものではありません。最終的な投資判断は利用者自身で行ってください。</p>
+    <p>TUTTO 市場分析は、企業・市場を研究するための教育・分析情報です。特定銘柄の売買を推奨するものではなく、投資助言、利益保証、将来価格の保証を行うものではありません。最終的な投資判断は利用者自身で行ってください。</p>
   </aside>;
 }

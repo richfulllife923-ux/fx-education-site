@@ -7,7 +7,7 @@ import NumericHeroParticles from "@/components/NumericHeroParticles";
 export const metadata = buildMetadata({
   title: "TUTTO",
   description:
-    "TUTTOは、市場がどの構造を受け入れ、どの構造を拒否したのかを可視化するために開発中のMT5 Market Structure Platformです。",
+    "TUTTOは市場構造を観測する分析フレームワークです。企業の決算・財務・成長性を毎日調査するTUTTO市場分析も公開しています。",
   path: "/",
 });
 
@@ -59,6 +59,9 @@ export default function HomePage() {
               TUTTOは、市場がどの構造を受け入れ、どの構造を拒否したのかを可視化するために開発中のMT5 Market Structure Platformです。
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/stock-analysis/watchlist/#daily-analysis-heading" className="main-cta cta-stock">
+                毎日更新の市場分析を見る
+              </Link>
               <Link href="/manifesto" className="main-cta cta-manifesto">Manifestoを見る <ArrowRight size={16} strokeWidth={1.8} /></Link>
               <Link href="/blog" className="main-cta cta-manifesto">ブログを見る <ArrowRight size={16} /></Link>
               <Link href="/tools" className="main-cta cta-manifesto">開発状況 <ArrowRight size={16} /></Link>
@@ -80,6 +83,36 @@ export default function HomePage() {
       </section>
 
       <section className="container-page py-8 sm:py-10">
+        <div className="card p-5 sm:p-7" style={{ borderWidth: "1px", borderColor: "rgba(16, 185, 129, 0.62)", background: "linear-gradient(115deg, rgba(16,185,129,0.14), #182238 42%, #111827 100%)", boxShadow: "0 16px 44px -28px rgba(16, 185, 129, 0.36)" }}>
+          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="eyebrow mb-0 text-emerald-300">TUTTO MARKET ANALYSIS</p>
+                <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/50 bg-emerald-400/10 px-3 py-1 text-xs font-bold text-emerald-200">
+                  <span className="h-2 w-2 rounded-full bg-emerald-300" aria-hidden="true" />TUTTOが毎日更新
+                </span>
+              </div>
+              <h2 className="mt-3 text-2xl font-bold leading-tight text-text-primary sm:text-3xl">TUTTO 市場分析</h2>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-text-secondary sm:text-base sm:leading-8">
+                TUTTOが企業の決算・財務・成長性・企業価値・リスクを毎日調査し、確認できた事実と今後の観測点を公開します。
+              </p>
+              <p className="mt-2 max-w-3xl text-sm leading-7 text-text-secondary">
+                注目5銘柄と、企業の変化を追う毎日の分析を同じページでご覧いただけます。予測ではなく、開示情報に基づく観測をお届けします。
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
+              <Link href="/stock-analysis/watchlist/#daily-analysis-heading" className="main-cta cta-stock whitespace-nowrap">
+                毎日の市場分析を見る
+              </Link>
+              <Link href="/stock-analysis/watchlist/#ranking-heading" className="btn-secondary whitespace-nowrap">
+                注目5銘柄を見る
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="container-page py-8 sm:py-10">
         <div className="card bg-surface/70 p-5 sm:p-6">
           <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
@@ -96,19 +129,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="container-page pb-4 sm:pb-6">
-        <div className="card p-5 sm:p-6" style={{ borderWidth: "1px", borderColor: "rgba(16, 185, 129, 0.5)", backgroundColor: "#182238", boxShadow: "0 14px 40px -28px rgba(0, 0, 0, 0.55), 0 0 18px rgba(16, 185, 129, 0.06)" }}>
-          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
-            <div>
-              <p className="eyebrow text-emerald-400">TUTTO STOCK ANALYSIS</p>
-              <h2 className="text-2xl font-bold sm:text-3xl">TUTTO 株式分析</h2>
-              <p className="mt-4 max-w-2xl text-sm leading-8 text-text-secondary">企業の事業、業績、Cash Flow、成長性、バリュエーション、リスクを整理し、企業の現在地を構造的に分析します。</p>
-              <p className="mt-3 max-w-2xl text-sm leading-8 text-text-secondary">有名企業だけでなく、まだ市場で十分に認知されていない成長企業も研究対象として探索します。</p>
-            </div>
-            <Link href="/stock-analysis/watchlist/" className="main-cta cta-stock">注目5銘柄を見る <span className="inline-flex h-[18px] w-[18px] items-center justify-center">→</span></Link>
-          </div>
-        </div>
-      </section>
       <section className="container-page py-10 pb-16 sm:py-14 sm:pb-24">
         <div className="card border-primary bg-[linear-gradient(135deg,rgba(59,130,246,0.16),rgba(21,28,46,0.88)_44%,rgba(11,16,32,0.96))] p-6 sm:p-8">
           <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
