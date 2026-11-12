@@ -206,7 +206,7 @@ export default function FeaturedFiveClient() {
           </div>
           <article className={styles.dailyEntry} aria-labelledby="daily-entry-heading">
             <h3 id="daily-entry-heading">本日の分析</h3>
-            <p>本日の分析記事は準備中です。</p>
+            <p>企業の業績・財務・成長性・企業価値・リスクを日々分析し、この欄に掲載します。</p>
           </article>
         </section>
 
