@@ -41,6 +41,26 @@ export const OBSERVATION_TOP5_SCHEMA="tutto-public-observation/2" as const;
 export const OBSERVATION_TOP5_KEY="top5-public-observation";
 export const OBSERVATION_INPUT_KEY="public-observation-input";
 export const OBSERVATION_REVIEW_KEY="top5-public-observation-review";
+/** Muse submission path (Owner decision, 2026-11-12): inputs Muse verified against
+ *  primary sources are stored separately from the legacy sealed input, and the
+ *  publication is authorized by a truthful provenance record instead of JEV
+ *  PRE/POST receipts. The provenance record is not a review receipt and never
+ *  claims a review happened. */
+export const OBSERVATION_CLAUDE_INPUT_KEY="public-observation-input-Muse";
+export const OBSERVATION_PROVENANCE_KEY="top5-public-observation-provenance";
+export type PublicationProvenance = {
+  schema:"tutto-public-observation-provenance/1"; scope:"PUBLIC_OBSERVATION_TOP5";
+  input_sha256:string; projection_sha256:string;
+  via:"CLAUDE_SUBMISSION"; review:"NOT_APPLICABLE"; published_at:string;
+};
+export function isPublicationProvenance(x:unknown,p:Top5ObservationProjection):x is PublicationProvenance {
+  if(!x || typeof x!=="object")return false;
+  const r=x as PublicationProvenance;
+  return r.schema==="tutto-public-observation-provenance/1" && r.scope==="PUBLIC_OBSERVATION_TOP5" &&
+    r.via==="CLAUDE_SUBMISSION" && r.review==="NOT_APPLICABLE" &&
+    r.input_sha256===p.integrity.input_sha256 && r.projection_sha256===p.projection_sha256 &&
+    timestamp(r.published_at);
+}
 export type Top5ObservationProjection=Omit<ObservationProjection,"schema"|"top3"|"integrity"> & {
   schema:typeof OBSERVATION_TOP5_SCHEMA; selected_count:number; top5:ObservationRow[];
   integrity:ObservationProjection["integrity"] & {input_sha256:string};

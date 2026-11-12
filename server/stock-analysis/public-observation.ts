@@ -1,6 +1,6 @@
 import type {CompanyData,Datum,FinancialPeriod} from "./model";
 import type {ResearchRunStore} from "./featured";
-import {OBSERVATION_KEY,verifyObservationProjection,OBSERVATION_TOP5_SCHEMA,OBSERVATION_MODEL,OBSERVATION_TOP5_KEY,OBSERVATION_INPUT_KEY,OBSERVATION_REVIEW_KEY,observationDigest,verifyTop5Observation,type Top5ObservationProjection} from "../../lib/public-observation";
+import {OBSERVATION_KEY,verifyObservationProjection,OBSERVATION_TOP5_SCHEMA,OBSERVATION_MODEL,OBSERVATION_TOP5_KEY,OBSERVATION_INPUT_KEY,OBSERVATION_REVIEW_KEY,OBSERVATION_CLAUDE_INPUT_KEY,OBSERVATION_PROVENANCE_KEY,isPublicationProvenance,observationDigest,verifyTop5Observation,type Top5ObservationProjection,type PublicationProvenance} from "../../lib/public-observation";
 
 export type ObservationMetrics={code:string;name:string;period:string;growth:number;margin:number;cashMargin:number};
 const days=(a:string,b:string)=>(Date.parse(a)-Date.parse(b))/86400000;
@@ -77,10 +77,39 @@ export async function selectTop5Observation(value:unknown):Promise<Top5Observati
   return verifyTop5Observation(projection);
 }
 /** Actual external release PRE/POST receipts, independent from Formal Research JEV. */
-async function verifyPublicReview(store:ObservationStore,p:Top5ObservationProjection){
+async function hasPublicReview(store:ObservationStore,p:Top5ObservationProjection):Promise<boolean>{
   const r=await store.get(OBSERVATION_REVIEW_KEY,"json") as {scope?:string;input_sha256?:string;projection_sha256?:string;pre?:{status?:string;request_id?:string;response_sha256?:string};post?:{status?:string;request_id?:string;response_sha256?:string}}|null;
-  if(!r || r.scope!=="PUBLIC_OBSERVATION_TOP5" || r.input_sha256!==p.integrity.input_sha256 || r.projection_sha256!==p.projection_sha256 ||
-     [r.pre,r.post].some(j=>j?.status!=="PASS" || !j.request_id || !sha(j.response_sha256)))throw Error("OBSERVATION_REVIEW_HOLD");
+  return !!r && r.scope==="PUBLIC_OBSERVATION_TOP5" && r.input_sha256===p.integrity.input_sha256 && r.projection_sha256===p.projection_sha256 &&
+     ![r.pre,r.post].some(j=>j?.status!=="PASS" || !j.request_id || !sha(j.response_sha256));
+}
+/** Publication gate. A stored projection may be read or refreshed only when it is
+ *  authorized for its exact input/projection hashes by one of:
+ *  - matching external JEV PRE/POST PASS receipts (legacy path), or
+ *  - a truthful provenance record for the authenticated Muse submission path
+ *    (Owner decision, 2026-11-12: JEV is not used for this path; the record
+ *    states review NOT_APPLICABLE and never imitates a review receipt).
+ *  Anything else fails closed. */
+async function verifyPublicReview(store:ObservationStore,p:Top5ObservationProjection){
+  if(await hasPublicReview(store,p))return;
+  if(isPublicationProvenance(await store.get(OBSERVATION_PROVENANCE_KEY,"json"),p))return;
+  throw Error("OBSERVATION_REVIEW_HOLD");
+}
+/** Compute the projection for a Muse-submitted input without storing anything.
+ *  Scoring reuses the existing model via selectTop5Observation; nothing is imputed. */
+export async function previewObservationSubmission(value:unknown):Promise<Top5ObservationProjection>{
+  return selectTop5Observation(value);
+}
+/** Publish a Muse-submitted input: compute with the existing model, then store
+ *  the submitted input (audit), its provenance record, and the projection. */
+export async function publishObservationSubmission(store:ObservationStore|undefined,value:unknown,publishedAt=new Date().toISOString()):Promise<Top5ObservationProjection>{
+  if(!store?.put)throw Error("OBSERVATION_STORE_UNAVAILABLE");
+  const p=await selectTop5Observation(value);
+  const provenance:PublicationProvenance={schema:"tutto-public-observation-provenance/1",scope:"PUBLIC_OBSERVATION_TOP5",
+    input_sha256:p.integrity.input_sha256,projection_sha256:p.projection_sha256,via:"CLAUDE_SUBMISSION",review:"NOT_APPLICABLE",published_at:publishedAt};
+  await store.put(OBSERVATION_CLAUDE_INPUT_KEY,JSON.stringify(value));
+  await store.put(OBSERVATION_PROVENANCE_KEY,JSON.stringify(provenance));
+  await store.put(OBSERVATION_TOP5_KEY,JSON.stringify(p));
+  return p;
 }
 export async function readTop5Observation(store?:ObservationStore){
   if(!store)throw Error("OBSERVATION_STORE_UNAVAILABLE");
