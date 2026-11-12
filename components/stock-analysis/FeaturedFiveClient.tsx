@@ -199,6 +199,17 @@ export default function FeaturedFiveClient() {
           )}
         </section>
 
+        <section className={styles.dailyAnalysis} aria-labelledby="daily-analysis-heading">
+          <div className={styles.sectionHeading}>
+            <p className={styles.eyebrow}>DAILY STOCK ANALYSIS</p>
+            <h2 id="daily-analysis-heading">毎日のTUTTO株式分析</h2>
+          </div>
+          <article className={styles.dailyEntry} aria-labelledby="daily-entry-heading">
+            <h3 id="daily-entry-heading">本日の分析</h3>
+            <p>本日の分析記事は準備中です。</p>
+          </article>
+        </section>
+
         <aside className={styles.notes} aria-label="重要な注記">
           <p>本ページの公開観測ランキングは、Formal Researchの認証・承認結果とは異なります。</p>
           <p>
