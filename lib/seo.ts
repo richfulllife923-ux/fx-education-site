@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 const SITE_NAME = "TUTTO";
-const SITE_URL = "https://example.com";
+const SITE_URL = "https://fx-education-site.pages.dev";
 const DEFAULT_DESCRIPTION =
   "TUTTOは、市場がどの構造を受け入れ、どの構造を拒否したのかを可視化するために開発中のMarket Structure Observation Frameworkです。";
 const DEFAULT_OG_IMAGE = `${SITE_URL}/brand/og-image.png`;
