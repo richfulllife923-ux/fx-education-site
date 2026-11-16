@@ -52,7 +52,7 @@ test('public GET returns empty before first publication, then reads only the dai
   assert.deepEqual(await response.json(), { status: 'empty' });
   response = await onRequest({ request: request('POST', article()), env: { TOP3_RESEARCH_RUN: backing, DAILY_ANALYSIS_PUBLISH_TOKEN: TOKEN } });
   assert.equal(response.status, 201);
-  assert.deepEqual(backing.writes, [KEY]);
+  assert.equal(backing.writes[0], KEY);
   response = await onRequest({ request: request('GET', undefined, { token: null }), env: { TOP3_RESEARCH_RUN: backing } });
   const published = await response.json();
   assert.equal(response.status, 200);
@@ -98,7 +98,8 @@ test('older article dates cannot replace the current entry, while same-day corre
   assert.equal((await onRequest({ request: request('POST', old), env })).status, 409);
   assert.equal((await onRequest({ request: request('POST', { ...article(), title: '訂正版' }), env })).status, 201);
   assert.equal(backing.values.get(KEY).title, '訂正版');
-  assert.equal(backing.writes.length, 1);
+  // One write for the current article, plus the archive item and archive index.
+  assert.equal(backing.writes.length, 3);
 });
 
 test('corrupt stored content is not silently replaced by a new publish', async () => {

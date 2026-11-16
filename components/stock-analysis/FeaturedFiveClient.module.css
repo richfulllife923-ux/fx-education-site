@@ -319,6 +319,21 @@
   color: var(--color-text-secondary);
 }
 
+.archiveLink {
+  margin: 1.25rem 0 0;
+  font-size: 0.9rem;
+}
+
+.archiveLink a {
+  color: var(--color-primary);
+  text-underline-offset: 0.2em;
+}
+
+.archiveLink a:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 3px;
+}
+
 .notes {
   padding-top: 1.5rem;
   color: var(--color-text-secondary);

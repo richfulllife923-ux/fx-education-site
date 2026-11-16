@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { parsePublishedDailyAnalysis, type PublishedDailyAnalysis } from "@/lib/daily-analysis-content";
 import styles from "./FeaturedFiveClient.module.css";
@@ -503,6 +504,9 @@ export default function FeaturedFiveClient() {
               </article>
             )}
           </div>
+          <p className={styles.archiveLink}>
+            <Link href="/daily-analysis/archive">過去の市場分析アーカイブ →</Link>
+          </p>
         </section>
 
         <aside className={styles.notes} aria-label="重要な注記">

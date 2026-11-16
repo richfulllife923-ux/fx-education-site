@@ -1,0 +1,58 @@
+.archiveList {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.archiveItem {
+  display: block;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.65rem;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.archiveItem:hover {
+  border-color: var(--color-primary);
+}
+
+.archiveItem:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 3px;
+}
+
+.archiveItem[aria-current="true"] {
+  border-color: var(--color-primary);
+}
+
+.articleState {
+  margin-top: 1.2rem;
+}
+
+.archiveDate {
+  color: var(--color-primary);
+  font-size: 0.82rem;
+}
+
+.archiveTitle {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.archiveCompany {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
