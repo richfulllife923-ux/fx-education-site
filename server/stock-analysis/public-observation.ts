@@ -117,6 +117,16 @@ export async function readTop5Observation(store?:ObservationStore){
 }
 export async function refreshTop5Observation(store?:ObservationStore){
   if(!store?.put)throw Error("OBSERVATION_STORE_UNAVAILABLE");
+  // A projection published through the authenticated Muse submission path
+  // (provenance record on file) is authoritative for the public Top5:
+  // the legacy refresh must not overwrite it from the sealed legacy input.
+  const existing=await store.get(OBSERVATION_TOP5_KEY,"json");
+  if(existing){
+    try{
+      const current=await verifyTop5Observation(existing);
+      if(isPublicationProvenance(await store.get(OBSERVATION_PROVENANCE_KEY,"json"),current))return current;
+    }catch{/* fall through to the legacy refresh */}
+  }
   const p=await selectTop5Observation(await store.get(OBSERVATION_INPUT_KEY,"json"));await verifyPublicReview(store,p);
   const previous=await store.get(OBSERVATION_TOP5_KEY,"json");
   // Identical generation/result retains the same update time and requires no write.
