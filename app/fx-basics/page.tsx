@@ -29,11 +29,16 @@ function ChapterSection({
 }) {
   return (
     <section id={id} className="container-page scroll-mt-24 border-t border-border py-14 sm:py-16">
-      <p className="eyebrow">Chapter {no}</p>
-      <h2 className="mt-2 font-display text-3xl font-black leading-tight text-text-primary">
-        第{no}章 {title}
-      </h2>
-      <p className="mt-2 text-base font-semibold text-text-primary">{sub}</p>
+      <div
+        className="rounded-card px-6 py-6 sm:px-8"
+        style={{ background: "linear-gradient(120deg, #075985 0%, #0284c7 55%, #0ea5e9 100%)" }}
+      >
+        <p className="text-xs font-bold uppercase tracking-[0.25em] text-sky-100">Chapter {no}</p>
+        <h2 className="mt-2 font-display text-3xl font-black leading-tight text-white">
+          第{no}章 {title}
+        </h2>
+        <p className="mt-2 text-base font-semibold text-sky-50">{sub}</p>
+      </div>
       <div className="mt-6 rounded-card border border-border bg-surface p-5">
         <p className="text-xs font-bold uppercase tracking-widest text-text-secondary">この章でわかること</p>
         <ul className="mt-3 grid gap-2 sm:grid-cols-2">
