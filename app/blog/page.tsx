@@ -6,7 +6,7 @@ import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
   title: "ブログ",
-  description: "TUTTOの市場構造観測、資金管理、開発状況に関する記事一覧です。",
+  description: "TUTTOの基礎知識と開発ログの記事一覧です。",
   path: "/blog",
 });
 

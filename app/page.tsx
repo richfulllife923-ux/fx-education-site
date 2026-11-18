@@ -63,7 +63,7 @@ export default function HomePage() {
                 毎日更新の市場分析を見る
               </Link>
               <Link href="/manifesto" className="main-cta cta-manifesto">Manifestoを見る <ArrowRight size={16} strokeWidth={1.8} /></Link>
-              <Link href="/blog" className="main-cta cta-manifesto">ブログを見る <ArrowRight size={16} /></Link>
+              <Link href="/fx-basics" className="main-cta cta-manifesto">基礎知識を見る <ArrowRight size={16} /></Link>
               <Link href="/tools" className="main-cta cta-manifesto">開発状況 <ArrowRight size={16} /></Link>
             </div>
           </div>

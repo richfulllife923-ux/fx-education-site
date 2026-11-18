@@ -1,4 +1,4 @@
-export type Category = "TUTTO" | "市場構造" | "資金管理" | "開発ログ" | "基礎知識";
+export type Category = "基礎知識" | "開発ログ";
 
 export interface Post {
   slug: string;
@@ -14,14 +14,14 @@ export interface Post {
   content: string;
 }
 
-export const CATEGORIES: Category[] = ["TUTTO", "市場構造", "資金管理", "開発ログ", "基礎知識"];
+export const CATEGORIES: Category[] = ["基礎知識", "開発ログ"];
 
 export const posts: Post[] = [
   {
     slug: "why-survival-rate-matters-more-than-winrate",
     title: "勝率よりも生存率を重視する理由",
     excerpt: "一度の勝ち負けではなく、市場に残り続けるための設計思想を整理します。",
-    category: "資金管理",
+    category: "基礎知識",
     tags: ["資金管理", "リスク", "生存率"],
     coverImage: "/images/blog/survival-rate.jpg",
     publishedAt: "2026-01-10",
@@ -35,7 +35,7 @@ export const posts: Post[] = [
     slug: "lot-size-basics-for-beginners",
     title: "ロットサイズを固定せず、状態に合わせて考える",
     excerpt: "ロット計算を、許容損失・市場状態・判断品質の関係から見直します。",
-    category: "資金管理",
+    category: "基礎知識",
     tags: ["ロット", "リスク", "初心者"],
     coverImage: "/images/blog/lot-size.jpg",
     publishedAt: "2026-02-02",
@@ -49,7 +49,7 @@ export const posts: Post[] = [
     slug: "tutto-theory-state1-to-state5-overview",
     title: "TUTTOが市場構造を観測するということ",
     excerpt: "TUTTOを売買サインではなく、市場構造の観測フレームワークとして捉えるための導入です。",
-    category: "TUTTO",
+    category: "基礎知識",
     tags: ["TUTTO", "市場構造", "観測"],
     coverImage: "/images/blog/tutto-overview.jpg",
     publishedAt: "2026-03-05",
@@ -77,7 +77,7 @@ export const posts: Post[] = [
     slug: "why-you-should-withdraw-profit",
     title: "利益を守るルールを先に決める",
     excerpt: "利益を伸ばす前に、利益を口座外へ逃がす設計を持つ重要性を整理します。",
-    category: "資金管理",
+    category: "基礎知識",
     tags: ["利益保護", "出金", "資金管理"],
     coverImage: "/images/blog/withdraw-profit.jpg",
     publishedAt: "2026-04-18",
