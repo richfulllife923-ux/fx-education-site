@@ -82,42 +82,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="container-page py-8 sm:py-10" aria-labelledby="main-manifesto-heading">
-        <div className="card overflow-hidden p-5 sm:p-7" style={{ borderWidth: "1px", borderColor: "rgba(217, 164, 65, 0.55)", background: "linear-gradient(120deg, rgba(217,164,65,0.12), #182238 45%, #111827 100%)", boxShadow: "0 16px 44px -28px rgba(217, 164, 65, 0.35)" }}>
-          <img
-            src="/images/tutto-main-manifesto.jpg"
-            alt="TUTTO — すべての人に、資産を。TUTTO INVESTMENT PHILOSOPHY"
-            width={680}
-            height={383}
-            className="block w-full rounded-card object-cover"
-          />
-          <p className="eyebrow mb-0 mt-7" style={{ color: "#e7c26a" }}>Main Manifesto</p>
-          <h2 id="main-manifesto-heading" className="mt-3 text-2xl font-bold leading-tight text-text-primary sm:text-3xl">TUTTO — すべての人に、資産を。</h2>
-          <p className="mt-2 font-display text-sm font-black uppercase tracking-[0.18em]" style={{ color: "#e7c26a" }}>TUTTO Investment Philosophy</p>
-          <div className="mt-5 space-y-4 text-sm leading-8 text-text-secondary sm:text-base">
-            <p>TUTTO はイタリア語で「すべて」「全体」を意味する。</p>
-            <p>この名前には、資産を持つ一部の人だけでなく、すべての人に資産形成の知識と機会を届けたいという理念を込める。資本の優位性を知るこの資本の非対称性が、富の格差を維持・拡大させる要因の一つとなっている。</p>
-          </div>
-          <h3 className="mt-8 text-xl font-bold text-text-primary">TUTTOが目指すもの</h3>
-          <div className="mt-4 space-y-4 text-sm leading-8 text-text-secondary sm:text-base">
-            <p>TUTTOは富裕層だけの投資術ではない。</p>
-            <p>資産を持たない人が資産を持つ側へ移行するために、経済の仕組みを学び、投資のリスクを理解し、少額からでも資本を築く方法を研究する。</p>
-          </div>
-          <div className="mt-6 rounded-card border p-5" style={{ borderColor: "rgba(217,164,65,0.45)", background: "rgba(217,164,65,0.07)" }}>
-            <p className="text-sm leading-8 text-text-primary sm:text-base">1億円の資産を持つ人は、わずか1%の利益で100万円を得られる。</p>
-            <p className="mt-2 text-sm leading-8 text-text-primary sm:text-base">一方、100万円しか持たない人が同じ100万円を得るには、100%の利益が必要になる。</p>
-          </div>
-          <div className="mt-6 space-y-4 text-sm leading-8 text-text-secondary sm:text-base">
-            <p>同じ市場に参加していても、資本の規模によって利益を得るための条件は大きく異なる。投資とは、一度の勝負で大金を得ることではない。</p>
-            <p>資産を守り、育て、次の世代へつなぐための知識と実践である。</p>
-            <p>私たちは、誰もが必ず富裕層になれるとは約束しない。</p>
-            <p>しかし、生まれた環境や現在の資産額だけで、経済的な未来が決まるべきではないと考える。TUTTO — すべての人に、資産を。</p>
-          </div>
-          <p className="mt-8 font-display text-base font-black tracking-[0.14em] text-text-primary">Knowledge for All. Opportunity for All.</p>
-          <p className="mt-3 text-sm font-semibold leading-8 text-text-primary sm:text-base">予測より観測。感覚より検証。そして、すべての人に資産形成の機会を。</p>
-        </div>
-      </section>
-
       <section className="container-page py-8 sm:py-10">
         <div className="card p-5 sm:p-7" style={{ borderWidth: "1px", borderColor: "rgba(16, 185, 129, 0.62)", background: "linear-gradient(115deg, rgba(16,185,129,0.14), #182238 42%, #111827 100%)", boxShadow: "0 16px 44px -28px rgba(16, 185, 129, 0.36)" }}>
           <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">

@@ -120,6 +120,29 @@ export default function ManifestoPage() {
 
       <section className="container-page py-16 sm:py-24">
         <SectionHeading
+          eyebrow="TUTTO Investment Philosophy"
+          title="TUTTO — すべての人に、資産を。"
+          description="TUTTOはイタリア語で「すべて」「全体」を意味する。資産を持つ一部の人だけでなく、すべての人に資産形成の知識と機会を届けたい。その理念を、この名前に込める。"
+        />
+        <Image
+          src="/images/tutto-main-manifesto.jpg"
+          alt="TUTTO — すべての人に、資産を。TUTTO INVESTMENT PHILOSOPHY"
+          width={680}
+          height={383}
+          sizes="100vw"
+          className="h-auto w-full rounded-card object-cover"
+        />
+        <div className="prose-tutto mt-8 max-w-3xl text-[15px] sm:text-base">
+          <p>資本には非対称性がある。1億円の資産を持つ人は、わずか1%の利益で100万円を得られる。一方、100万円しか持たない人が同じ100万円を得るには、100%の利益が必要になる。同じ市場に参加していても、資本の規模によって利益を得るための条件は大きく異なる。</p>
+          <p>TUTTOは富裕層だけの投資術ではない。資産を持たない人が資産を持つ側へ移行するために、経済の仕組みを学び、投資のリスクを理解し、少額からでも資本を築く方法を研究する。投資とは、一度の勝負で大金を得ることではない。資産を守り、育て、次の世代へつなぐための知識と実践である。</p>
+          <p>私たちは、誰もが必ず富裕層になれるとは約束しない。しかし、生まれた環境や現在の資産額だけで、経済的な未来が決まるべきではないと考える。</p>
+          <p className="font-display font-black tracking-[0.14em] text-text-primary">Knowledge for All. Opportunity for All.</p>
+          <p className="font-semibold text-text-primary">予測より観測。感覚より検証。そして、すべての人に資産形成の機会を。</p>
+        </div>
+      </section>
+
+      <section className="container-page py-16 sm:py-24">
+        <SectionHeading
           eyebrow="Why TUTTO Exists"
           title="低額資金からでも、市場構造を学ぶことはできる"
           description="TUTTOは、少額で簡単に儲かることを伝えるためのものではありません。限られた資金から始める人が、市場との向き合い方を学び、判断材料を整理できるようになるためのFrameworkです。"
