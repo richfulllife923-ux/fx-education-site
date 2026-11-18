@@ -193,6 +193,7 @@ export default function FxBasicsPage() {
         <SectionHeading
           eyebrow="Basics — Step-by-Step Trading Textbook"
           title="基礎知識"
+          titleClassName="text-[#a3e635]"
           description="初心者向けFXトレード解説BOOK。FXの仕組みから、チャートの読み方、メンタル、リスクと始める前の実務知識までを、章ごとに細分化して整理しました。旧「資金管理」ページの内容は、本ページの第8章に統合しています。"
         />
         <div className="mt-6">
