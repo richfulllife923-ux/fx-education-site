@@ -15,7 +15,6 @@ const COLUMNS: { title: string; links: { href: string; label: string }[] }[] = [
       { href: "/roadmap", label: "Roadmap" },
       { href: "/brokers", label: "FX会社を選ぶ" },
       { href: "/fx-basics", label: "基礎知識" },
-      { href: "/fund-management", label: "資金管理" },
       { href: "/blog", label: "ブログ" },
     ],
   },
