@@ -240,7 +240,7 @@ export default function FxBasicsPage() {
       </section>
 
       <section className="container-page mt-12">
-        <h2 className="font-display text-xl font-bold text-text-primary">目次</h2>
+        <h2 className="font-display text-xl font-bold text-[#ef4444]">目次</h2>
         <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {TOC_GROUPS.map((group) => (
             <div key={group.label} className="card p-5">
