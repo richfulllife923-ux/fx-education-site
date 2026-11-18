@@ -1115,7 +1115,7 @@ export default function FxBasicsPage() {
 
       <section id="glossary" className="container-page scroll-mt-24 border-t border-border py-14 sm:py-16">
         <p className="eyebrow">Appendix</p>
-        <h2 className="mt-2 font-display text-3xl font-black leading-tight text-text-primary">用語集（50音順）</h2>
+        <h2 className="mt-2 font-display text-3xl font-black leading-tight text-[#facc15]">用語集（50音順）</h2>
         <p className="mt-3 max-w-3xl text-sm leading-8 text-text-secondary sm:text-[15px]">
           分からない言葉は何度でもここへ戻ってください。
         </p>
