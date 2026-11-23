@@ -29,6 +29,7 @@ export default function DailyPeriodPageClient({ kind }: { kind: "week" | "month"
         <SectionHeading
           eyebrow={kind === "week" ? "TUTTO WEEKLY MARKET ANALYSIS" : "TUTTO MONTHLY MARKET ANALYSIS"}
           title={kind === "week" ? "週刊市場分析" : "月間市場分析"}
+          titleClassName="text-[#facc15]"
           description={
             kind === "week"
               ? `毎日の市場分析を週（月曜始まり）ごとにまとめた一覧です。週を選ぶと、その週の記事一覧を表示します。${DISCLAIMER}`
@@ -48,6 +49,7 @@ export default function DailyPeriodPageClient({ kind }: { kind: "week" | "month"
       <SectionHeading
         eyebrow={kind === "week" ? "TUTTO WEEKLY MARKET ANALYSIS" : "TUTTO MONTHLY MARKET ANALYSIS"}
         title={kind === "week" ? label : `${label}の市場分析`}
+        titleClassName="text-[#facc15]"
         description={`この${kind === "week" ? "週" : "月"}に公開した毎日の市場分析の一覧です。${DISCLAIMER}`}
       />
       <DailyArchiveClient periodStart={start} periodEnd={end} pageSize={10} />

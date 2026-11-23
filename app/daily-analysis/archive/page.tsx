@@ -19,6 +19,7 @@ export default function DailyAnalysisArchivePage() {
         <SectionHeading
           eyebrow="TUTTO DAILY MARKET ANALYSIS"
           title="過去のTUTTO市場分析"
+          titleClassName="text-[#facc15]"
           description="これまでに公開した毎日の市場分析の一覧です。記事を選ぶと全文を表示します。表示内容は公開時点の観測結果であり、売買指示や投資助言ではありません。"
         />
         <ArchiveNavCards />

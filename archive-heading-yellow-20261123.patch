@@ -1,0 +1,44 @@
+diff --git a/app/daily-analysis/archive/page.tsx b/app/daily-analysis/archive/page.tsx
+index ed70da7..c52d5fa 100644
+--- a/app/daily-analysis/archive/page.tsx
++++ b/app/daily-analysis/archive/page.tsx
+@@ -19,6 +19,7 @@ export default function DailyAnalysisArchivePage() {
+         <SectionHeading
+           eyebrow="TUTTO DAILY MARKET ANALYSIS"
+           title="過去のTUTTO市場分析"
++          titleClassName="text-[#facc15]"
+           description="これまでに公開した毎日の市場分析の一覧です。記事を選ぶと全文を表示します。表示内容は公開時点の観測結果であり、売買指示や投資助言ではありません。"
+         />
+         <ArchiveNavCards />
+diff --git a/components/stock-analysis/ArchiveNavCards.module.css b/components/stock-analysis/ArchiveNavCards.module.css
+index 56299b2..f7fe405 100644
+--- a/components/stock-analysis/ArchiveNavCards.module.css
++++ b/components/stock-analysis/ArchiveNavCards.module.css
+@@ -31,6 +31,7 @@
+ 
+ .navTitle {
+   display: block;
++  color: #facc15;
+   font-size: 1.05rem;
+   font-weight: 700;
+   line-height: 1.6;
+diff --git a/components/stock-analysis/DailyPeriodPageClient.tsx b/components/stock-analysis/DailyPeriodPageClient.tsx
+index 7dee56c..24097ff 100644
+--- a/components/stock-analysis/DailyPeriodPageClient.tsx
++++ b/components/stock-analysis/DailyPeriodPageClient.tsx
+@@ -29,6 +29,7 @@ export default function DailyPeriodPageClient({ kind }: { kind: "week" | "month"
+         <SectionHeading
+           eyebrow={kind === "week" ? "TUTTO WEEKLY MARKET ANALYSIS" : "TUTTO MONTHLY MARKET ANALYSIS"}
+           title={kind === "week" ? "週刊市場分析" : "月間市場分析"}
++          titleClassName="text-[#facc15]"
+           description={
+             kind === "week"
+               ? `毎日の市場分析を週（月曜始まり）ごとにまとめた一覧です。週を選ぶと、その週の記事一覧を表示します。${DISCLAIMER}`
+@@ -48,6 +49,7 @@ export default function DailyPeriodPageClient({ kind }: { kind: "week" | "month"
+       <SectionHeading
+         eyebrow={kind === "week" ? "TUTTO WEEKLY MARKET ANALYSIS" : "TUTTO MONTHLY MARKET ANALYSIS"}
+         title={kind === "week" ? label : `${label}の市場分析`}
++        titleClassName="text-[#facc15]"
+         description={`この${kind === "week" ? "週" : "月"}に公開した毎日の市場分析の一覧です。${DISCLAIMER}`}
+       />
+       <DailyArchiveClient periodStart={start} periodEnd={end} pageSize={10} />
