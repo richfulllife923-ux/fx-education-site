@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { parsePublishedDailyAnalysis, type PublishedDailyAnalysis } from "@/lib/daily-analysis-content";
+import { monthKeyOf, monthLabel } from "@/lib/archive-periods";
 import featuredStyles from "./FeaturedFiveClient.module.css";
 import styles from "./DailyArchiveClient.module.css";
 
-type ArchiveIndexEntry = {
+export type ArchiveIndexEntry = {
   id: string;
   date: string;
   title: string;
@@ -28,7 +29,7 @@ type ArticleState =
 
 const ARCHIVE_ID_PATTERN = /^[0-9]{4}-[0-9]{2}-[0-9]{2}(-\d+)?$/;
 
-function parseArchiveIndex(value: unknown): ArchiveIndexEntry[] {
+export function parseArchiveIndex(value: unknown): ArchiveIndexEntry[] {
   if (!Array.isArray(value)) throw new Error("DAILY_ARCHIVE_UNAVAILABLE");
   return value.map((item) => {
     if (!item || typeof item !== "object") throw new Error("DAILY_ARCHIVE_UNAVAILABLE");
@@ -74,9 +75,25 @@ function updatedJst(value: string) {
   return `${part("year")}/${part("month")}/${part("day")} ${part("hour")}:${part("minute")} JST`;
 }
 
-export default function DailyArchiveClient() {
+export type DailyArchiveClientProps = {
+  /** Inclusive JST date range ("YYYY-MM-DD") to limit the list to one period. */
+  periodStart?: string;
+  periodEnd?: string;
+  /** Show a month heading whenever the month changes within the list. */
+  groupByMonth?: boolean;
+  /** Items per page. Omit to show the whole list without pagination. */
+  pageSize?: number;
+};
+
+export default function DailyArchiveClient({
+  periodStart,
+  periodEnd,
+  groupByMonth = false,
+  pageSize,
+}: DailyArchiveClientProps = {}) {
   const [attempt, setAttempt] = useState(0);
   const [listView, setListView] = useState<ListState>({ status: "loading" });
+  const [page, setPage] = useState(0);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [articleAttempt, setArticleAttempt] = useState(0);
   const [articleView, setArticleView] = useState<ArticleState>({ status: "idle" });
@@ -144,6 +161,20 @@ export default function DailyArchiveClient() {
     };
   }, [selectedId, articleAttempt]);
 
+  const visibleItems =
+    listView.status === "ready"
+      ? listView.items.filter(
+          (item) =>
+            (!periodStart || item.date >= periodStart) &&
+            (!periodEnd || item.date <= periodEnd),
+        )
+      : [];
+  const totalPages = pageSize ? Math.max(1, Math.ceil(visibleItems.length / pageSize)) : 1;
+  const currentPage = Math.min(page, totalPages - 1);
+  const pageItems = pageSize
+    ? visibleItems.slice(currentPage * pageSize, currentPage * pageSize + pageSize)
+    : visibleItems;
+
   return (
     <div aria-live="polite" aria-busy={listView.status === "loading"}>
       {listView.status === "loading" && (
@@ -163,27 +194,69 @@ export default function DailyArchiveClient() {
         </div>
       )}
 
-      {listView.status === "ready" && (
-        <ol className={styles.archiveList}>
-          {listView.items.map((item) => (
-            <li key={item.id}>
+      {listView.status === "ready" && visibleItems.length === 0 && (
+        <p className={featuredStyles.state} role="status">この期間の記事はまだありません。</p>
+      )}
+
+      {listView.status === "ready" && visibleItems.length > 0 && (
+        <>
+          <ol className={styles.archiveList}>
+            {pageItems.map((item, index) => {
+              const showMonthHeading =
+                groupByMonth &&
+                (index === 0 || monthKeyOf(pageItems[index - 1].date) !== monthKeyOf(item.date));
+              return (
+                <Fragment key={item.id}>
+                  {showMonthHeading && (
+                    <li className={styles.monthHeading}>
+                      <h3>{monthLabel(monthKeyOf(item.date))}</h3>
+                    </li>
+                  )}
+                  <li>
+                    <button
+                      className={styles.archiveItem}
+                      type="button"
+                      aria-current={selectedId === item.id ? "true" : undefined}
+                      onClick={() => setSelectedId(item.id)}
+                    >
+                      <time className={styles.archiveDate} dateTime={item.date}>
+                        {item.date.replaceAll("-", "/")} JST
+                      </time>
+                      <span className={styles.archiveTitle}>{item.title}</span>
+                      <span className={styles.archiveCompany}>
+                        {item.companyName}（{item.ticker}）
+                      </span>
+                    </button>
+                  </li>
+                </Fragment>
+              );
+            })}
+          </ol>
+
+          {pageSize && totalPages > 1 && (
+            <nav className={styles.pagination} aria-label="過去の結果のページ送り">
               <button
-                className={styles.archiveItem}
+                className={styles.pageButton}
                 type="button"
-                aria-current={selectedId === item.id ? "true" : undefined}
-                onClick={() => setSelectedId(item.id)}
+                disabled={currentPage === 0}
+                onClick={() => setPage(currentPage - 1)}
               >
-                <time className={styles.archiveDate} dateTime={item.date}>
-                  {item.date.replaceAll("-", "/")} JST
-                </time>
-                <span className={styles.archiveTitle}>{item.title}</span>
-                <span className={styles.archiveCompany}>
-                  {item.companyName}（{item.ticker}）
-                </span>
+                前へ
               </button>
-            </li>
-          ))}
-        </ol>
+              <span className={styles.pageStatus}>
+                {currentPage + 1} / {totalPages} ページ（全{visibleItems.length}件）
+              </span>
+              <button
+                className={styles.pageButton}
+                type="button"
+                disabled={currentPage >= totalPages - 1}
+                onClick={() => setPage(currentPage + 1)}
+              >
+                次へ
+              </button>
+            </nav>
+          )}
+        </>
       )}
 
       {selectedId && articleView.status === "loading" && (

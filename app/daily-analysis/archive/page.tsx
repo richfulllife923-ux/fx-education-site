@@ -1,6 +1,8 @@
 import Breadcrumb from "@/components/Breadcrumb";
 import SectionHeading from "@/components/SectionHeading";
 import DailyArchiveClient from "@/components/stock-analysis/DailyArchiveClient";
+import ArchiveNavCards from "@/components/stock-analysis/ArchiveNavCards";
+import navStyles from "@/components/stock-analysis/ArchiveNavCards.module.css";
 import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
@@ -19,7 +21,9 @@ export default function DailyAnalysisArchivePage() {
           title="過去のTUTTO市場分析"
           description="これまでに公開した毎日の市場分析の一覧です。記事を選ぶと全文を表示します。表示内容は公開時点の観測結果であり、売買指示や投資助言ではありません。"
         />
-        <DailyArchiveClient />
+        <ArchiveNavCards />
+        <h2 className={navStyles.resultsHeading}>過去の結果</h2>
+        <DailyArchiveClient groupByMonth pageSize={10} />
       </section>
     </div>
   );

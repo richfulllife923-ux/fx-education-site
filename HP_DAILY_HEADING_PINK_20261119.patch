@@ -1,0 +1,14 @@
+--- a/components/stock-analysis/FeaturedFiveClient.module.css
++++ b/components/stock-analysis/FeaturedFiveClient.module.css
+@@ -53,9 +53,9 @@
+ .dailyAnalysis .eyebrow {
+-  color: #facc15;
++  color: #f9a8d4;
+ }
+ 
+ .dailyAnalysis .sectionHeading h2 {
+-  color: #facc15;
++  color: #f9a8d4;
+ }
+ 
+ .sectionHeading h2 {

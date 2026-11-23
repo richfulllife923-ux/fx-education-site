@@ -1,0 +1,741 @@
+diff --git a/app/daily-analysis/archive/monthly/page.tsx b/app/daily-analysis/archive/monthly/page.tsx
+new file mode 100644
+index 0000000..01860a9
+--- /dev/null
++++ b/app/daily-analysis/archive/monthly/page.tsx
+@@ -0,0 +1,28 @@
++import { Suspense } from "react";
++import Breadcrumb from "@/components/Breadcrumb";
++import DailyPeriodPageClient from "@/components/stock-analysis/DailyPeriodPageClient";
++import { buildMetadata } from "@/lib/seo";
++
++export const metadata = buildMetadata({
++  title: "月間市場分析",
++  description: "毎日のTUTTO市場分析を月ごとにまとめた一覧です。月を選ぶと、その月の記事一覧を表示します。",
++  path: "/daily-analysis/archive/monthly",
++});
++
++export default function MonthlyArchiveIndexPage() {
++  return (
++    <div className="pb-24">
++      <Breadcrumb
++        items={[
++          { name: "過去のTUTTO市場分析", path: "/daily-analysis/archive" },
++          { name: "月間市場分析", path: "/daily-analysis/archive/monthly" },
++        ]}
++      />
++      <section className="container-page pt-6">
++        <Suspense fallback={<p role="status">一覧を読み込んでいます…</p>}>
++          <DailyPeriodPageClient kind="month" />
++        </Suspense>
++      </section>
++    </div>
++  );
++}
+diff --git a/app/daily-analysis/archive/page.tsx b/app/daily-analysis/archive/page.tsx
+index a8ceed7..ed70da7 100644
+--- a/app/daily-analysis/archive/page.tsx
++++ b/app/daily-analysis/archive/page.tsx
+@@ -1,6 +1,8 @@
+ import Breadcrumb from "@/components/Breadcrumb";
+ import SectionHeading from "@/components/SectionHeading";
+ import DailyArchiveClient from "@/components/stock-analysis/DailyArchiveClient";
++import ArchiveNavCards from "@/components/stock-analysis/ArchiveNavCards";
++import navStyles from "@/components/stock-analysis/ArchiveNavCards.module.css";
+ import { buildMetadata } from "@/lib/seo";
+ 
+ export const metadata = buildMetadata({
+@@ -19,7 +21,9 @@ export default function DailyAnalysisArchivePage() {
+           title="過去のTUTTO市場分析"
+           description="これまでに公開した毎日の市場分析の一覧です。記事を選ぶと全文を表示します。表示内容は公開時点の観測結果であり、売買指示や投資助言ではありません。"
+         />
+-        <DailyArchiveClient />
++        <ArchiveNavCards />
++        <h2 className={navStyles.resultsHeading}>過去の結果</h2>
++        <DailyArchiveClient groupByMonth pageSize={10} />
+       </section>
+     </div>
+   );
+diff --git a/app/daily-analysis/archive/weekly/page.tsx b/app/daily-analysis/archive/weekly/page.tsx
+new file mode 100644
+index 0000000..e7b2cc7
+--- /dev/null
++++ b/app/daily-analysis/archive/weekly/page.tsx
+@@ -0,0 +1,28 @@
++import { Suspense } from "react";
++import Breadcrumb from "@/components/Breadcrumb";
++import DailyPeriodPageClient from "@/components/stock-analysis/DailyPeriodPageClient";
++import { buildMetadata } from "@/lib/seo";
++
++export const metadata = buildMetadata({
++  title: "週刊市場分析",
++  description: "毎日のTUTTO市場分析を週ごとにまとめた一覧です。週を選ぶと、その週の記事一覧を表示します。",
++  path: "/daily-analysis/archive/weekly",
++});
++
++export default function WeeklyArchiveIndexPage() {
++  return (
++    <div className="pb-24">
++      <Breadcrumb
++        items={[
++          { name: "過去のTUTTO市場分析", path: "/daily-analysis/archive" },
++          { name: "週刊市場分析", path: "/daily-analysis/archive/weekly" },
++        ]}
++      />
++      <section className="container-page pt-6">
++        <Suspense fallback={<p role="status">一覧を読み込んでいます…</p>}>
++          <DailyPeriodPageClient kind="week" />
++        </Suspense>
++      </section>
++    </div>
++  );
++}
+diff --git a/components/stock-analysis/ArchiveNavCards.module.css b/components/stock-analysis/ArchiveNavCards.module.css
+new file mode 100644
+index 0000000..56299b2
+--- /dev/null
++++ b/components/stock-analysis/ArchiveNavCards.module.css
+@@ -0,0 +1,60 @@
++.navGrid {
++  display: grid;
++  gap: 0.75rem;
++  margin: 0 0 2.2rem;
++}
++
++@media (min-width: 640px) {
++  .navGrid {
++    grid-template-columns: 1fr 1fr;
++  }
++}
++
++.navCard {
++  display: block;
++  padding: 1.1rem 1.25rem;
++  border: 1px solid var(--color-border);
++  border-radius: 0.65rem;
++  background: var(--color-surface);
++  color: var(--color-text-primary);
++  text-decoration: none;
++}
++
++.navCard:hover {
++  border-color: var(--color-primary);
++}
++
++.navCard:focus-visible {
++  outline: 3px solid #93c5fd;
++  outline-offset: 3px;
++}
++
++.navTitle {
++  display: block;
++  font-size: 1.05rem;
++  font-weight: 700;
++  line-height: 1.6;
++}
++
++.navDescription {
++  display: block;
++  margin-top: 0.3rem;
++  color: var(--color-text-secondary);
++  font-size: 0.88rem;
++  line-height: 1.7;
++}
++
++.navAction {
++  display: block;
++  margin-top: 0.55rem;
++  color: var(--color-primary);
++  font-size: 0.88rem;
++  font-weight: 600;
++}
++
++.resultsHeading {
++  margin: 0 0 0.4rem;
++  color: var(--color-text-primary);
++  font-size: 1.3rem;
++  font-weight: 700;
++}
+diff --git a/components/stock-analysis/ArchiveNavCards.tsx b/components/stock-analysis/ArchiveNavCards.tsx
+new file mode 100644
+index 0000000..b68b8f4
+--- /dev/null
++++ b/components/stock-analysis/ArchiveNavCards.tsx
+@@ -0,0 +1,29 @@
++import Link from "next/link";
++import styles from "./ArchiveNavCards.module.css";
++
++const CARDS = [
++  {
++    href: "/daily-analysis/archive/weekly",
++    title: "週刊市場分析",
++    description: "毎日の市場分析を週ごとにまとめた一覧です。その週の記事をまとめて読み返せます。",
++  },
++  {
++    href: "/daily-analysis/archive/monthly",
++    title: "月間市場分析",
++    description: "毎日の市場分析を月ごとにまとめた一覧です。その月の記事をまとめて読み返せます。",
++  },
++];
++
++export default function ArchiveNavCards() {
++  return (
++    <div className={styles.navGrid}>
++      {CARDS.map((card) => (
++        <Link key={card.href} className={styles.navCard} href={card.href}>
++          <span className={styles.navTitle}>{card.title}</span>
++          <span className={styles.navDescription}>{card.description}</span>
++          <span className={styles.navAction}>一覧を見る →</span>
++        </Link>
++      ))}
++    </div>
++  );
++}
+diff --git a/components/stock-analysis/DailyArchiveClient.module.css b/components/stock-analysis/DailyArchiveClient.module.css
+index f704a69..31a3683 100644
+--- a/components/stock-analysis/DailyArchiveClient.module.css
++++ b/components/stock-analysis/DailyArchiveClient.module.css
+@@ -32,6 +32,10 @@
+   border-color: var(--color-primary);
+ }
+ 
++a.archiveItem {
++  text-decoration: none;
++}
++
+ .articleState {
+   margin-top: 1.2rem;
+ }
+@@ -56,3 +60,69 @@
+   font-size: 0.85rem;
+   line-height: 1.7;
+ }
++
++.monthHeading {
++  margin-top: 1.4rem;
++}
++
++.monthHeading:first-child {
++  margin-top: 0;
++}
++
++.monthHeading h3 {
++  color: var(--color-text-primary);
++  font-size: 1.05rem;
++  font-weight: 700;
++}
++
++.pagination {
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  gap: 1rem;
++  margin-top: 1.4rem;
++}
++
++.pageButton {
++  padding: 0.5rem 1.1rem;
++  border: 1px solid var(--color-border);
++  border-radius: 0.55rem;
++  background: var(--color-surface);
++  color: var(--color-text-primary);
++  font: inherit;
++  font-size: 0.9rem;
++  cursor: pointer;
++}
++
++.pageButton:hover:not(:disabled) {
++  border-color: var(--color-primary);
++}
++
++.pageButton:disabled {
++  opacity: 0.45;
++  cursor: default;
++}
++
++.pageButton:focus-visible {
++  outline: 3px solid #93c5fd;
++  outline-offset: 3px;
++}
++
++.pageStatus {
++  color: var(--color-text-secondary);
++  font-size: 0.88rem;
++}
++
++.backLink {
++  margin-top: 1.6rem;
++  font-size: 0.92rem;
++}
++
++.backLink a {
++  color: var(--color-primary);
++  text-decoration: none;
++}
++
++.backLink a:hover {
++  text-decoration: underline;
++}
+diff --git a/components/stock-analysis/DailyArchiveClient.tsx b/components/stock-analysis/DailyArchiveClient.tsx
+index b63bf09..c4a3567 100644
+--- a/components/stock-analysis/DailyArchiveClient.tsx
++++ b/components/stock-analysis/DailyArchiveClient.tsx
+@@ -1,11 +1,12 @@
+ "use client";
+ 
+-import { useEffect, useState } from "react";
++import { Fragment, useEffect, useState } from "react";
+ import { parsePublishedDailyAnalysis, type PublishedDailyAnalysis } from "@/lib/daily-analysis-content";
++import { monthKeyOf, monthLabel } from "@/lib/archive-periods";
+ import featuredStyles from "./FeaturedFiveClient.module.css";
+ import styles from "./DailyArchiveClient.module.css";
+ 
+-type ArchiveIndexEntry = {
++export type ArchiveIndexEntry = {
+   id: string;
+   date: string;
+   title: string;
+@@ -28,7 +29,7 @@ type ArticleState =
+ 
+ const ARCHIVE_ID_PATTERN = /^[0-9]{4}-[0-9]{2}-[0-9]{2}(-\d+)?$/;
+ 
+-function parseArchiveIndex(value: unknown): ArchiveIndexEntry[] {
++export function parseArchiveIndex(value: unknown): ArchiveIndexEntry[] {
+   if (!Array.isArray(value)) throw new Error("DAILY_ARCHIVE_UNAVAILABLE");
+   return value.map((item) => {
+     if (!item || typeof item !== "object") throw new Error("DAILY_ARCHIVE_UNAVAILABLE");
+@@ -74,9 +75,25 @@ function updatedJst(value: string) {
+   return `${part("year")}/${part("month")}/${part("day")} ${part("hour")}:${part("minute")} JST`;
+ }
+ 
+-export default function DailyArchiveClient() {
++export type DailyArchiveClientProps = {
++  /** Inclusive JST date range ("YYYY-MM-DD") to limit the list to one period. */
++  periodStart?: string;
++  periodEnd?: string;
++  /** Show a month heading whenever the month changes within the list. */
++  groupByMonth?: boolean;
++  /** Items per page. Omit to show the whole list without pagination. */
++  pageSize?: number;
++};
++
++export default function DailyArchiveClient({
++  periodStart,
++  periodEnd,
++  groupByMonth = false,
++  pageSize,
++}: DailyArchiveClientProps = {}) {
+   const [attempt, setAttempt] = useState(0);
+   const [listView, setListView] = useState<ListState>({ status: "loading" });
++  const [page, setPage] = useState(0);
+   const [selectedId, setSelectedId] = useState<string | null>(null);
+   const [articleAttempt, setArticleAttempt] = useState(0);
+   const [articleView, setArticleView] = useState<ArticleState>({ status: "idle" });
+@@ -144,6 +161,20 @@ export default function DailyArchiveClient() {
+     };
+   }, [selectedId, articleAttempt]);
+ 
++  const visibleItems =
++    listView.status === "ready"
++      ? listView.items.filter(
++          (item) =>
++            (!periodStart || item.date >= periodStart) &&
++            (!periodEnd || item.date <= periodEnd),
++        )
++      : [];
++  const totalPages = pageSize ? Math.max(1, Math.ceil(visibleItems.length / pageSize)) : 1;
++  const currentPage = Math.min(page, totalPages - 1);
++  const pageItems = pageSize
++    ? visibleItems.slice(currentPage * pageSize, currentPage * pageSize + pageSize)
++    : visibleItems;
++
+   return (
+     <div aria-live="polite" aria-busy={listView.status === "loading"}>
+       {listView.status === "loading" && (
+@@ -163,27 +194,69 @@ export default function DailyArchiveClient() {
+         </div>
+       )}
+ 
+-      {listView.status === "ready" && (
+-        <ol className={styles.archiveList}>
+-          {listView.items.map((item) => (
+-            <li key={item.id}>
++      {listView.status === "ready" && visibleItems.length === 0 && (
++        <p className={featuredStyles.state} role="status">この期間の記事はまだありません。</p>
++      )}
++
++      {listView.status === "ready" && visibleItems.length > 0 && (
++        <>
++          <ol className={styles.archiveList}>
++            {pageItems.map((item, index) => {
++              const showMonthHeading =
++                groupByMonth &&
++                (index === 0 || monthKeyOf(pageItems[index - 1].date) !== monthKeyOf(item.date));
++              return (
++                <Fragment key={item.id}>
++                  {showMonthHeading && (
++                    <li className={styles.monthHeading}>
++                      <h3>{monthLabel(monthKeyOf(item.date))}</h3>
++                    </li>
++                  )}
++                  <li>
++                    <button
++                      className={styles.archiveItem}
++                      type="button"
++                      aria-current={selectedId === item.id ? "true" : undefined}
++                      onClick={() => setSelectedId(item.id)}
++                    >
++                      <time className={styles.archiveDate} dateTime={item.date}>
++                        {item.date.replaceAll("-", "/")} JST
++                      </time>
++                      <span className={styles.archiveTitle}>{item.title}</span>
++                      <span className={styles.archiveCompany}>
++                        {item.companyName}（{item.ticker}）
++                      </span>
++                    </button>
++                  </li>
++                </Fragment>
++              );
++            })}
++          </ol>
++
++          {pageSize && totalPages > 1 && (
++            <nav className={styles.pagination} aria-label="過去の結果のページ送り">
+               <button
+-                className={styles.archiveItem}
++                className={styles.pageButton}
+                 type="button"
+-                aria-current={selectedId === item.id ? "true" : undefined}
+-                onClick={() => setSelectedId(item.id)}
++                disabled={currentPage === 0}
++                onClick={() => setPage(currentPage - 1)}
+               >
+-                <time className={styles.archiveDate} dateTime={item.date}>
+-                  {item.date.replaceAll("-", "/")} JST
+-                </time>
+-                <span className={styles.archiveTitle}>{item.title}</span>
+-                <span className={styles.archiveCompany}>
+-                  {item.companyName}（{item.ticker}）
+-                </span>
++                前へ
+               </button>
+-            </li>
+-          ))}
+-        </ol>
++              <span className={styles.pageStatus}>
++                {currentPage + 1} / {totalPages} ページ（全{visibleItems.length}件）
++              </span>
++              <button
++                className={styles.pageButton}
++                type="button"
++                disabled={currentPage >= totalPages - 1}
++                onClick={() => setPage(currentPage + 1)}
++              >
++                次へ
++              </button>
++            </nav>
++          )}
++        </>
+       )}
+ 
+       {selectedId && articleView.status === "loading" && (
+diff --git a/components/stock-analysis/DailyPeriodIndexClient.tsx b/components/stock-analysis/DailyPeriodIndexClient.tsx
+new file mode 100644
+index 0000000..af37f1b
+--- /dev/null
++++ b/components/stock-analysis/DailyPeriodIndexClient.tsx
+@@ -0,0 +1,128 @@
++"use client";
++
++import { useEffect, useState } from "react";
++import Link from "next/link";
++import {
++  parseArchiveIndex,
++  type ArchiveIndexEntry,
++} from "@/components/stock-analysis/DailyArchiveClient";
++import {
++  mondayOfWeek,
++  monthKeyOf,
++  monthLabel,
++  weekName,
++  weekRangeLabel,
++} from "@/lib/archive-periods";
++import featuredStyles from "./FeaturedFiveClient.module.css";
++import styles from "./DailyArchiveClient.module.css";
++
++type PeriodGroup = {
++  key: string;
++  title: string;
++  detail: string;
++  count: number;
++};
++
++type ListState =
++  | { status: "loading" }
++  | { status: "empty" }
++  | { status: "error" }
++  | { status: "ready"; groups: PeriodGroup[] };
++
++function groupByPeriod(items: ArchiveIndexEntry[], kind: "week" | "month"): PeriodGroup[] {
++  const groups = new Map<string, PeriodGroup>();
++  for (const item of items) {
++    const key = kind === "week" ? mondayOfWeek(item.date) : monthKeyOf(item.date);
++    const existing = groups.get(key);
++    if (existing) {
++      existing.count += 1;
++    } else {
++      groups.set(key, {
++        key,
++        title: kind === "week" ? weekName(key) : monthLabel(key),
++        detail: kind === "week" ? weekRangeLabel(key) : "",
++        count: 1,
++      });
++    }
++  }
++  return [...groups.values()].sort((a, b) => (a.key < b.key ? 1 : -1));
++}
++
++export default function DailyPeriodIndexClient({ kind }: { kind: "week" | "month" }) {
++  const [attempt, setAttempt] = useState(0);
++  const [listView, setListView] = useState<ListState>({ status: "loading" });
++
++  useEffect(() => {
++    const controller = new AbortController();
++    const timeout = window.setTimeout(() => controller.abort(), 15000);
++
++    setListView({ status: "loading" });
++    void (async () => {
++      try {
++        const response = await fetch("/api/daily-analysis?archive=1", {
++          cache: "no-store",
++          signal: controller.signal,
++        });
++        if (!response.ok) throw new Error("DAILY_ARCHIVE_UNAVAILABLE");
++        const result = (await response.json()) as { status?: unknown; items?: unknown };
++        if (result.status === "empty") {
++          if (!controller.signal.aborted) setListView({ status: "empty" });
++          return;
++        }
++        if (result.status !== "ready") throw new Error("DAILY_ARCHIVE_UNAVAILABLE");
++        const items = parseArchiveIndex(result.items);
++        if (!controller.signal.aborted)
++          setListView({ status: "ready", groups: groupByPeriod(items, kind) });
++      } catch {
++        if (!controller.signal.aborted) setListView({ status: "error" });
++      } finally {
++        window.clearTimeout(timeout);
++      }
++    })();
++
++    return () => {
++      window.clearTimeout(timeout);
++      controller.abort();
++    };
++  }, [attempt, kind]);
++
++  return (
++    <div aria-live="polite" aria-busy={listView.status === "loading"}>
++      {listView.status === "loading" && (
++        <p className={featuredStyles.state} role="status">一覧を読み込んでいます…</p>
++      )}
++
++      {listView.status === "empty" && (
++        <p className={featuredStyles.state} role="status">公開済みのアーカイブはまだありません。</p>
++      )}
++
++      {listView.status === "error" && (
++        <div className={featuredStyles.state} role="alert">
++          <p>一覧を取得できませんでした。</p>
++          <button className={featuredStyles.retry} type="button" onClick={() => setAttempt((value) => value + 1)}>
++            再読み込み
++          </button>
++        </div>
++      )}
++
++      {listView.status === "ready" && (
++        <ol className={styles.archiveList}>
++          {listView.groups.map((group) => (
++            <li key={group.key}>
++              <Link
++                className={styles.archiveItem}
++                href={`/daily-analysis/archive/${kind === "week" ? "weekly" : "monthly"}/?${kind === "week" ? "week" : "month"}=${group.key}`}
++              >
++                <span className={styles.archiveTitle}>{group.title}</span>
++                <span className={styles.archiveCompany}>
++                  {group.detail ? `${group.detail}・` : ""}
++                  {group.count}件の記事
++                </span>
++              </Link>
++            </li>
++          ))}
++        </ol>
++      )}
++    </div>
++  );
++}
+diff --git a/components/stock-analysis/DailyPeriodPageClient.tsx b/components/stock-analysis/DailyPeriodPageClient.tsx
+new file mode 100644
+index 0000000..7dee56c
+--- /dev/null
++++ b/components/stock-analysis/DailyPeriodPageClient.tsx
+@@ -0,0 +1,61 @@
++"use client";
++
++import Link from "next/link";
++import { useSearchParams } from "next/navigation";
++import SectionHeading from "@/components/SectionHeading";
++import DailyArchiveClient from "@/components/stock-analysis/DailyArchiveClient";
++import DailyPeriodIndexClient from "@/components/stock-analysis/DailyPeriodIndexClient";
++import {
++  isMonthKey,
++  isWeekKey,
++  monthLabel,
++  monthRange,
++  weekLabel,
++  weekRange,
++} from "@/lib/archive-periods";
++import styles from "./DailyArchiveClient.module.css";
++
++const DISCLAIMER =
++  "表示内容は公開時点の観測結果であり、売買指示や投資助言ではありません。記事を選ぶと全文を表示します。";
++
++export default function DailyPeriodPageClient({ kind }: { kind: "week" | "month" }) {
++  const searchParams = useSearchParams();
++  const param = searchParams.get(kind === "week" ? "week" : "month");
++  const valid = param !== null && (kind === "week" ? isWeekKey(param) : isMonthKey(param));
++
++  if (!valid) {
++    return (
++      <>
++        <SectionHeading
++          eyebrow={kind === "week" ? "TUTTO WEEKLY MARKET ANALYSIS" : "TUTTO MONTHLY MARKET ANALYSIS"}
++          title={kind === "week" ? "週刊市場分析" : "月間市場分析"}
++          description={
++            kind === "week"
++              ? `毎日の市場分析を週（月曜始まり）ごとにまとめた一覧です。週を選ぶと、その週の記事一覧を表示します。${DISCLAIMER}`
++              : `毎日の市場分析を月ごとにまとめた一覧です。月を選ぶと、その月の記事一覧を表示します。${DISCLAIMER}`
++          }
++        />
++        <DailyPeriodIndexClient kind={kind} />
++      </>
++    );
++  }
++
++  const { start, end } = kind === "week" ? weekRange(param) : monthRange(param);
++  const label = kind === "week" ? weekLabel(param) : monthLabel(param);
++
++  return (
++    <>
++      <SectionHeading
++        eyebrow={kind === "week" ? "TUTTO WEEKLY MARKET ANALYSIS" : "TUTTO MONTHLY MARKET ANALYSIS"}
++        title={kind === "week" ? label : `${label}の市場分析`}
++        description={`この${kind === "week" ? "週" : "月"}に公開した毎日の市場分析の一覧です。${DISCLAIMER}`}
++      />
++      <DailyArchiveClient periodStart={start} periodEnd={end} pageSize={10} />
++      <p className={styles.backLink}>
++        <Link href={`/daily-analysis/archive/${kind === "week" ? "weekly" : "monthly"}/`}>
++          ← {kind === "week" ? "週の一覧" : "月の一覧"}へ戻る
++        </Link>
++      </p>
++    </>
++  );
++}
+diff --git a/lib/archive-periods.ts b/lib/archive-periods.ts
+new file mode 100644
+index 0000000..c4e22fd
+--- /dev/null
++++ b/lib/archive-periods.ts
+@@ -0,0 +1,93 @@
++// Helpers for grouping daily-analysis archive entries by week / month.
++// All dates are JST calendar dates in "YYYY-MM-DD" form, so arithmetic is
++// done on the calendar components (via UTC) without timezone conversion.
++
++const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
++const MONTH_PATTERN = /^\d{4}-\d{2}$/;
++
++function toUtcDate(date: string): Date {
++  const [year, month, day] = date.split("-").map(Number);
++  return new Date(Date.UTC(year, month - 1, day));
++}
++
++function formatDate(value: Date): string {
++  const year = value.getUTCFullYear();
++  const month = String(value.getUTCMonth() + 1).padStart(2, "0");
++  const day = String(value.getUTCDate()).padStart(2, "0");
++  return `${year}-${month}-${day}`;
++}
++
++export function addDays(date: string, days: number): string {
++  const value = toUtcDate(date);
++  value.setUTCDate(value.getUTCDate() + days);
++  return formatDate(value);
++}
++
++/** Monday (JST week start) of the week containing the given date. */
++export function mondayOfWeek(date: string): string {
++  const value = toUtcDate(date);
++  const offset = (value.getUTCDay() + 6) % 7; // Mon=0 ... Sun=6
++  value.setUTCDate(value.getUTCDate() - offset);
++  return formatDate(value);
++}
++
++/** A week key is the Monday date "YYYY-MM-DD" of that week. */
++export function isWeekKey(value: string): boolean {
++  if (!DATE_PATTERN.test(value)) return false;
++  const parsed = toUtcDate(value);
++  if (formatDate(parsed) !== value) return false;
++  return mondayOfWeek(value) === value;
++}
++
++export function weekRange(weekKey: string): { start: string; end: string } {
++  return { start: weekKey, end: addDays(weekKey, 6) };
++}
++
++function monthDayLabel(date: string): string {
++  const [, month, day] = date.split("-").map(Number);
++  return `${month}月${day}日`;
++}
++
++/** e.g. "2026年11月第3週" */
++export function weekName(weekKey: string): string {
++  const [year, month, day] = weekKey.split("-").map(Number);
++  const weekOfMonth = Math.ceil(day / 7);
++  return `${year}年${month}月第${weekOfMonth}週`;
++}
++
++/** e.g. "2026年11月第3週（11月16日〜11月22日）" */
++export function weekLabel(weekKey: string): string {
++  const { start, end } = weekRange(weekKey);
++  return `${weekName(weekKey)}（${monthDayLabel(start)}〜${monthDayLabel(end)}）`;
++}
++
++/** e.g. "11月16日〜11月22日" */
++export function weekRangeLabel(weekKey: string): string {
++  const { start, end } = weekRange(weekKey);
++  return `${monthDayLabel(start)}〜${monthDayLabel(end)}`;
++}
++
++export function monthKeyOf(date: string): string {
++  return date.slice(0, 7);
++}
++
++export function isMonthKey(value: string): boolean {
++  if (!MONTH_PATTERN.test(value)) return false;
++  const [, month] = value.split("-").map(Number);
++  return month >= 1 && month <= 12;
++}
++
++export function monthRange(monthKey: string): { start: string; end: string } {
++  const [year, month] = monthKey.split("-").map(Number);
++  const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
++  return {
++    start: `${monthKey}-01`,
++    end: `${monthKey}-${String(lastDay).padStart(2, "0")}`,
++  };
++}
++
++/** e.g. "2026年11月" */
++export function monthLabel(monthKey: string): string {
++  const [year, month] = monthKey.split("-").map(Number);
++  return `${year}年${month}月`;
++}
