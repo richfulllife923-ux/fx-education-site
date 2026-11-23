@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useState } from "react";
+import Link from "next/link";
 import { parsePublishedDailyAnalysis, type PublishedDailyAnalysis } from "@/lib/daily-analysis-content";
 import { monthKeyOf, monthLabel } from "@/lib/archive-periods";
 import featuredStyles from "./FeaturedFiveClient.module.css";
@@ -314,6 +315,9 @@ export default function DailyArchiveClient({
           </div>
           <p className={featuredStyles.dailyPublished}>
             公開更新：<time dateTime={articleView.article.publishedAt}>{updatedJst(articleView.article.publishedAt)}</time>
+          </p>
+          <p className={styles.backLink}>
+            <Link href="/daily-analysis/archive/">結果を見る →</Link>
           </p>
         </article>
       )}
