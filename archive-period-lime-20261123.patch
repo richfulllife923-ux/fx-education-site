@@ -1,0 +1,35 @@
+diff --git a/components/stock-analysis/ArchiveNavCards.module.css b/components/stock-analysis/ArchiveNavCards.module.css
+index f7fe405..a8af6fd 100644
+--- a/components/stock-analysis/ArchiveNavCards.module.css
++++ b/components/stock-analysis/ArchiveNavCards.module.css
+@@ -31,7 +31,7 @@
+ 
+ .navTitle {
+   display: block;
+-  color: #facc15;
++  color: #a3e635;
+   font-size: 1.05rem;
+   font-weight: 700;
+   line-height: 1.6;
+diff --git a/components/stock-analysis/DailyPeriodPageClient.tsx b/components/stock-analysis/DailyPeriodPageClient.tsx
+index 24097ff..2ed3d82 100644
+--- a/components/stock-analysis/DailyPeriodPageClient.tsx
++++ b/components/stock-analysis/DailyPeriodPageClient.tsx
+@@ -29,7 +29,7 @@ export default function DailyPeriodPageClient({ kind }: { kind: "week" | "month"
+         <SectionHeading
+           eyebrow={kind === "week" ? "TUTTO WEEKLY MARKET ANALYSIS" : "TUTTO MONTHLY MARKET ANALYSIS"}
+           title={kind === "week" ? "週刊市場分析" : "月間市場分析"}
+-          titleClassName="text-[#facc15]"
++          titleClassName="text-[#a3e635]"
+           description={
+             kind === "week"
+               ? `毎日の市場分析を週（月曜始まり）ごとにまとめた一覧です。週を選ぶと、その週の記事一覧を表示します。${DISCLAIMER}`
+@@ -49,7 +49,7 @@ export default function DailyPeriodPageClient({ kind }: { kind: "week" | "month"
+       <SectionHeading
+         eyebrow={kind === "week" ? "TUTTO WEEKLY MARKET ANALYSIS" : "TUTTO MONTHLY MARKET ANALYSIS"}
+         title={kind === "week" ? label : `${label}の市場分析`}
+-        titleClassName="text-[#facc15]"
++        titleClassName="text-[#a3e635]"
+         description={`この${kind === "week" ? "週" : "月"}に公開した毎日の市場分析の一覧です。${DISCLAIMER}`}
+       />
+       <DailyArchiveClient periodStart={start} periodEnd={end} pageSize={10} />
