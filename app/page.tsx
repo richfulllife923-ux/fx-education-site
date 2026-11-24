@@ -114,36 +114,6 @@ export default function HomePage() {
       </section>
 
       <section className="container-page py-8 sm:py-10">
-        <div className="card p-5 sm:p-7" style={{ borderWidth: "1px", borderColor: "rgba(236, 72, 153, 0.62)", background: "linear-gradient(115deg, rgba(236,72,153,0.14), #182238 42%, #111827 100%)", boxShadow: "0 16px 44px -28px rgba(236, 72, 153, 0.36)" }}>
-          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-3">
-                <p className="eyebrow mb-0 text-pink-300">TUTTO on note</p>
-                <span className="inline-flex items-center gap-2 rounded-full border border-pink-400/50 bg-pink-400/10 px-3 py-1 text-xs font-bold text-pink-200">
-                  <span className="h-2 w-2 rounded-full bg-pink-300" aria-hidden="true" />noteで公開中
-                </span>
-              </div>
-              <h2 className="mt-3 text-2xl font-bold leading-tight text-text-primary sm:text-3xl">noteでも発信しています</h2>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-text-secondary sm:text-base sm:leading-8">
-                基礎知識や取引の考え方は、noteでも読み物として公開しています。第1回は、忙しい人向けの「週足×三尊×レバレッジなし」シンプル取引術です。
-              </p>
-              <p className="mt-2 max-w-3xl text-sm leading-7 text-text-secondary">
-                このサイトのブログとあわせて、noteの記事もご覧いただけます。
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-              <a href="https://note.com/tutto_tradinglab" target="_blank" rel="noopener noreferrer" className="main-cta cta-note whitespace-nowrap">
-                noteの記事を読む <ExternalLink size={16} />
-              </a>
-              <Link href="/blog" className="btn-secondary whitespace-nowrap">
-                ブログを見る
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="container-page py-8 sm:py-10">
         <div className="card bg-surface/70 p-5 sm:p-6">
           <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
