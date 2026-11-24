@@ -90,6 +90,7 @@ h4 {
 .cta-stock { background-color: #047857; }
 .cta-indicator { background-color: #dc2626; }
 .cta-basics { background-color: #facc15; color: #111827; }
+.cta-note { background-color: #ec4899; }
 .main-cta:hover { filter: brightness(1.12); }
 .main-cta:focus-visible, .stock-input:focus-visible, .stock-nav:focus-visible {
   outline: 3px solid #93c5fd;
