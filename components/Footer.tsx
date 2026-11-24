@@ -43,6 +43,9 @@ export default function Footer() {
             <a href="/rss.xml" aria-label="RSS" className="rounded-button border border-border p-2 hover:border-primary hover:text-text-primary">
               <Rss size={16} strokeWidth={1.8} />
             </a>
+            <a href="https://note.com/tutto_tradinglab" target="_blank" rel="noopener noreferrer" className="rounded-button border border-pink-500/60 px-3 py-2 text-xs font-bold text-pink-300 hover:bg-pink-500/10">
+              noteで読む
+            </a>
           </div>
         </div>
 

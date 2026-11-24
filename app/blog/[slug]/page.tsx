@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Clock, Facebook, Link as LinkIcon, Twitter } from "lucide-react";
+import { Clock, ExternalLink, Facebook, Link as LinkIcon, Twitter } from "lucide-react";
 import { articleJsonLd, buildMetadata, site } from "@/lib/seo";
 import Breadcrumb from "@/components/Breadcrumb";
 import PostCard from "@/components/PostCard";
@@ -88,6 +88,19 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             <span className="rounded-button border border-border p-2 text-text-secondary">
               <LinkIcon size={14} strokeWidth={1.8} />
             </span>
+          </div>
+
+          <div className="card mt-10 p-5 sm:p-6" style={{ borderWidth: "1px", borderColor: "rgba(236, 72, 153, 0.62)", background: "linear-gradient(115deg, rgba(236,72,153,0.14), #182238 42%, #111827 100%)" }}>
+            <p className="eyebrow mb-0 text-pink-300">TUTTO on note</p>
+            <h2 className="mt-3 text-xl font-bold leading-tight text-text-primary sm:text-2xl">読み物はnoteでも公開しています</h2>
+            <p className="mt-3 text-sm leading-7 text-text-secondary">
+              noteでは「週足×三尊×レバレッジなし」のシンプル取引術など、忙しい人向けの読み物を公開しています。この記事とあわせてご覧ください。
+            </p>
+            <div className="mt-5">
+              <a href="https://note.com/tutto_tradinglab" target="_blank" rel="noopener noreferrer" className="main-cta cta-note whitespace-nowrap">
+                noteで読む <ExternalLink size={16} />
+              </a>
+            </div>
           </div>
         </div>
 
